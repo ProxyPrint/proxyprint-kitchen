@@ -6,4 +6,6 @@ target/
 nbdist/
 nbactions.xml
 .nb-gradle/
+.idea/
+src/main/resources/application.properties
 
