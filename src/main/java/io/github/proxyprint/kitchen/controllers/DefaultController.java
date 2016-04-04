@@ -18,8 +18,10 @@ package io.github.proxyprint.kitchen.controllers;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import io.github.proxyprint.kitchen.models.User;
 import io.github.proxyprint.kitchen.models.repositories.UserDAO;
+import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.ui.ModelMap;
@@ -50,10 +52,34 @@ public class DefaultController {
         return "Se estiveres autenticado, podes ver isto!\n";
     }
 
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    public String login(WebRequest request) throws IOException {
+        boolean auth;
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+        JsonObject response = new JsonObject();
+        if (username == null || password == null) {
+            auth = false;
+        } else {
+            User user = users.findByUsername(username);
+            if (user == null) {
+                auth = false;
+            } else {
+                auth = user.getPassword().equals(password);
+                response.add("user", GSON.toJsonTree(user));
+            }
+        }
+
+        response.addProperty("success", auth);
+        return GSON.toJson(response);
+    }
+
     @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public String addUser(WebRequest webRequest) {
-        String user = webRequest.getParameter("user");
-        String password = webRequest.getParameter("password");
+    public String addUser(WebRequest request) {
+        boolean success;
+        String user = request.getParameter("user");
+        String password = request.getParameter("password");
+        JsonObject response = new JsonObject();
         User u = new User(user, password);
         u.addRole("ROLE_USER");
 
@@ -61,9 +87,12 @@ public class DefaultController {
         if (existing == null) {
             u.setPassword(password);
             users.save(u);
-            return GSON.toJson(u);
+            success = true;
+            response.add("user", GSON.toJsonTree(u));
         } else {
-            return GSON.toJson("Username in use!");
+            success = false;
         }
+        response.addProperty("success", success);
+        return GSON.toJson(response);
     }
 }
