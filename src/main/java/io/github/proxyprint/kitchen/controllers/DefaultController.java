@@ -52,13 +52,17 @@ public class DefaultController {
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String index(ModelMap map) {
-        return "Olá mundo!\n";
+        JsonObject response = new JsonObject();
+        response.addProperty("message", "Olá Mundo!");
+        return GSON.toJson(response);
     }
 
     @Secured({"ROLE_USER"})
     @RequestMapping(value = "/api/secured", method = RequestMethod.GET)
     public String secured(ModelMap map) {
-        return "Se estiveres autenticado, podes ver isto!\n";
+        JsonObject response = new JsonObject();
+        response.addProperty("message", "Se estiveres autenticado, podes ver isto!");
+        return GSON.toJson(response);
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
