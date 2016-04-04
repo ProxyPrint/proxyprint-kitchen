@@ -23,10 +23,13 @@ import io.github.proxyprint.kitchen.models.User;
 import io.github.proxyprint.kitchen.models.repositories.UserDAO;
 import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
@@ -40,6 +43,12 @@ public class DefaultController {
     @Autowired
     private UserDAO users;
     private final static Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+
+    @RequestMapping(method = RequestMethod.OPTIONS, value = "/*")
+    @ResponseBody
+    public ResponseEntity handleOptions() {
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String index(ModelMap map) {
