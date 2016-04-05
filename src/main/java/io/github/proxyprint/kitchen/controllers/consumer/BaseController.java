@@ -29,11 +29,13 @@ public class BaseController {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         JsonObject response = new JsonObject();
-        if (username!=null && password!=null && !username.isEmpty() && !password.isEmpty()) {
+        if (username != null && password != null && !username.isEmpty() && !password.isEmpty()) {
             Consumer consumer = consumers.findByUsername(username);
             if (consumer != null) {
                 auth = consumer.getPassword().equals(password);
-                response.add("consumer", GSON.toJsonTree(consumer));
+                if (auth) {
+                    response.add("consumer", GSON.toJsonTree(consumer));
+                }
             }
         }
 
@@ -43,26 +45,26 @@ public class BaseController {
 
     @RequestMapping(value = "/consumer/register", method = RequestMethod.POST)
     public String addUser(WebRequest request) {
-        boolean success=false;
+        boolean success = false;
 
         JsonObject response = new JsonObject();
         String username = request.getParameter("username");
         Consumer c = consumers.findByUsername(username);
 
-        if(c == null){
+        if (c == null) {
             String password = request.getParameter("password");
             String email = request.getParameter("email");
             String name = request.getParameter("name");
             String lat = request.getParameter("latitude");
             String lon = request.getParameter("longitude");
-            c = new Consumer(name,username,password,email,lat,lon);
+            c = new Consumer(name, username, password, email, lat, lon);
             c.addRole("ROLE_USER");
             consumers.save(c);
             response.add("consumer", GSON.toJsonTree(c));
-            success=true;
+            success = true;
         } else {
             response.addProperty("error", "O username já se encontra em uso.");
-            success=false;
+            success = false;
         }
 
         response.addProperty("success", success);

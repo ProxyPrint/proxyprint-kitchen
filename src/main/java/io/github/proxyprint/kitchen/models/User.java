@@ -16,12 +16,26 @@
  */
 package io.github.proxyprint.kitchen.models;
 
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Table;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.*;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 /**
  *
@@ -43,6 +57,7 @@ public class User implements Serializable {
             name = "roles",
             joinColumns = @JoinColumn(name = "user_id")
     )
+    @Cascade(CascadeType.ALL)
     private Set<String> roles;
 
     public User() {
