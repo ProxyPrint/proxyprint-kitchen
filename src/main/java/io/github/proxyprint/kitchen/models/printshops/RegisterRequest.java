@@ -16,6 +16,7 @@
  */
 package io.github.proxyprint.kitchen.models.printshops;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -51,11 +52,14 @@ public class RegisterRequest implements Serializable {
     private String pShopNIF;
     @Column(nullable = false, name = "pshop_name")
     private String pShopName;
+    @JsonIgnore
+    @Column(nullable = false, name = "accepted")
+    private boolean accepted = false;
 
     public RegisterRequest() {
     }
 
-    public RegisterRequest(String managerName, String managerEmail, String managerPassword, String pShopAddress, String pShopLatitude, String pShopLongitude, String pShopNIF, String pShopName) {
+    public RegisterRequest(String managerName, String managerEmail, String managerPassword, String pShopAddress, String pShopLatitude, String pShopLongitude, String pShopNIF, String pShopName, boolean accepted) {
         this.managerName = managerName;
         this.managerEmail = managerEmail;
         this.managerPassword = managerPassword;
@@ -64,6 +68,7 @@ public class RegisterRequest implements Serializable {
         this.pShopLongitude = pShopLongitude;
         this.pShopNIF = pShopNIF;
         this.pShopName = pShopName;
+        this.accepted = accepted;
     }
 
     public long getId() {
@@ -132,6 +137,14 @@ public class RegisterRequest implements Serializable {
 
     public void setpShopName(String pShopName) {
         this.pShopName = pShopName;
+    }
+
+    public boolean isAccepted() {
+        return accepted;
+    }
+
+    public void setAccepted(boolean accepted) {
+        this.accepted = accepted;
     }
 
     @Override
