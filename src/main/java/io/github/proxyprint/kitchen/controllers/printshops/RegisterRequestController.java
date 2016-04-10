@@ -17,11 +17,16 @@ package io.github.proxyprint.kitchen.controllers.printshops;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import io.github.proxyprint.kitchen.models.printshops.RegisterRequest;
 import io.github.proxyprint.kitchen.models.repositories.RegisterRequestDAO;
+import java.io.IOException;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -39,9 +44,22 @@ public class RegisterRequestController {
     private final static Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     @RequestMapping(value = "/request/register", method = RequestMethod.POST)
-    public ResponseEntity<RegisterRequest> updateDisplay(@RequestBody RegisterRequest request) {
-        System.out.println(request);
-        this.registerRequests.save(request);
-        return new ResponseEntity<>(request, HttpStatus.OK);
+    public ResponseEntity<RegisterRequest> registerRequest(@RequestBody RegisterRequest registerRequest) {
+        System.out.println(registerRequest);
+        this.registerRequests.save(registerRequest);
+        return new ResponseEntity<>(registerRequest, HttpStatus.OK);
+    }
+
+    @Secured({"ROLE_MANAGER"})
+    @RequestMapping(value = "/request/accept/{id}", method = RequestMethod.POST)
+    public ResponseEntity<String> acceptRequest(@PathVariable(value = "id") long id) throws IOException {
+        RegisterRequest registerRequest = registerRequests.findOne(id);
+        if (registerRequest == null) {
+            return new ResponseEntity<>("No Request with such ID!", HttpStatus.NOT_FOUND);
+        } else {
+            registerRequest.setAccepted(true);
+            registerRequests.save(registerRequest);
+            return new ResponseEntity<>("Request accepted!", HttpStatus.OK);
+        }
     }
 }
