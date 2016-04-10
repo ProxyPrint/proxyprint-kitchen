@@ -1,11 +1,15 @@
-package io.github.proxyprint.kitchen.controllers.consumer;
+package io.github.proxyprint.kitchen.controllers.printshop.employee;
+
+/**
+ * Created by daniel on 09-04-2016.
+ */
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import io.github.proxyprint.kitchen.models.User;
-import io.github.proxyprint.kitchen.models.consumer.Consumer;
-import io.github.proxyprint.kitchen.models.repositories.ConsumerDAO;
+import io.github.proxyprint.kitchen.models.printshop.employee.Employee;
+import io.github.proxyprint.kitchen.models.repositories.EmployeeDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -15,27 +19,27 @@ import org.springframework.web.context.request.WebRequest;
 import java.io.IOException;
 
 /**
- * Created by daniel on 04-04-2016.
+ * Created by daniel on 09-04-2016.
  */
 @RestController
-public class BaseController {
+public class EBaseController {
 
     @Autowired
-    private ConsumerDAO consumers;
+    private EmployeeDAO employees;
     private final static Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    @RequestMapping(value = "/consumer/login", method = RequestMethod.POST)
+    @RequestMapping(value = "/employee/login", method = RequestMethod.POST)
     public String login(WebRequest request) throws IOException {
         boolean auth = false;
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         JsonObject response = new JsonObject();
         if (username != null && password != null && !username.isEmpty() && !password.isEmpty()) {
-            Consumer consumer = consumers.findByUsername(username);
-            if (consumer != null) {
-                auth = consumer.getPassword().equals(password);
+            Employee employee = employees.findByUsername(username);
+            if (employee != null) {
+                auth = employee.getPassword().equals(password);
                 if (auth) {
-                    response.add("consumer", GSON.toJsonTree(consumer));
+                    response.add("employee", GSON.toJsonTree(employee));
                 }
             }
         }
@@ -44,24 +48,23 @@ public class BaseController {
         return GSON.toJson(response);
     }
 
-    @RequestMapping(value = "/consumer/register", method = RequestMethod.POST)
-    public String addUser(WebRequest request) {
+    /*The employee doesn't have resgiter method. A printshop manager should register its employees*/
+    /*ONLY FOR TESTING!!*/
+    @RequestMapping(value = "/employee/register", method = RequestMethod.POST)
+    public String addEmployee(WebRequest request) {
         boolean success = false;
 
         JsonObject response = new JsonObject();
         String username = request.getParameter("username");
-        Consumer c = consumers.findByUsername(username);
+        Employee e = employees.findByUsername(username);
 
-        if (c == null) {
+        if (e == null) {
             String password = request.getParameter("password");
-            String email = request.getParameter("email");
             String name = request.getParameter("name");
-            String lat = request.getParameter("latitude");
-            String lon = request.getParameter("longitude");
-            c = new Consumer(name, username, password, email, lat, lon);
-            c.addRole(User.Roles.ROLE_USER.toString());
-            consumers.save(c);
-            response.add("consumer", GSON.toJsonTree(c));
+            e = new Employee(username, password, name);
+            e.addRole(User.Roles.ROLE_EMPLOYEE.toString());
+            employees.save(e);
+            response.add("employee", GSON.toJsonTree(e));
             success = true;
         } else {
             response.addProperty("error", "O username já se encontra em uso.");
@@ -71,4 +74,5 @@ public class BaseController {
         response.addProperty("success", success);
         return GSON.toJson(response);
     }
+
 }

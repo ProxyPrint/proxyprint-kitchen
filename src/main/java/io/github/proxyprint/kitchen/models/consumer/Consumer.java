@@ -14,11 +14,11 @@ import javax.persistence.Table;
 public class Consumer extends User {
     @Column(name = "name", nullable = false)
     private String name;
-    @Column(name = "email", nullable = false)
+    @Column(name = "email", nullable = true) // all true because null constraint block adition of employees
     private String email;
-    @Column(name = "latitude", nullable = false)
+    @Column(name = "latitude", nullable = true)
     private String latitude;
-    @Column(name = "longitude", nullable = false)
+    @Column(name = "longitude", nullable = true)
     private String longitude;
 
     public Consumer() {}
