@@ -50,7 +50,7 @@ public class RegisterRequestController {
         return new ResponseEntity<>(registerRequest, HttpStatus.OK);
     }
 
-    @Secured({"ROLE_MANAGER"})
+    @Secured({"ROLE_ADMIN"})
     @RequestMapping(value = "/request/accept/{id}", method = RequestMethod.POST)
     public ResponseEntity<String> acceptRequest(@PathVariable(value = "id") long id) throws IOException {
         RegisterRequest registerRequest = registerRequests.findOne(id);
