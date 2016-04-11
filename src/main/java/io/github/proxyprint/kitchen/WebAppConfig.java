@@ -18,6 +18,7 @@ package io.github.proxyprint.kitchen;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -34,6 +35,19 @@ public class WebAppConfig {
 
     public static void main(String[] args) {
         SpringApplication.run(WebAppConfig.class, args);
+    }
+
+    @Bean
+    public EmbeddedServletContainerCustomizer containerCustomizer() {
+        return (container -> {
+            Integer port;
+            try {
+                port = Integer.valueOf(System.getenv("PORT"));
+            } catch (NumberFormatException ex) {
+                port = 8080;
+            }
+            container.setPort(port);
+        });
     }
 
     @Bean
