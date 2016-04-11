@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2016 Jorge Caldas, José Cortez
  * José Francisco, Marcelo Gonçalves
  *
@@ -36,10 +36,6 @@ public class User implements Serializable {
     public static enum Roles {
         ROLE_USER, ROLE_EMPLOYEE, ROLE_MANAGER, ROLE_ADMIN
     }
-    /*    public static String ROLE_USER = "ROLE_USER";
-    public static String ROLE_EMPLOYEE = "ROLE_EMPLOYEE";
-    public static String ROLE_MANAGER = "ROLE_MANAGER";
-    public static String ROLE_ADMIN = "ROLE_ADMIN";*/
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
