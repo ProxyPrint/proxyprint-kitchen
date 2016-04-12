@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2016 Jorge Caldas, José Cortez
  * José Francisco, Marcelo Gonçalves
  *
@@ -38,6 +38,12 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.*;
 
 /**
  *
@@ -47,6 +53,10 @@ import org.hibernate.annotations.CascadeType;
 @Table(name = "users")
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class User implements Serializable {
+
+    public static enum Roles {
+        ROLE_USER, ROLE_EMPLOYEE, ROLE_MANAGER, ROLE_ADMIN
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
