@@ -30,6 +30,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 import org.springframework.security.core.GrantedAuthority;
@@ -43,7 +45,8 @@ import org.hibernate.annotations.CascadeType;
  */
 @Entity
 @Table(name = "users")
-public class User implements Serializable {
+@Inheritance(strategy = InheritanceType.JOINED)
+public abstract class User implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -102,7 +105,7 @@ public class User implements Serializable {
         return authorities;
     }
 
-    public void addRole(String role) {
+    protected void addRole(String role) {
         this.roles.add(role);
     }
 

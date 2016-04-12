@@ -86,26 +86,4 @@ public class DefaultController {
         response.addProperty("success", auth);
         return GSON.toJson(response);
     }
-
-    @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public String addUser(WebRequest request) {
-        boolean success;
-        String user = request.getParameter("username");
-        String password = request.getParameter("password");
-        JsonObject response = new JsonObject();
-        User u = new User(user, password);
-        u.addRole("ROLE_USER");
-
-        User existing = users.findByUsername(user);
-        if (existing == null) {
-            u.setPassword(password);
-            users.save(u);
-            success = true;
-            response.add("user", GSON.toJsonTree(u));
-        } else {
-            success = false;
-        }
-        response.addProperty("success", success);
-        return GSON.toJson(response);
-    }
 }
