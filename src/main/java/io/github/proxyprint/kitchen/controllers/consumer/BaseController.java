@@ -58,7 +58,7 @@ public class BaseController {
             String lat = request.getParameter("latitude");
             String lon = request.getParameter("longitude");
             c = new Consumer(name, username, password, email, lat, lon);
-            c.addRole("ROLE_USER");
+            
             consumers.save(c);
             response.add("consumer", GSON.toJsonTree(c));
             success = true;
