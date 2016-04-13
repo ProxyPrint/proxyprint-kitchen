@@ -7,7 +7,6 @@ package io.github.proxyprint.kitchen.controllers.printshop.employee;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import io.github.proxyprint.kitchen.models.User;
 import io.github.proxyprint.kitchen.models.printshop.employee.Employee;
 import io.github.proxyprint.kitchen.models.repositories.EmployeeDAO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +61,8 @@ public class EBaseController {
             String password = request.getParameter("password");
             String name = request.getParameter("name");
             e = new Employee(username, password, name);
-            e.addRole(User.Roles.ROLE_EMPLOYEE.toString());
+            //e.addRole(User.Roles.ROLE_EMPLOYEE.toString());
+
             employees.save(e);
             response.add("employee", GSON.toJsonTree(e));
             success = true;
