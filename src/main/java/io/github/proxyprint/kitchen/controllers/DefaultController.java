@@ -21,7 +21,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import io.github.proxyprint.kitchen.models.User;
 import io.github.proxyprint.kitchen.models.repositories.UserDAO;
-import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +31,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
+
+import java.io.IOException;
 
 /**
  *
@@ -79,7 +80,9 @@ public class DefaultController {
                 auth = false;
             } else {
                 auth = user.getPassword().equals(password);
-                response.add("user", GSON.toJsonTree(user));
+                if(auth==true) {
+                    response.add("user", GSON.toJsonTree(user));
+                }
             }
         }
 
