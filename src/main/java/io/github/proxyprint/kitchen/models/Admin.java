@@ -1,4 +1,4 @@
-package io.github.proxyprint.kitchen;
+package io.github.proxyprint.kitchen.models;
 
 import io.github.proxyprint.kitchen.models.User;
 

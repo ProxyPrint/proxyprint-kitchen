@@ -17,20 +17,17 @@ package io.github.proxyprint.kitchen.controllers.printshops;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
 import io.github.proxyprint.kitchen.models.printshops.RegisterRequest;
 import io.github.proxyprint.kitchen.models.repositories.RegisterRequestDAO;
-import java.io.IOException;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -61,5 +58,17 @@ public class RegisterRequestController {
             registerRequests.save(registerRequest);
             return new ResponseEntity<>("Request accepted!", HttpStatus.OK);
         }
+    }
+
+    @Secured({"ROLE_ADMIN"})
+    @RequestMapping(value = "/requests/pending", method = RequestMethod.GET)
+    public ResponseEntity<List<RegisterRequest>> acceptRequest() {
+        List<RegisterRequest> pendingRequests = new ArrayList<>();
+        for(RegisterRequest rq : registerRequests.findAll()) {
+            if(!rq.isAccepted()) {
+                pendingRequests.add(rq);
+            }
+        }
+        return new ResponseEntity<List<RegisterRequest>>(pendingRequests, HttpStatus.OK);
     }
 }

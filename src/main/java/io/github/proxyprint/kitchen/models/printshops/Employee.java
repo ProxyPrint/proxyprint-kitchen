@@ -1,4 +1,4 @@
-package io.github.proxyprint.kitchen.models.printshop.employee;
+package io.github.proxyprint.kitchen.models.printshops;
 
 import io.github.proxyprint.kitchen.models.User;
 

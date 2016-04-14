@@ -1,6 +1,6 @@
 package io.github.proxyprint.kitchen.models.repositories;
 
-import io.github.proxyprint.kitchen.Admin;
+import io.github.proxyprint.kitchen.models.Admin;
 import org.springframework.data.repository.CrudRepository;
 
 import javax.transaction.Transactional;
