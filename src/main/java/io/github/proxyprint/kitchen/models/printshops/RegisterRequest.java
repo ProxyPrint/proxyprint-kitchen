@@ -53,23 +53,15 @@ public class RegisterRequest implements Serializable {
     @JsonIgnore
     @Column(nullable = false, name = "accepted")
     private boolean accepted = false;
-    @JsonIgnore
     @Column(nullable = false, name = "pshop_date_request")
-    private GregorianCalendar pShopDateRequest;
-    @JsonIgnore
+    private String pShopDateRequest;
     @Column(nullable = true, name = "pshop_date_request_accepted")
-    private GregorianCalendar pShopDateRequestAccepted;
-    @Transient
-    private String pShopDateRequestString;
-    @Transient
-    private String pShopDateRequestAcceptedString;
+    private String pShopDateRequestAccepted;
 
     public RegisterRequest() {
         // Return a Calendar based on default Locale and TimeZone
-        this.pShopDateRequest = (GregorianCalendar) GregorianCalendar.getInstance();
+        this.pShopDateRequest = GregorianCalendarToString((GregorianCalendar) GregorianCalendar.getInstance());
         this.pShopDateRequestAccepted = null;
-        this.pShopDateRequestString = GregorianCalendarToString(this.pShopDateRequest);
-        this.pShopDateRequestAcceptedString = "";
     }
 
     public RegisterRequest(String managerName, String managerEmail, String managerPassword, String pShopAddress, String pShopLatitude, String pShopLongitude, String pShopNIF, String pShopName, boolean accepted) {
@@ -82,10 +74,8 @@ public class RegisterRequest implements Serializable {
         this.pShopNIF = pShopNIF;
         this.pShopName = pShopName;
         this.accepted = accepted;
-        this.pShopDateRequest = (GregorianCalendar) GregorianCalendar.getInstance();
+        this.pShopDateRequest = GregorianCalendarToString((GregorianCalendar) GregorianCalendar.getInstance());
         this.pShopDateRequestAccepted = null;
-        this.pShopDateRequestString = GregorianCalendarToString(this.pShopDateRequest);
-        this.pShopDateRequestAcceptedString = "";
     }
 
     public long getId() { return id; }
@@ -126,13 +116,9 @@ public class RegisterRequest implements Serializable {
 
     public void setAccepted(boolean accepted) { this.accepted = accepted; }
 
-    public GregorianCalendar getpShopDateRequest() { return pShopDateRequest; }
+    public String getpShopDateRequest() { return pShopDateRequest; }
 
-    public void setpShopDateRequest(GregorianCalendar pShopDateRequest) { this.pShopDateRequest = pShopDateRequest; }
-
-    public GregorianCalendar getpShopDateRequestAccepted() { return pShopDateRequestAccepted; }
-
-    public void setpShopDateRequestAccepted(GregorianCalendar pShopDateRequestAccepted) { this.pShopDateRequestAccepted = pShopDateRequestAccepted; }
+    public String getpShopDateRequestAccepted() { return pShopDateRequestAccepted; }
 
     @Override
     public String toString() {
@@ -140,7 +126,7 @@ public class RegisterRequest implements Serializable {
     }
 
     /**
-     *
+     * From GregoriaCalendar to String.
      * @param c, GregorianCalendar instance
      * @return Well formated string for display
      */
