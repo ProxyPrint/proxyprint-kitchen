@@ -68,7 +68,7 @@ public class Consumer extends User {
 
     @Override
     public String toString() {
-        return "Consumer{"
+        return "Consumer{" + super.toString()
                 + "name='" + name + '\''
                 + ", email='" + email + '\''
                 + ", latitude='" + latitude + '\''
