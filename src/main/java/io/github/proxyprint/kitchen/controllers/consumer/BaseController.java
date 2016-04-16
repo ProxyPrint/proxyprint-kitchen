@@ -6,6 +6,9 @@ import com.google.gson.JsonObject;
 import io.github.proxyprint.kitchen.models.User;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.repositories.ConsumerDAO;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -13,6 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
 import java.io.IOException;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Created by daniel on 04-04-2016.
@@ -68,6 +76,35 @@ public class BaseController {
         }
 
         response.addProperty("success", success);
+        return GSON.toJson(response);
+    }
+
+    @RequestMapping(value = "/consumer/upload", method = RequestMethod.POST)
+    public String handleFileUpload(@RequestParam("file") MultipartFile file, WebRequest req) {
+        JsonObject response = new JsonObject();
+
+        String filetype = FilenameUtils.getExtension(file.getOriginalFilename());
+        if (!filetype.equals("pdf")) {
+            throw new RuntimeException("Error! Not a pdf");
+        }
+        String name = FilenameUtils.removeExtension(file.getOriginalFilename());
+
+        if (!file.isEmpty()) {
+            try {
+                PDDocument pdf = PDDocument.load(file.getInputStream());
+                int count = pdf.getNumberOfPages();
+
+                System.out.println("Este pdf tem " + count + " páginas!!");
+                response.addProperty("success", true);
+                response.addProperty("message", "Este pdf tem " + count + " páginas!!");
+            } catch (Exception e) {
+                response.addProperty("success", false);
+                response.addProperty("message", "You failed to upload " + name + " => " + e.getMessage());
+            }
+        } else {
+            response.addProperty("success", false);
+            response.addProperty("message", "You failed to upload because the file was empty");
+        }
         return GSON.toJson(response);
     }
 }
