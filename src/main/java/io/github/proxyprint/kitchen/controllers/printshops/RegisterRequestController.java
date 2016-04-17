@@ -62,4 +62,17 @@ public class RegisterRequestController {
             return new ResponseEntity<>("Request accepted!", HttpStatus.OK);
         }
     }
+    
+    @Secured({"ROLE_ADMIN"})
+    @RequestMapping(value = "/request/reject/{id}", method = RequestMethod.POST)
+    public ResponseEntity<String> rejectRequest(@PathVariable(value ="id") long id) throws IOException {
+        RegisterRequest  registerRequest = registerRequests.findOne(id);
+        if (registerRequest == null) {
+            return new ResponseEntity<>("No request with such ID!", HttpStatus.NOT_FOUND);
+        }
+        else {
+            registerRequests.delete(id);
+            return new ResponseEntity<>("Request rejected", HttpStatus.OK);
+        }
+    }
 }
