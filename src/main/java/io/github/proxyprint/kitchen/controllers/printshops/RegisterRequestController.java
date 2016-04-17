@@ -17,6 +17,7 @@ package io.github.proxyprint.kitchen.controllers.printshops;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import io.github.proxyprint.kitchen.controllers.MailBox;
 import io.github.proxyprint.kitchen.models.printshops.RegisterRequest;
 import io.github.proxyprint.kitchen.models.repositories.RegisterRequestDAO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +57,16 @@ public class RegisterRequestController {
         } else {
             registerRequest.setAccepted(true);
             registerRequests.save(registerRequest);
-            return new ResponseEntity<>("Request accepted!", HttpStatus.OK);
+
+            // Send email
+            MailBox m = new MailBox();
+            boolean res = m.sedMailAcceptedRequest(registerRequest);
+
+            if(res) {
+                return new ResponseEntity<String>("Request accepted!", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<String>("Erro no servidor mail", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
     }
 
