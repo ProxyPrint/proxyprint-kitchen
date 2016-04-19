@@ -1,8 +1,6 @@
 package io.github.proxyprint.kitchen.models.printshops;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * Created by daniel on 18-04-2016.
@@ -10,6 +8,9 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "printshops")
 public class PrintShop {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
     @Column(name = "name", nullable = false)
     private String name;
     @Column(nullable = false, name = "address")
@@ -25,11 +26,15 @@ public class PrintShop {
     @Column(nullable = false, name = "avg_rating")
     private float avgRating;
     // Missing priceTable : <PriceItem,price:float>
+    // If printshop deleted, then manager is also deleted
+    @OneToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "manager_id")
+    Manager manager;
 
 
     public PrintShop() {}
 
-    public PrintShop(String name, String address, String latitude, String longitude, String nif, String logo, float avgRating) {
+    public PrintShop(String name, String address, String latitude, String longitude, String nif, String logo, float avgRating, Manager manager) {
         this.name = name;
         this.address = address;
         this.latitude = latitude;
@@ -37,7 +42,12 @@ public class PrintShop {
         this.nif = nif;
         this.logo = logo;
         this.avgRating = avgRating;
+        this.manager = manager;
     }
+
+    public long getId() { return id; }
+
+    public void setId(long id) { this.id = id; }
 
     public String getName() { return name; }
 
@@ -45,7 +55,7 @@ public class PrintShop {
 
     public String getAddress() { return address; }
 
-   public void setAddress(String address) { this.address = address; }
+    public void setAddress(String address) { this.address = address; }
 
     public String getLatitude() { return latitude; }
 
@@ -67,16 +77,22 @@ public class PrintShop {
 
     public void setAvgRating(float avgRating) { this.avgRating = avgRating; }
 
+    public Manager getManager() { return manager; }
+
+    public void setManager(Manager manager) { this.manager = manager; }
+
     @Override
     public String toString() {
         return "PrintShop{" +
-                "name='" + name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 ", address='" + address + '\'' +
                 ", latitude='" + latitude + '\'' +
                 ", longitude='" + longitude + '\'' +
                 ", nif='" + nif + '\'' +
                 ", logo='" + logo + '\'' +
                 ", avgRating=" + avgRating +
+                ", manager=" + manager +
                 '}';
     }
 
@@ -87,6 +103,7 @@ public class PrintShop {
 
         PrintShop printShop = (PrintShop) o;
 
+        if (getId() != printShop.getId()) return false;
         if (Float.compare(printShop.getAvgRating(), getAvgRating()) != 0) return false;
         if (getName() != null ? !getName().equals(printShop.getName()) : printShop.getName() != null) return false;
         if (getAddress() != null ? !getAddress().equals(printShop.getAddress()) : printShop.getAddress() != null)
@@ -96,17 +113,20 @@ public class PrintShop {
         if (getLongitude() != null ? !getLongitude().equals(printShop.getLongitude()) : printShop.getLongitude() != null)
             return false;
         if (getNif() != null ? !getNif().equals(printShop.getNif()) : printShop.getNif() != null) return false;
-        return getLogo() != null ? getLogo().equals(printShop.getLogo()) : printShop.getLogo() == null;
+        if (getLogo() != null ? !getLogo().equals(printShop.getLogo()) : printShop.getLogo() != null) return false;
+        return getManager() != null ? getManager().equals(printShop.getManager()) : printShop.getManager() == null;
 
     }
 
     @Override
     public int hashCode() {
-        int result = getName() != null ? getName().hashCode() : 0;
+        int result = (int) (getId() ^ (getId() >>> 32));
+        result = 31 * result + (getName() != null ? getName().hashCode() : 0);
         result = 31 * result + (getAddress() != null ? getAddress().hashCode() : 0);
         result = 31 * result + (getLatitude() != null ? getLatitude().hashCode() : 0);
         result = 31 * result + (getLongitude() != null ? getLongitude().hashCode() : 0);
         result = 31 * result + (getNif() != null ? getNif().hashCode() : 0);
+        result = 31 * result + (getAvgRating() != +0.0f ? Float.floatToIntBits(getAvgRating()) : 0);
         return result;
     }
 }

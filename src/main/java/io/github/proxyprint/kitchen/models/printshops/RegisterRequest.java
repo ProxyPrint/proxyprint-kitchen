@@ -120,6 +120,8 @@ public class RegisterRequest implements Serializable {
 
     public String getpShopDateRequestAccepted() { return pShopDateRequestAccepted; }
 
+    public void setpShopDateRequestAccepted(GregorianCalendar date) { this.pShopDateRequestAccepted = GregorianCalendarToString(date); }
+
     @Override
     public String toString() {
         return "RegisterRequest{" + "id=" + id + ", managerName=" + managerName + ", managerEmail=" + managerEmail + ", managerPassword=" + managerPassword + ", pShopAddress=" + pShopAddress + ", pShopLatitude=" + pShopLatitude + ", pShopLongitude=" + pShopLongitude + ", pShopNIF=" + pShopNIF + ", pShopName=" + pShopName + '}';

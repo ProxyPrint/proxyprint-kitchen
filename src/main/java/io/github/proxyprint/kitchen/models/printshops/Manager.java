@@ -2,9 +2,7 @@ package io.github.proxyprint.kitchen.models.printshops;
 
 import io.github.proxyprint.kitchen.models.User;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * Created by daniel on 18-04-2016.
@@ -16,12 +14,16 @@ public class Manager extends User {
     private String name;
     @Column(name = "email", nullable = false)
     private String email;
-    @Column(name = "password", nullable = false)
-    private String password;
-    @Column(name = "print_shop_id", nullable = false)
-    private String printShopID;
+    @OneToOne(mappedBy = "manager") // "manager" name of variable in class PrintShop
+    private PrintShop printShop;
 
     public Manager() {}
+
+    public Manager(String username, String password, String name, String email) {
+        super(username, password);
+        this.name = name;
+        this.email = email;
+    }
 
     public String getName() { return name; }
 
@@ -31,23 +33,16 @@ public class Manager extends User {
 
     public void setEmail(String email) { this.email = email; }
 
-    @Override
-    public String getPassword() { return password; }
+    public PrintShop getPrintShop() { return printShop; }
 
-    @Override
-    public void setPassword(String password) { this.password = password; }
-
-    public String getPrintShopID() { return printShopID; }
-
-    public void setPrintShopID(String printShopID) { this.printShopID = printShopID; }
+    public void setPrintShop(PrintShop printShop) { this.printShop = printShop; }
 
     @Override
     public String toString() {
-        return "Manager{" +
+        return "Manager{" + super.toString() +
                 "name='" + name + '\'' +
                 ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", printShopID='" + printShopID + '\'' +
+                ", printShopID='" + printShop.toString() + '\'' +
                 '}';
     }
 }
