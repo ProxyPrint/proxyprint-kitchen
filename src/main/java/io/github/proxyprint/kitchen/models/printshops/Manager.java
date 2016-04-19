@@ -1,5 +1,6 @@
 package io.github.proxyprint.kitchen.models.printshops;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.proxyprint.kitchen.models.User;
 
 import javax.persistence.*;
@@ -14,6 +15,7 @@ public class Manager extends User {
     private String name;
     @Column(name = "email", nullable = false)
     private String email;
+    @JsonIgnore
     @OneToOne(mappedBy = "manager", cascade = CascadeType.REMOVE) // "manager" name of variable in class PrintShop
     private PrintShop printShop;
 
