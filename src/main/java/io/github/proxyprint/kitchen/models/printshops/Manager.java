@@ -14,7 +14,7 @@ public class Manager extends User {
     private String name;
     @Column(name = "email", nullable = false)
     private String email;
-    @OneToOne(mappedBy = "manager") // "manager" name of variable in class PrintShop
+    @OneToOne(mappedBy = "manager", cascade = CascadeType.REMOVE) // "manager" name of variable in class PrintShop
     private PrintShop printShop;
 
     public Manager() {}
