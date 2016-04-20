@@ -16,9 +16,9 @@ public class PrintShop {
     @Column(nullable = false, name = "address")
     private String address;
     @Column(nullable = false, name = "latitude")
-    private String latitude;
+    private Double latitude;
     @Column(nullable = false, name = "longitude")
-    private String longitude;
+    private Double longitude;
     @Column(nullable = false, name = "nif")
     private String nif;
     @Column(nullable = false, name = "logo")
@@ -34,7 +34,7 @@ public class PrintShop {
 
     public PrintShop() {}
 
-    public PrintShop(String name, String address, String latitude, String longitude, String nif, String logo, float avgRating, Manager manager) {
+    public PrintShop(String name, String address, Double latitude, Double longitude, String nif, String logo, float avgRating, Manager manager) {
         this.name = name;
         this.address = address;
         this.latitude = latitude;
@@ -57,13 +57,13 @@ public class PrintShop {
 
     public void setAddress(String address) { this.address = address; }
 
-    public String getLatitude() { return latitude; }
+    public Double getLatitude() { return latitude; }
 
-    public void setLatitude(String latitude) { this.latitude = latitude; }
+    public void setLatitude(Double latitude) { this.latitude = latitude; }
 
-    public String getLongitude() { return longitude; }
+    public Double getLongitude() { return longitude; }
 
-    public void setLongitude(String longitude) { this.longitude = longitude; }
+    public void setLongitude(Double longitude) { this.longitude = longitude; }
 
     public String getNif() { return nif; }
 

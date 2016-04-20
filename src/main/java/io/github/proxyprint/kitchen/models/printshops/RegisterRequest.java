@@ -43,9 +43,9 @@ public class RegisterRequest implements Serializable {
     @Column(nullable = false, name = "pshop_address")
     private String pShopAddress;
     @Column(nullable = false, name = "pshop_latitude")
-    private String pShopLatitude;
+    private Double pShopLatitude;
     @Column(nullable = false, name = "pshop_longitude")
-    private String pShopLongitude;
+    private Double pShopLongitude;
     @Column(nullable = false, name = "pshop_nif")
     private String pShopNIF;
     @Column(nullable = false, name = "pshop_name")
@@ -64,7 +64,7 @@ public class RegisterRequest implements Serializable {
         this.pShopDateRequestAccepted = null;
     }
 
-    public RegisterRequest(String managerName, String managerEmail, String managerPassword, String pShopAddress, String pShopLatitude, String pShopLongitude, String pShopNIF, String pShopName, boolean accepted) {
+    public RegisterRequest(String managerName, String managerEmail, String managerPassword, String pShopAddress, Double pShopLatitude, Double pShopLongitude, String pShopNIF, String pShopName, boolean accepted) {
         this.managerName = managerName;
         this.managerEmail = managerEmail;
         this.managerPassword = managerPassword;
@@ -96,13 +96,21 @@ public class RegisterRequest implements Serializable {
 
     public void setpShopAddress(String pShopAddress) { this.pShopAddress = pShopAddress; }
 
-    public String getpShopLatitude() { return pShopLatitude; }
+    public Double getpShopLatitude() {
+        return pShopLatitude;
+    }
 
-    public void setpShopLatitude(String pShopLatitude) { this.pShopLatitude = pShopLatitude; }
+    public void setpShopLatitude(Double pShopLatitude) {
+        this.pShopLatitude = pShopLatitude;
+    }
 
-    public String getpShopLongitude() { return pShopLongitude; }
+    public Double getpShopLongitude() {
+        return pShopLongitude;
+    }
 
-    public void setpShopLongitude(String pShopLongitude) { this.pShopLongitude = pShopLongitude; }
+    public void setpShopLongitude(Double pShopLongitude) {
+        this.pShopLongitude = pShopLongitude;
+    }
 
     public String getpShopNIF() { return pShopNIF; }
 
