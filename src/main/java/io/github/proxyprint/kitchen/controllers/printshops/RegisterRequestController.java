@@ -18,6 +18,7 @@ package io.github.proxyprint.kitchen.controllers.printshops;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import io.github.proxyprint.kitchen.models.printshops.RegisterRequest;
 import io.github.proxyprint.kitchen.models.repositories.RegisterRequestDAO;
 import java.io.IOException;
@@ -65,14 +66,18 @@ public class RegisterRequestController {
     
     @Secured({"ROLE_ADMIN"})
     @RequestMapping(value = "/request/reject/{id}", method = RequestMethod.POST)
-    public ResponseEntity<String> rejectRequest(@PathVariable(value ="id") long id) throws IOException {
+    public String rejectRequest(@PathVariable(value ="id") long id) throws IOException {
         RegisterRequest  registerRequest = registerRequests.findOne(id);
+        JsonObject response = new JsonObject();
         if (registerRequest == null) {
-            return new ResponseEntity<>("No request with such ID!", HttpStatus.NOT_FOUND);
+            response.addProperty("success", false);
+            return GSON.toJson(response);
         }
         else {
+            // Send e-mail
             registerRequests.delete(id);
-            return new ResponseEntity<>("Request rejected", HttpStatus.OK);
+            response.addProperty("success", true);
+            return GSON.toJson(response);
         }
     }
 }
