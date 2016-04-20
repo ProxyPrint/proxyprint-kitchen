@@ -17,13 +17,11 @@
 package io.github.proxyprint.kitchen.models.printshops;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import javax.persistence.*;
 import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import java.text.SimpleDateFormat;
+import java.util.GregorianCalendar;
 
 /**
  *
@@ -55,8 +53,15 @@ public class RegisterRequest implements Serializable {
     @JsonIgnore
     @Column(nullable = false, name = "accepted")
     private boolean accepted = false;
+    @Column(nullable = false, name = "pshop_date_request")
+    private String pShopDateRequest;
+    @Column(nullable = true, name = "pshop_date_request_accepted")
+    private String pShopDateRequestAccepted;
 
     public RegisterRequest() {
+        // Return a Calendar based on default Locale and TimeZone
+        this.pShopDateRequest = GregorianCalendarToString((GregorianCalendar) GregorianCalendar.getInstance());
+        this.pShopDateRequestAccepted = null;
     }
 
     public RegisterRequest(String managerName, String managerEmail, String managerPassword, String pShopAddress, Double pShopLatitude, Double pShopLongitude, String pShopNIF, String pShopName, boolean accepted) {
@@ -69,43 +74,27 @@ public class RegisterRequest implements Serializable {
         this.pShopNIF = pShopNIF;
         this.pShopName = pShopName;
         this.accepted = accepted;
+        this.pShopDateRequest = GregorianCalendarToString((GregorianCalendar) GregorianCalendar.getInstance());
+        this.pShopDateRequestAccepted = null;
     }
 
-    public long getId() {
-        return id;
-    }
+    public long getId() { return id; }
 
-    public String getManagerName() {
-        return managerName;
-    }
+    public String getManagerName() { return managerName; }
 
-    public void setManagerName(String managerName) {
-        this.managerName = managerName;
-    }
+    public void setManagerName(String managerName) { this.managerName = managerName; }
 
-    public String getManagerEmail() {
-        return managerEmail;
-    }
+    public String getManagerEmail() { return managerEmail; }
 
-    public void setManagerEmail(String managerEmail) {
-        this.managerEmail = managerEmail;
-    }
+    public void setManagerEmail(String managerEmail) { this.managerEmail = managerEmail; }
 
-    public String getManagerPassword() {
-        return managerPassword;
-    }
+    public String getManagerPassword() { return managerPassword; }
 
-    public void setManagerPassword(String managerPassword) {
-        this.managerPassword = managerPassword;
-    }
+    public void setManagerPassword(String managerPassword) { this.managerPassword = managerPassword; }
 
-    public String getpShopAddress() {
-        return pShopAddress;
-    }
+    public String getpShopAddress() { return pShopAddress; }
 
-    public void setpShopAddress(String pShopAddress) {
-        this.pShopAddress = pShopAddress;
-    }
+    public void setpShopAddress(String pShopAddress) { this.pShopAddress = pShopAddress; }
 
     public Double getpShopLatitude() {
         return pShopLatitude;
@@ -123,33 +112,38 @@ public class RegisterRequest implements Serializable {
         this.pShopLongitude = pShopLongitude;
     }
 
-    public String getpShopNIF() {
-        return pShopNIF;
-    }
+    public String getpShopNIF() { return pShopNIF; }
 
-    public void setpShopNIF(String pShopNIF) {
-        this.pShopNIF = pShopNIF;
-    }
+    public void setpShopNIF(String pShopNIF) { this.pShopNIF = pShopNIF; }
 
-    public String getpShopName() {
-        return pShopName;
-    }
+    public String getpShopName() { return pShopName; }
 
-    public void setpShopName(String pShopName) {
-        this.pShopName = pShopName;
-    }
+    public void setpShopName(String pShopName) { this.pShopName = pShopName; }
 
-    public boolean isAccepted() {
-        return accepted;
-    }
+    public boolean isAccepted() { return accepted; }
 
-    public void setAccepted(boolean accepted) {
-        this.accepted = accepted;
-    }
+    public void setAccepted(boolean accepted) { this.accepted = accepted; }
+
+    public String getpShopDateRequest() { return pShopDateRequest; }
+
+    public String getpShopDateRequestAccepted() { return pShopDateRequestAccepted; }
+
+    public void setpShopDateRequestAccepted(GregorianCalendar date) { this.pShopDateRequestAccepted = GregorianCalendarToString(date); }
 
     @Override
     public String toString() {
         return "RegisterRequest{" + "id=" + id + ", managerName=" + managerName + ", managerEmail=" + managerEmail + ", managerPassword=" + managerPassword + ", pShopAddress=" + pShopAddress + ", pShopLatitude=" + pShopLatitude + ", pShopLongitude=" + pShopLongitude + ", pShopNIF=" + pShopNIF + ", pShopName=" + pShopName + '}';
     }
 
+    /**
+     * From GregoriaCalendar to String.
+     * @param c, GregorianCalendar instance
+     * @return Well formated string for display
+     */
+    private String GregorianCalendarToString(GregorianCalendar c) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm");
+        sdf.setCalendar(c);
+        String dateFormatted = sdf.format(c.getTime());
+        return dateFormatted;
+    }
 }

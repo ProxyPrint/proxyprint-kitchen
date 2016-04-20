@@ -1,4 +1,4 @@
-package io.github.proxyprint.kitchen.controllers.printshop.employee;
+package io.github.proxyprint.kitchen.controllers.printshops;
 
 /**
  * Created by daniel on 09-04-2016.
@@ -7,7 +7,7 @@ package io.github.proxyprint.kitchen.controllers.printshop.employee;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import io.github.proxyprint.kitchen.models.printshop.employee.Employee;
+import io.github.proxyprint.kitchen.models.printshops.Employee;
 import io.github.proxyprint.kitchen.models.repositories.EmployeeDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;

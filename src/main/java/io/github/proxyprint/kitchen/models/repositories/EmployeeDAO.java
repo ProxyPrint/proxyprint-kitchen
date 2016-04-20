@@ -1,6 +1,6 @@
 package io.github.proxyprint.kitchen.models.repositories;
 
-import io.github.proxyprint.kitchen.models.printshop.employee.Employee;
+import io.github.proxyprint.kitchen.models.printshops.Employee;
 import org.springframework.data.repository.CrudRepository;
 
 import javax.transaction.Transactional;
