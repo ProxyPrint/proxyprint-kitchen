@@ -63,4 +63,32 @@ public class MailBox {
             return false;
         }
     }
+
+    public boolean sedMailRejectedRequest(RegisterRequest rr) {
+
+        final String username = PROXYPRINT_EMAIL;
+        final String password = PROXYPRINT_PASSWORD;
+        try {
+            Session session = Session.getDefaultInstance(props,
+                    new Authenticator() {
+                        protected PasswordAuthentication getPasswordAuthentication() {
+                            return new PasswordAuthentication(username, password);
+                        }
+                    });
+
+            Message msg = new MimeMessage(session);
+
+            msg.setFrom(new InternetAddress(PROXYPRINT_EMAIL));
+            msg.setRecipients(Message.RecipientType.TO,
+                    InternetAddress.parse(rr.getManagerEmail(), false));
+            msg.setSubject("ProxyPrint");
+            msg.setText("Caro, " + rr.getManagerName() + ", o seu pedido foi rejeitado.");
+            msg.setSentDate(new Date());
+            Transport.send(msg);
+            return true;
+        } catch (MessagingException e) {
+            System.out.println("Erro no envio de email: " + e);
+            return false;
+        }
+    }
 }

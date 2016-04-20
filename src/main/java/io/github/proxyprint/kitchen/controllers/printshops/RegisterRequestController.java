@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 /**
@@ -110,6 +109,28 @@ public class RegisterRequestController {
     }
 
     @Secured({"ROLE_ADMIN"})
+    @RequestMapping(value = "/request/reject/{id}", method = RequestMethod.POST)
+    public String rejectRequest(@PathVariable(value ="id") long id) throws IOException {
+        RegisterRequest  registerRequest = registerRequests.findOne(id);
+        JsonObject response = new JsonObject();
+        if (registerRequest == null) {
+            response.addProperty("success", false);
+            return GSON.toJson(response);
+        }
+        else {
+            // Send e-mail
+            registerRequests.delete(id);
+
+            // Send email
+            MailBox m = new MailBox();
+            boolean res = m.sedMailRejectedRequest(registerRequest);
+
+            response.addProperty("success", true);
+            return GSON.toJson(response);
+        }
+    }
+
+    @Secured({"ROLE_ADMIN"})
     @RequestMapping(value = "/requests/pending", method = RequestMethod.GET)
     public ResponseEntity<List<RegisterRequest>> acceptRequest() {
         List<RegisterRequest> pendingRequests = new ArrayList<>();
@@ -120,4 +141,5 @@ public class RegisterRequestController {
         }
         return new ResponseEntity<List<RegisterRequest>>(pendingRequests, HttpStatus.OK);
     }
+
 }
