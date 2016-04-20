@@ -1,0 +1,49 @@
+#!/bin/bash
+
+function help_text {
+  printf "ppdb [options]:\n\tdac - drop and create database\n"
+  printf "\tpopulate - populate proxyprint database\n"
+  printf "\tusers - select * from all users tables\n\n"
+}
+
+if [ -z $1 ]; then
+  help_text
+elif [ $1 == "dac" ]; then
+  sudo -u postgres -H dropdb proxyprint
+  sudo -u postgres -H createdb proxyprint
+elif [ $1 == "populate" ]; then
+  # admin
+  sudo -u postgres -H -- psql -d proxyprint -c "insert into users values(1000,1234,'master');";
+  sudo -u postgres -H -- psql -d proxyprint -c "insert into roles values(1000,'ROLE_ADMIN');";
+  sudo -u postgres -H -- psql -d proxyprint -c "insert into admin values('danielcaldas@sapo.pt',1000);";
+  # consumer
+  sudo -u postgres -H -- psql -d proxyprint -c "insert into users values(1001,1234,'joao');"
+  sudo -u postgres -H -- psql -d proxyprint -c "insert into roles values(1001,'ROLE_USER');"
+  sudo -u postgres -H -- psql -d proxyprint -c "insert into consumers values('joao@gmail.com', '41.5594', '8.3972', 'João dos Santos', 1001);" # latitude and longitude locate Braga, UM
+  # manager
+  sudo -u postgres -H -- psql -d proxyprint -c "insert into users values(1002,1234,'joaquim');"
+  sudo -u postgres -H -- psql -d proxyprint -c "insert into roles values(1002,'ROLE_MANAGER');"
+  sudo -u postgres -H -- psql -d proxyprint -c "insert into managers values('joaquim@gmail.com', 'Joaquim Pereira', 1002);"
+  # employee
+  sudo -u postgres -H -- psql -d proxyprint -c "insert into users values(1003,1234,'mafalda');"
+  sudo -u postgres -H -- psql -d proxyprint -c "insert into employees values('Mafalda Sofia Pinto', 1003);"
+  sudo -u postgres -H -- psql -d proxyprint -c "insert into roles values(1003,'ROLE_EMPLOYEE');"
+
+  # to be continued... requests etc. ...
+elif [ $1 == "users" ]; then
+  # see user in the db
+  printf "ADMIN\n"
+  sudo -u postgres -H -- psql -d proxyprint -c "select * from admin;"
+  printf "CONSUMERS\n"
+  sudo -u postgres -H -- psql -d proxyprint -c "select * from consumers;"
+  printf "MANAGERS\n";
+  sudo -u postgres -H -- psql -d proxyprint -c "select * from managers;"
+  printf "EMPLOYESS\n";
+  sudo -u postgres -H -- psql -d proxyprint -c "select * from employees;"
+elif [ $1 == "psrequests" ]; then
+  #see print shop's requests
+  sudo -u postgres -H -- psql -d proxyprint -c "select * from register_requests;"
+elif [ $1 == "--help" ]; then
+  #help
+  help_text
+fi

@@ -1,4 +1,4 @@
-package io.github.proxyprint.kitchen.controllers;
+package io.github.proxyprint.kitchen.utils;
 
 /**
  * Created by daniel on 17-04-2016.
