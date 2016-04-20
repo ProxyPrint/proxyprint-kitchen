@@ -64,47 +64,44 @@ public class RegisterRequestController {
         JsonObject response = new JsonObject();
         if (registerRequest == null) {
             response.addProperty("success", false);
-            // return new ResponseEntity<>("No Request with such ID!", HttpStatus.NOT_FOUND);
             return GSON.toJson(response);
         } else {
-            // Send email
-            MailBox m = new MailBox();
-            boolean res = m.sedMailAcceptedRequest(registerRequest);
 
-            if (res) {
-                // Create Manager instance
-                Manager newManager = new Manager(registerRequest.getManagerName(),
-                        registerRequest.getManagerPassword(),
-                        registerRequest.getManagerName(),
-                        registerRequest.getManagerEmail()
+            // Create Manager instance
+            Manager newManager = new Manager(registerRequest.getManagerName(),
+                    registerRequest.getManagerPassword(),
+                    registerRequest.getManagerName(),
+                    registerRequest.getManagerEmail()
+            );
+
+            Manager savedManager = managers.save(newManager);
+
+            if (savedManager != null) {
+                // Create PrintShop instance
+                PrintShop newPShop = new PrintShop(registerRequest.getpShopName(),
+                        registerRequest.getpShopAddress(),
+                        registerRequest.getpShopLatitude(),
+                        registerRequest.getpShopLongitude(),
+                        registerRequest.getpShopNIF(),
+                        "path_to_logo",
+                        0,
+                        newManager
                 );
+                PrintShop savedPShop = printShops.save(newPShop);
 
-                Manager savedManager = managers.save(newManager);
+                if (savedPShop != null) {
+                    savedManager.setPrintShop(savedPShop);
+                    managers.save(savedManager);
 
-                if (savedManager != null) {
-                    // Create PrintShop instance
-                    PrintShop newPShop = new PrintShop(registerRequest.getpShopName(),
-                            registerRequest.getpShopAddress(),
-                            registerRequest.getpShopLatitude(),
-                            registerRequest.getpShopLongitude(),
-                            registerRequest.getpShopNIF(),
-                            "path_to_logo",
-                            0,
-                            newManager
-                    );
-                    PrintShop savedPShop = printShops.save(newPShop);
+                    // Delete request, is no longer needed
+                    registerRequests.delete(registerRequest.getId());
 
-                    if (savedPShop != null) {
-                        savedManager.setPrintShop(savedPShop);
-                        managers.save(savedManager);
+                    // Send email
+                    MailBox m = new MailBox();
+                    boolean res = m.sedMailAcceptedRequest(registerRequest);
 
-                        registerRequest.setAccepted(true);
-                        registerRequest.setpShopDateRequestAccepted((GregorianCalendar) GregorianCalendar.getInstance());
-                        registerRequests.save(registerRequest);
-                        // return new ResponseEntity<String>("Request accepted!", HttpStatus.OK);
-                        response.addProperty("success", true);
-                        return GSON.toJson(response);
-                    }
+                    response.addProperty("success", true);
+                    return GSON.toJson(response);
                 }
             }
         }
