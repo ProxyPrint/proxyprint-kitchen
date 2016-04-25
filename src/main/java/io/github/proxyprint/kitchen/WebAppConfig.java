@@ -16,6 +16,9 @@
  */
 package io.github.proxyprint.kitchen;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import io.github.proxyprint.kitchen.utils.gson.AnnotationExclusionStrategy;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
@@ -59,5 +62,10 @@ public class WebAppConfig {
                 registry.addMapping("/**").allowedOrigins("http://localhost:9000");
             }
         };
+    }
+    
+    @Bean
+    public Gson gson(){
+        return new GsonBuilder().setExclusionStrategies(new AnnotationExclusionStrategy()).create();
     }
 }

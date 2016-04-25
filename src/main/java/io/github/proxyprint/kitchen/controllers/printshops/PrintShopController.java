@@ -39,7 +39,8 @@ public class PrintShopController {
 
     @Autowired
     private PrintShopDAO printshops;
-    private final static Gson GSON = new GsonBuilder().setExclusionStrategies(new AnnotationExclusionStrategy()).create();
+    @Autowired
+    private Gson GSON;
 
     @RequestMapping(value = "/printshops/nearest", method = RequestMethod.GET)
     public String getNearestPrintShops(WebRequest request) {
