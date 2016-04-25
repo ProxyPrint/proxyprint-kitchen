@@ -1,5 +1,6 @@
 package io.github.proxyprint.kitchen.models.printshops;
 
+import io.github.proxyprint.kitchen.utils.gson.Exclude;
 import javax.persistence.*;
 
 /**
@@ -29,7 +30,7 @@ public class PrintShop {
     // If printshop deleted, then manager is also deleted
     @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "manager_id")
-    Manager manager;
+    @Exclude Manager manager;
 
 
     public PrintShop() {}

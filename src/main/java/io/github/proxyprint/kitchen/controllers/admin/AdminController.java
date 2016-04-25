@@ -4,7 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import io.github.proxyprint.kitchen.models.Admin;
+import io.github.proxyprint.kitchen.models.User;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
+import io.github.proxyprint.kitchen.models.repositories.AdminDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
@@ -15,6 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 
 /**
  * Created by daniel on 19-04-2016.
@@ -24,6 +30,8 @@ public class AdminController {
 
     @Autowired
     private PrintShopDAO printShops;
+    @Autowired
+    private AdminDAO admins;
     private final static Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     // NOT WORKING YET!
@@ -43,6 +51,13 @@ public class AdminController {
         response.addProperty("prinshops", res);
         response.addProperty("success", true);
         return GSON.toJson(response);
+    }
+    
+    @RequestMapping(value = "/admin/register", method = RequestMethod.POST)
+    public ResponseEntity<Admin> newAdmin(@RequestBody Admin admin) {
+        admin.addRole(User.Roles.ROLE_ADMIN.toString());
+        this.admins.save(admin);
+        return new ResponseEntity<>(admin, HttpStatus.OK);
     }
 }
 

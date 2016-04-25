@@ -18,12 +18,13 @@ package io.github.proxyprint.kitchen.controllers.printshops;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import io.github.proxyprint.kitchen.models.printshops.RegisterRequest;
-import io.github.proxyprint.kitchen.models.repositories.RegisterRequestDAO;
+import io.github.proxyprint.kitchen.models.printshops.PrintShop;
+import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
 import io.github.proxyprint.kitchen.utils.DistanceCalculator;
+import io.github.proxyprint.kitchen.utils.gson.AnnotationExclusionStrategy;
+import java.util.LinkedList;
 import java.util.TreeMap;
 import org.springframework.beans.factory.annotation.Autowired;
-import static org.springframework.http.converter.json.Jackson2ObjectMapperBuilder.json;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,24 +38,25 @@ import org.springframework.web.context.request.WebRequest;
 public class PrintShopController {
 
     @Autowired
-    private RegisterRequestDAO registerRequests;
-    private final static Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    private PrintShopDAO printshops;
+    private final static Gson GSON = new GsonBuilder().setExclusionStrategies(new AnnotationExclusionStrategy()).create();
 
     @RequestMapping(value = "/printshops/nearest", method = RequestMethod.GET)
     public String getNearestPrintShops(WebRequest request) {
+        System.out.format("Latitude: %s Longitude: %s\n", request.getParameter("latitude"), request.getParameter("longitude"));
         Double latitude = Double.parseDouble(request.getParameter("latitude"));
         Double longitude = Double.parseDouble(request.getParameter("longitude"));
 
         System.out.format("Latitude: %s Longitude: %s\n", latitude, longitude);
 
-        TreeMap<Double, RegisterRequest> pshops = new TreeMap<>();
+        TreeMap<Double, PrintShop> pshops = new TreeMap<>();
         JsonObject response = new JsonObject();
         //em vez de register requests, meter reprografias
-        for (RegisterRequest r : registerRequests.findAll()){
-            double distance = DistanceCalculator.distance(latitude, longitude, r.getpShopLatitude(), r.getpShopLongitude());
-            pshops.put(distance,r);
+        for (PrintShop p: printshops.findAll()){
+            double distance = DistanceCalculator.distance(latitude, longitude, p.getLatitude(), p.getLongitude());
+            pshops.put(distance,p);
         }
-        response.add("reprogs", GSON.toJsonTree(pshops.values()));
+        response.add("printshops", GSON.toJsonTree(new LinkedList(pshops.values())));
 
         return GSON.toJson(response);
     }
