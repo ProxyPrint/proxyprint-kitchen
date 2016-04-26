@@ -76,7 +76,7 @@ public class PrintShopController {
         if (p != null) {
             printshops.delete(p);
         }
-        p = new PrintShop("CopyScan", "asd", Double.MIN_NORMAL, Double.MIN_VALUE, "123123", "asdasd", 0, new Manager("asd", "asd", "asd", "asd"));
+        p = new PrintShop("CopyScan", "asd", Double.MIN_NORMAL, Double.MIN_VALUE, "123123", "asdasd", 0);
         p.addPriceItem(new PriceItem(PaperItem.Format.A4, PaperItem.Sides.SIMPLEX, PaperItem.Colors.COLOR, 0, 20), 1.23f);
         p.addPriceItem(new PriceItem(PaperItem.Format.A4, PaperItem.Sides.SIMPLEX, PaperItem.Colors.COLOR, 0, 20), 1.43f);
         printshops.save(p);

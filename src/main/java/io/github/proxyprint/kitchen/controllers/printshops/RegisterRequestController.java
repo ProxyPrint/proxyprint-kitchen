@@ -51,8 +51,7 @@ public class RegisterRequestController {
 
     @RequestMapping(value = "/request/register", method = RequestMethod.POST)
     public ResponseEntity<RegisterRequest> registerRequest(@RequestBody RegisterRequest registerRequest) {
-        System.out.println(registerRequest);
-        this.registerRequests.save(registerRequest);
+        registerRequests.save(registerRequest);
         return new ResponseEntity<>(registerRequest, HttpStatus.OK);
     }
 
@@ -83,8 +82,7 @@ public class RegisterRequestController {
                         registerRequest.getpShopLongitude(),
                         registerRequest.getpShopNIF(),
                         "path_to_logo",
-                        0,
-                        newManager
+                        0
                 );
                 PrintShop savedPShop = printShops.save(newPShop);
 

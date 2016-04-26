@@ -37,17 +37,11 @@ public class PrintShop {
     @Column(name = "price")
     private Map<String, Float> priceTable;
 
-    // Missing priceTable : <PriceItem,price:float>
-    // If printshop deleted, then manager is also deleted
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "manager_id")
-    Manager manager;
-
     public PrintShop() {
         this.priceTable = new HashMap<>();
     }
 
-    public PrintShop(String name, String address, Double latitude, Double longitude, String nif, String logo, float avgRating, Manager manager) {
+    public PrintShop(String name, String address, Double latitude, Double longitude, String nif, String logo, float avgRating) {
         this.name = name;
         this.address = address;
         this.latitude = latitude;
@@ -55,7 +49,6 @@ public class PrintShop {
         this.nif = nif;
         this.logo = logo;
         this.avgRating = avgRating;
-        this.manager = manager;
         this.priceTable = new HashMap<>();
     }
 
@@ -123,14 +116,6 @@ public class PrintShop {
         this.avgRating = avgRating;
     }
 
-    public Manager getManager() {
-        return manager;
-    }
-
-    public void setManager(Manager manager) {
-        this.manager = manager;
-    }
-
     public void addPriceItem(PriceItem item, float price) {
         this.priceTable.put(item.toString(), price);
     }
@@ -168,40 +153,23 @@ public class PrintShop {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof PrintShop)) {
-            return false;
-        }
+        if (this == o) return true;
+        if (!(o instanceof PrintShop)) return false;
 
         PrintShop printShop = (PrintShop) o;
 
-        if (getId() != printShop.getId()) {
+        if (getId() != printShop.getId()) return false;
+        if (Float.compare(printShop.getAvgRating(), getAvgRating()) != 0) return false;
+        if (getName() != null ? !getName().equals(printShop.getName()) : printShop.getName() != null) return false;
+        if (getAddress() != null ? !getAddress().equals(printShop.getAddress()) : printShop.getAddress() != null)
             return false;
-        }
-        if (Float.compare(printShop.getAvgRating(), getAvgRating()) != 0) {
+        if (getLatitude() != null ? !getLatitude().equals(printShop.getLatitude()) : printShop.getLatitude() != null)
             return false;
-        }
-        if (getName() != null ? !getName().equals(printShop.getName()) : printShop.getName() != null) {
+        if (getLongitude() != null ? !getLongitude().equals(printShop.getLongitude()) : printShop.getLongitude() != null)
             return false;
-        }
-        if (getAddress() != null ? !getAddress().equals(printShop.getAddress()) : printShop.getAddress() != null) {
-            return false;
-        }
-        if (getLatitude() != null ? !getLatitude().equals(printShop.getLatitude()) : printShop.getLatitude() != null) {
-            return false;
-        }
-        if (getLongitude() != null ? !getLongitude().equals(printShop.getLongitude()) : printShop.getLongitude() != null) {
-            return false;
-        }
-        if (getNif() != null ? !getNif().equals(printShop.getNif()) : printShop.getNif() != null) {
-            return false;
-        }
-        if (getLogo() != null ? !getLogo().equals(printShop.getLogo()) : printShop.getLogo() != null) {
-            return false;
-        }
-        return getManager() != null ? getManager().equals(printShop.getManager()) : printShop.getManager() == null;
+        if (getNif() != null ? !getNif().equals(printShop.getNif()) : printShop.getNif() != null) return false;
+        if (getLogo() != null ? !getLogo().equals(printShop.getLogo()) : printShop.getLogo() != null) return false;
+        return getPriceTable() != null ? getPriceTable().equals(printShop.getPriceTable()) : printShop.getPriceTable() == null;
 
     }
 
