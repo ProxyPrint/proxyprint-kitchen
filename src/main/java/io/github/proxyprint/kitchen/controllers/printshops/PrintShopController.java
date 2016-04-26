@@ -22,11 +22,11 @@ import io.github.proxyprint.kitchen.models.printshops.Manager;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
 import io.github.proxyprint.kitchen.models.printshops.RegisterRequest;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.PaperItem;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.PaperTableItem;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.PriceItem;
 import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
 import io.github.proxyprint.kitchen.models.repositories.RegisterRequestDAO;
 import io.github.proxyprint.kitchen.utils.DistanceCalculator;
-import java.util.TreeMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +35,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
+
+import java.util.*;
 
 /**
  *
@@ -82,12 +84,65 @@ public class PrintShopController {
     }
 
     @RequestMapping(value = "/printshops/{id}/pricetable", method = RequestMethod.GET)
-    public ResponseEntity<String> getPrintShopPriceTable(@PathVariable(value = "id") long id) {
-        PrintShop p = printshops.findOne(id);
-        if (p == null) {
+    public ResponseEntity<Map<String,Set<PaperTableItem>>> getPrintShopPriceTable(@PathVariable(value = "id") long id) {
+        PrintShop pshop = printshops.findOne(id);
+
+        Map<String,Set<PaperTableItem>> finalTable = new HashMap<>();
+        Map<String,Map<String,PaperTableItem>> table = new HashMap<>();
+
+        if (pshop == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
-            return new ResponseEntity<>(GSON.toJson(p.getPriceTable()), HttpStatus.OK);
+            for(String key : pshop.getPriceTable().keySet()) {
+                PriceItem pi = pshop.loadPriceItem(key);
+
+                if(!table.containsKey(pi.getColors().toString())) { // The color is new
+                    // Create new PaperTableItem
+                    PaperTableItem pti = new PaperTableItem(pi.getInfLim(),pi.getSupLim());
+                    pti.addPriceToPaperTableItem(pi,pshop.getPrice(pi));
+
+                    // Add new range and associated PaperTableItem instance
+                    Map<String,PaperTableItem> map = new HashMap<>();
+                    map.put(pti.genKey(),pti);
+
+                    // Add to table
+                    table.put(pi.getColors().toString(),map);
+
+                } else {
+
+                    PaperTableItem pti = table.get(pi.getColors().toString()).get(pi.getInfLim()+";"+pi.getSupLim());
+
+                    if(pti!=null) {
+                        // PriceTableItem instance already exists add price
+                        pti.addPriceToPaperTableItem(pi,pshop.getPrice(pi));
+                        table.get(pi.getColors().toString()).put(pti.genKey(),pti);
+                    } else {
+                        // Create new PaperTableItem
+                        pti = new PaperTableItem(pi.getInfLim(),pi.getSupLim());
+                        pti.addPriceToPaperTableItem(pi,pshop.getPrice(pi));
+
+                        // Add new range and associated PaperTableItem instance
+                        Map<String,PaperTableItem> map = new HashMap<>();
+                        map.put(pti.genKey(),pti);
+
+                        // Add to table
+                        table.put(pi.getColors().toString(),map);
+                    }
+                }
+            }
+
+            // Covert Map<String,PaperTableItem> to Set<PaperTableItem>
+            for(String color : table.keySet()) {
+                Map<String,PaperTableItem> map = table.get(color);
+                Set<PaperTableItem> set = new TreeSet<>();
+                for(PaperTableItem pti : map.values()) {
+                    set.add(pti);
+                }
+                finalTable.put(color,set);
+            }
+
+            return new ResponseEntity<>(finalTable, HttpStatus.OK);
         }
     }
+
 }

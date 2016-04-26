@@ -15,8 +15,6 @@
  */
 package io.github.proxyprint.kitchen.models.printshops.pricetable;
 
-import java.util.Objects;
-
 /**
  *
  * @author josesousa
@@ -67,5 +65,10 @@ public abstract class PaperItem {
 
     public void setColors(Colors colors) {
         this.colors = colors;
+    }
+
+    // Get the paper specs hash
+    public String getPaperSpecs() {
+        return (String)(this.format.toString()+this.sides.toString());
     }
 }

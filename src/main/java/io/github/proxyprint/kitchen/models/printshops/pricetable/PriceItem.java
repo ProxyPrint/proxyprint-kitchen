@@ -15,29 +15,27 @@
  */
 package io.github.proxyprint.kitchen.models.printshops.pricetable;
 
-import java.util.Objects;
-
 /**
  *
  * @author josesousa
  */
 public class PriceItem extends PaperItem {
 
-    private int inLim;
+    private int infLim;
     private int supLim;
 
-    public PriceItem(Format format, Sides sides, Colors colors, int inLim, int supLim) {
+    public PriceItem(Format format, Sides sides, Colors colors, int infLim, int supLim) {
         super(format, sides, colors);
-        this.inLim = inLim;
+        this.infLim = infLim;
         this.supLim = supLim;
     }
 
-    public int getInLim() {
-        return inLim;
+    public int getInfLim() {
+        return infLim;
     }
 
-    public void setInLim(int inLim) {
-        this.inLim = inLim;
+    public void setInfLim(int infLim) {
+        this.infLim = infLim;
     }
 
     public int getSupLim() {
@@ -50,7 +48,7 @@ public class PriceItem extends PaperItem {
 
     @Override
     public String toString() {
-        return String.format("%s,%s,%s,%d,%d", this.colors, this.format, this.sides, inLim, supLim);
+        return String.format("%s,%s,%s,%d,%d", this.colors, this.format, this.sides, infLim, supLim);
     }
 
 }

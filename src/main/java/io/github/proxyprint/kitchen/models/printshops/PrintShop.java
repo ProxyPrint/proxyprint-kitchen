@@ -1,9 +1,11 @@
 package io.github.proxyprint.kitchen.models.printshops;
 
+import io.github.proxyprint.kitchen.models.printshops.pricetable.PaperItem;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.PriceItem;
+
+import javax.persistence.*;
 import java.util.HashMap;
 import java.util.Map;
-import javax.persistence.*;
 
 /**
  * Created by daniel on 18-04-2016.
@@ -133,27 +135,35 @@ public class PrintShop {
         this.priceTable.put(item.toString(), price);
     }
 
+    /**
+     * Load a price item concrete instance.
+     * @param priceItem, String that represents the item specs as stored in the database
+     * @return A concrete instance of PriceItem derived from the input String
+     * which is parsed along the function cut in pieces and feeded to the returned object.
+     */
+    public PriceItem loadPriceItem(String priceItem) {
+        PaperItem.Colors colors;
+        PaperItem.Format format;
+        PaperItem.Sides sides;
+        int infLim, supLim;
+
+        String[] parts = priceItem.split(",");
+        colors = PaperItem.Colors.valueOf(parts[0]);
+        format = PaperItem.Format.valueOf(parts[1]);
+        sides = PaperItem.Sides.valueOf(parts[2]);
+
+        infLim = Integer.parseInt(parts[3]);
+        supLim = Integer.parseInt(parts[4]);
+
+        return new PriceItem(format,sides,colors,infLim,supLim);
+    }
+
     public float getPrice(PriceItem item) {
         return this.priceTable.get(item.toString());
     }
     
     public Map<String, Float> getPriceTable(){
         return this.priceTable;
-    }
-
-    @Override
-    public String toString() {
-        return "PrintShop{"
-                + "id=" + id
-                + ", name='" + name + '\''
-                + ", address='" + address + '\''
-                + ", latitude='" + latitude + '\''
-                + ", longitude='" + longitude + '\''
-                + ", nif='" + nif + '\''
-                + ", logo='" + logo + '\''
-                + ", avgRating=" + avgRating
-                + ", manager=" + manager
-                + '}';
     }
 
     @Override
