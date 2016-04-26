@@ -30,6 +30,7 @@ import io.github.proxyprint.kitchen.utils.DistanceCalculator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -83,6 +84,7 @@ public class PrintShopController {
         return "";
     }
 
+    // @Secured({"ROLE_MANAGER"})
     @RequestMapping(value = "/printshops/{id}/pricetable", method = RequestMethod.GET)
     public ResponseEntity<Map<String,Set<PaperTableItem>>> getPrintShopPriceTable(@PathVariable(value = "id") long id) {
         PrintShop pshop = printshops.findOne(id);
@@ -108,9 +110,10 @@ public class PrintShopController {
                     // Add to table
                     table.put(pi.getColors().toString(),map);
 
-                } else {
-
-                    PaperTableItem pti = table.get(pi.getColors().toString()).get(pi.getInfLim()+";"+pi.getSupLim());
+                } else { // The color already exists
+                    String ptiKey = pi.getInfLim()+";"+pi.getSupLim();
+                    Map<String,PaperTableItem> aux = table.get(pi.getColors().toString());
+                    PaperTableItem pti = aux.get(ptiKey);
 
                     if(pti!=null) {
                         // PriceTableItem instance already exists add price
@@ -122,7 +125,7 @@ public class PrintShopController {
                         pti.addPriceToPaperTableItem(pi,pshop.getPrice(pi));
 
                         // Add new range and associated PaperTableItem instance
-                        Map<String,PaperTableItem> map = new HashMap<>();
+                        Map<String,PaperTableItem> map = table.get(pi.getColors().toString());
                         map.put(pti.genKey(),pti);
 
                         // Add to table

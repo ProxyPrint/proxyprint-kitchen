@@ -69,6 +69,6 @@ public abstract class PaperItem {
 
     // Get the paper specs hash
     public String getPaperSpecs() {
-        return (String)(this.format.toString()+this.sides.toString());
+        return this.format.toString()+this.sides.toString();
     }
 }

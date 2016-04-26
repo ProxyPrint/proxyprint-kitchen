@@ -1,5 +1,6 @@
 package io.github.proxyprint.kitchen.models.printshops;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.PaperItem;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.PriceItem;
 
@@ -35,6 +36,7 @@ public class PrintShop {
     @JoinTable(name = "pricetables", joinColumns = @JoinColumn(name = "printshop_id"))
     @MapKeyColumn(name = "item")
     @Column(name = "price")
+    @JsonIgnore // This JsonIgnore is not working
     private Map<String, Float> priceTable;
 
     public PrintShop() {

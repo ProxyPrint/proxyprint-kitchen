@@ -16,6 +16,7 @@
  */
 package io.github.proxyprint.kitchen.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.springframework.security.core.GrantedAuthority;
@@ -43,6 +44,7 @@ public abstract class User implements Serializable {
     private long id;
     @Column(name = "username", nullable = false, unique = true)
     private String username;
+    @JsonIgnore
     @Column(name = "password", nullable = false)
     private String password;
     @ElementCollection(fetch = FetchType.EAGER)
