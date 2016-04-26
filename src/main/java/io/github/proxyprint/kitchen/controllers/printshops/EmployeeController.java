@@ -21,7 +21,7 @@ import java.io.IOException;
  * Created by daniel on 09-04-2016.
  */
 @RestController
-public class EBaseController {
+public class EmployeeController {
 
     @Autowired
     private EmployeeDAO employees;

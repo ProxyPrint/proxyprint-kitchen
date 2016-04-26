@@ -40,6 +40,8 @@ elif [ $1 == "users" ]; then
   sudo -u postgres -H -- psql -d proxyprint -c "select * from managers;"
   printf "EMPLOYESS\n";
   sudo -u postgres -H -- psql -d proxyprint -c "select * from employees;"
+  printf "USERS\n";
+  sudo -u postgres -H -- psql -d proxyprint -c "select * from users;"
 elif [ $1 == "psrequests" ]; then
   #see print shop's requests
   sudo -u postgres -H -- psql -d proxyprint -c "select * from register_requests;"
