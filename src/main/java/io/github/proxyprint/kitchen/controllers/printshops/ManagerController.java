@@ -20,7 +20,7 @@ public class ManagerController {
     private final static Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     @RequestMapping(value = "/printshops/{id}/pricetable/newpaperitem", method = RequestMethod.POST)
-    public String registerRequest(@PathVariable(value = "id") long id, @RequestBody PaperTableItem pti) {
+    public String addNewPaperItem(@PathVariable(value = "id") long id, @RequestBody PaperTableItem pti) {
         PrintShop pshop = printshops.findOne(id);
         JsonObject response = new JsonObject();
 
