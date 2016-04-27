@@ -6,7 +6,9 @@ import io.github.proxyprint.kitchen.models.printshops.pricetable.PaperTableItem;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.PriceItem;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -167,6 +169,30 @@ public class PrintShop {
             PriceItem a3d = new PriceItem(PaperItem.Format.A3, PaperItem.Sides.DUPLEX, PaperItem.Colors.valueOf(pti.getColors()), pti.getInfLim(), pti.getSupLim());
             this.priceTable.put(a3d.toString(),Float.parseFloat(pti.getPriceA3DUPLEX()));
         }
+    }
+
+    /**
+     * Convert a PaperTableItem to its respective PriceItems
+     * @param pti, a new entry in the price table
+     * @return List<PriceItem>, List of price items which result from the conversion.
+     */
+    public List<PriceItem> convertPaperTableItemToPaperItems(PaperTableItem pti) {
+        List<PriceItem> res = new ArrayList<>();
+
+        if(!pti.getPriceA4SIMPLEX().equals(PaperTableItem.DEFAULT)) {
+            res.add(new PriceItem(PaperItem.Format.A4, PaperItem.Sides.SIMPLEX, PaperItem.Colors.valueOf(pti.getColors()), pti.getInfLim(), pti.getSupLim()));
+        }
+        if(!pti.getPriceA4DUPLEX().equals(PaperTableItem.DEFAULT)) {
+           res.add(new PriceItem(PaperItem.Format.A4, PaperItem.Sides.DUPLEX, PaperItem.Colors.valueOf(pti.getColors()), pti.getInfLim(), pti.getSupLim()));
+        }
+        if(!pti.getPriceA3SIMPLEX().equals(PaperTableItem.DEFAULT)) {
+            res.add(new PriceItem(PaperItem.Format.A3, PaperItem.Sides.SIMPLEX, PaperItem.Colors.valueOf(pti.getColors()), pti.getInfLim(), pti.getSupLim()));
+        }
+        if(!pti.getPriceA3DUPLEX().equals(PaperTableItem.DEFAULT)) {
+            res.add(new PriceItem(PaperItem.Format.A3, PaperItem.Sides.DUPLEX, PaperItem.Colors.valueOf(pti.getColors()), pti.getInfLim(), pti.getSupLim()));
+        }
+
+        return res;
     }
 
     public float getPrice(PriceItem item) {
