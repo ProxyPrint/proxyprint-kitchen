@@ -8,6 +8,7 @@ import io.github.proxyprint.kitchen.models.printshops.pricetable.PaperTableItem;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.PriceItem;
 import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class ManagerController {
     private PrintShopDAO printshops;
     private final static Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
+    @Secured("ROLE_MANAGER")
     @RequestMapping(value = "/printshops/{id}/pricetable/newpaperitem", method = RequestMethod.POST)
     public String addNewPaperItem(@PathVariable(value = "id") long id, @RequestBody PaperTableItem pti) {
         PrintShop pshop = printshops.findOne(id);
@@ -39,7 +41,7 @@ public class ManagerController {
         }
     }
 
-
+    @Secured("ROLE_MANAGER")
     @RequestMapping(value = "/printshops/{id}/pricetable/deletepaperitem", method = RequestMethod.POST)
     public String deletePaperItem(@PathVariable(value = "id") long id, @RequestBody PaperTableItem pti) {
         PrintShop pshop = printshops.findOne(id);
