@@ -12,7 +12,6 @@ import javax.persistence.*;
 @Entity
 @Table(name = "printing_schemas")
 public class PrintingSchema {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
