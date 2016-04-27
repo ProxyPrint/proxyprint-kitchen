@@ -3,6 +3,7 @@ package io.github.proxyprint.kitchen.controllers.consumer;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
+import io.github.proxyprint.kitchen.models.consumer.PrintingSchema;
 import io.github.proxyprint.kitchen.models.repositories.ConsumerDAO;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -13,6 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by daniel on 04-04-2016.
@@ -78,6 +82,21 @@ public class ConsumerController {
             response.addProperty("success", false);
             response.addProperty("message", "You failed to upload because the file was empty");
         }
+        return GSON.toJson(response);
+    }
+
+    @RequestMapping(value = "/schema", method = RequestMethod.GET)
+    public String testPrintinSchema(WebRequest request) {
+        JsonObject response = new JsonObject();
+        List<PrintingSchema> list = new ArrayList<>();
+        long id = 1001;
+        Consumer c = consumers.findOne(id);
+
+        for(PrintingSchema ps : c.getPrintingSchemas()) {
+            list.add(ps);
+        }
+
+        response.add("printingSchemas", GSON.toJsonTree(list));
         return GSON.toJson(response);
     }
 }

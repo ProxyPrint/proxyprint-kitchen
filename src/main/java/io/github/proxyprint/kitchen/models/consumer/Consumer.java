@@ -21,7 +21,7 @@ public class Consumer extends User {
     private String latitude;
     @Column(name = "longitude", nullable = true)
     private String longitude;
-    @JoinColumn (name="printing_schema_id")
+    @JoinColumn (name="consumer_id")
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<PrintingSchema> printingSchemas;
 
@@ -79,6 +79,10 @@ public class Consumer extends User {
     public void setLongitude(String longitude) {
         this.longitude = longitude;
     }
+
+    public Set<PrintingSchema> getPrintingSchemas() { return printingSchemas; }
+
+    public void setPrintingSchemas(Set<PrintingSchema> printingSchemas) { this.printingSchemas = printingSchemas; }
 
     @Override
     public String toString() {

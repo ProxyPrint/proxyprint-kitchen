@@ -17,8 +17,6 @@ public class PrintingSchema {
     private long id;
     @Column(name = "pschema_name", nullable = false)
     private String name;
-    @Column(name = "consumer_owner", nullable = false)
-    private Consumer consumer;
     @Column(name = "paper_specs", nullable = false)
     private String paperSpecs;
     @Column(name = "binding_specs", nullable = true)
@@ -28,9 +26,7 @@ public class PrintingSchema {
 
     public PrintingSchema() {}
 
-    public PrintingSchema(String name, Consumer consumer, PaperSpecItem psi, BindingItem bi, CoverItem ci) {
-        this.name = name;
-        this.consumer = consumer;
+    public PrintingSchema(String name , PaperSpecItem psi, BindingItem bi, CoverItem ci) {
         this.paperSpecs = psi.toString();
         if(bi!=null) {
             this.bindingSpecs = bi.toString();
@@ -42,9 +38,7 @@ public class PrintingSchema {
         }
     }
 
-    public PrintingSchema(String name, Consumer consumer, String paperSpecs, String bindingSpecs, String coverSpecs) {
-        this.name = name;
-        this.consumer = consumer;
+    public PrintingSchema(String name, String paperSpecs, String bindingSpecs, String coverSpecs) {
         this.paperSpecs = paperSpecs;
         this.bindingSpecs = bindingSpecs;
         this.coverSpecs = coverSpecs;
@@ -55,10 +49,6 @@ public class PrintingSchema {
     public String getName() { return name; }
 
     public void setName(String name) { this.name = name; }
-
-    public Consumer getConsumer() { return consumer; }
-
-    public void setConsumer(Consumer consumer) { this.consumer = consumer; }
 
     public String getPaperSpecs() { return paperSpecs; }
 
@@ -81,8 +71,6 @@ public class PrintingSchema {
 
         if (getId() != that.getId()) return false;
         if (getName() != null ? !getName().equals(that.getName()) : that.getName() != null) return false;
-        if (getConsumer() != null ? !getConsumer().equals(that.getConsumer()) : that.getConsumer() != null)
-            return false;
         if (getPaperSpecs() != null ? !getPaperSpecs().equals(that.getPaperSpecs()) : that.getPaperSpecs() != null)
             return false;
         if (getBindingSpecs() != null ? !getBindingSpecs().equals(that.getBindingSpecs()) : that.getBindingSpecs() != null)
@@ -95,7 +83,6 @@ public class PrintingSchema {
     public int hashCode() {
         int result = (int) (getId() ^ (getId() >>> 32));
         result = 31 * result + (getName() != null ? getName().hashCode() : 0);
-        result = 31 * result + (getConsumer() != null ? getConsumer().hashCode() : 0);
         result = 31 * result + (getPaperSpecs() != null ? getPaperSpecs().hashCode() : 0);
         result = 31 * result + (getBindingSpecs() != null ? getBindingSpecs().hashCode() : 0);
         result = 31 * result + (getCoverSpecs() != null ? getCoverSpecs().hashCode() : 0);
@@ -107,7 +94,6 @@ public class PrintingSchema {
         return "PrintingSchema{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", consumer=" + consumer +
                 ", paperSpecs='" + paperSpecs + '\'' +
                 ", bindingSpecs='" + bindingSpecs + '\'' +
                 ", coverSpecs='" + coverSpecs + '\'' +
