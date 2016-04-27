@@ -1,6 +1,5 @@
 /*
- * Copyright 2016 Jorge Caldas, José Cortez
- * José Francisco, Marcelo Gonçalves
+ * Copyright 2016 Pivotal Software, Inc..
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.proxyprint.kitchen.models.repositories;
+package io.github.proxyprint.kitchen.utils.gson;
 
-import io.github.proxyprint.kitchen.models.printshops.RegisterRequest;
-import org.springframework.data.repository.CrudRepository;
-
-import javax.transaction.Transactional;
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
 
 /**
  *
  * @author josesousa
  */
-@Transactional
-public interface RegisterRequestDAO extends CrudRepository<RegisterRequest, Long> {
+public class AnnotationExclusionStrategy implements ExclusionStrategy {
 
+    @Override
+    public boolean shouldSkipField(FieldAttributes f) {
+        return f.getAnnotation(Exclude.class) != null;
+    }
+
+    @Override
+    public boolean shouldSkipClass(Class<?> clazz) {
+        return false;
+    }
 }

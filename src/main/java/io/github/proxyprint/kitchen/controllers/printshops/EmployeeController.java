@@ -5,7 +5,6 @@ package io.github.proxyprint.kitchen.controllers.printshops;
  */
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import io.github.proxyprint.kitchen.models.printshops.Employee;
 import io.github.proxyprint.kitchen.models.repositories.EmployeeDAO;
@@ -15,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
-import java.io.IOException;
-
 /**
  * Created by daniel on 09-04-2016.
  */
@@ -25,27 +22,8 @@ public class EmployeeController {
 
     @Autowired
     private EmployeeDAO employees;
-    private final static Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-
-    @RequestMapping(value = "/employee/login", method = RequestMethod.POST)
-    public String login(WebRequest request) throws IOException {
-        boolean auth = false;
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-        JsonObject response = new JsonObject();
-        if (username != null && password != null && !username.isEmpty() && !password.isEmpty()) {
-            Employee employee = employees.findByUsername(username);
-            if (employee != null) {
-                auth = employee.getPassword().equals(password);
-                if (auth) {
-                    response.add("employee", GSON.toJsonTree(employee));
-                }
-            }
-        }
-
-        response.addProperty("success", auth);
-        return GSON.toJson(response);
-    }
+    @Autowired
+    private Gson GSON;
 
     /*The employee doesn't have resgiter method. A printshop manager should register its employees*/
     /*ONLY FOR TESTING!!*/

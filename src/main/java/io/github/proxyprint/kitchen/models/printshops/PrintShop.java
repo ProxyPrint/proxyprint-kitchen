@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.PaperItem;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.PaperTableItem;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.PriceItem;
+import io.github.proxyprint.kitchen.utils.gson.Exclude;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -40,11 +41,11 @@ public class PrintShop {
     @MapKeyColumn(name = "item")
     @Column(name = "price")
     @JsonIgnore // This JsonIgnore is not working
+    @Exclude
     private Map<String, Float> priceTable;
 
-    public PrintShop() {
-        this.priceTable = new HashMap<>();
-    }
+
+    public PrintShop() {}
 
     public PrintShop(String name, String address, Double latitude, Double longitude, String nif, String logo, float avgRating) {
         this.name = name;

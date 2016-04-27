@@ -16,15 +16,14 @@
 package io.github.proxyprint.kitchen.controllers.printshops;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import io.github.proxyprint.kitchen.utils.MailBox;
 import io.github.proxyprint.kitchen.models.printshops.Manager;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
 import io.github.proxyprint.kitchen.models.printshops.RegisterRequest;
 import io.github.proxyprint.kitchen.models.repositories.ManagerDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
 import io.github.proxyprint.kitchen.models.repositories.RegisterRequestDAO;
+import io.github.proxyprint.kitchen.utils.MailBox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,7 +46,8 @@ public class RegisterRequestController {
     private PrintShopDAO printShops;
     @Autowired
     private ManagerDAO managers;
-    private final static Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    @Autowired
+    private Gson GSON;
 
     @RequestMapping(value = "/request/register", method = RequestMethod.POST)
     public ResponseEntity<RegisterRequest> registerRequest(@RequestBody RegisterRequest registerRequest) {

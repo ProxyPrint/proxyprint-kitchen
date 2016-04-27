@@ -17,8 +17,9 @@
 package io.github.proxyprint.kitchen.models.repositories;
 
 import io.github.proxyprint.kitchen.models.User;
-import javax.transaction.Transactional;
 import org.springframework.data.repository.CrudRepository;
+
+import javax.transaction.Transactional;
 
 @Transactional
 public interface UserDAO extends CrudRepository<User, Long> {

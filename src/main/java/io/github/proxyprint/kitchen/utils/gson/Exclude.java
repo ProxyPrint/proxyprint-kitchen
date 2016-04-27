@@ -1,6 +1,5 @@
 /*
- * Copyright 2016 Jorge Caldas, José Cortez
- * José Francisco, Marcelo Gonçalves
+ * Copyright 2016 Pivotal Software, Inc..
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.proxyprint.kitchen.models.repositories;
+package io.github.proxyprint.kitchen.utils.gson;
 
-import io.github.proxyprint.kitchen.models.printshops.RegisterRequest;
-import org.springframework.data.repository.CrudRepository;
-
-import javax.transaction.Transactional;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  *
  * @author josesousa
  */
-@Transactional
-public interface RegisterRequestDAO extends CrudRepository<RegisterRequest, Long> {
-
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface Exclude {
 }

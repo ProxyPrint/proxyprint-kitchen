@@ -1,7 +1,5 @@
 package io.github.proxyprint.kitchen.models;
 
-import io.github.proxyprint.kitchen.models.User;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;

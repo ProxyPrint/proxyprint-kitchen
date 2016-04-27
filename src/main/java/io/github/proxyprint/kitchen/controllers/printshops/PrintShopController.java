@@ -16,22 +16,20 @@
 package io.github.proxyprint.kitchen.controllers.printshops;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import io.github.proxyprint.kitchen.models.printshops.Manager;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
-import io.github.proxyprint.kitchen.models.printshops.RegisterRequest;
-import io.github.proxyprint.kitchen.models.printshops.pricetable.PaperItem;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.PaperTableItem;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.PriceItem;
 import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
-import io.github.proxyprint.kitchen.models.repositories.RegisterRequestDAO;
 import io.github.proxyprint.kitchen.utils.DistanceCalculator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
 import java.util.*;
@@ -44,41 +42,28 @@ import java.util.*;
 public class PrintShopController {
 
     @Autowired
-    private RegisterRequestDAO registerRequests;
-    @Autowired
     private PrintShopDAO printshops;
-    private final static Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    @Autowired
+    private Gson GSON;
 
     @RequestMapping(value = "/printshops/nearest", method = RequestMethod.GET)
     public String getNearestPrintShops(WebRequest request) {
+        System.out.format("Latitude: %s Longitude: %s\n", request.getParameter("latitude"), request.getParameter("longitude"));
         Double latitude = Double.parseDouble(request.getParameter("latitude"));
         Double longitude = Double.parseDouble(request.getParameter("longitude"));
 
         System.out.format("Latitude: %s Longitude: %s\n", latitude, longitude);
 
-        TreeMap<Double, RegisterRequest> pshops = new TreeMap<>();
+        TreeMap<Double, PrintShop> pshops = new TreeMap<>();
         JsonObject response = new JsonObject();
-        //em vez de register requests, meter reprografias
-        for (RegisterRequest r : registerRequests.findAll()) {
-            double distance = DistanceCalculator.distance(latitude, longitude, r.getpShopLatitude(), r.getpShopLongitude());
-            pshops.put(distance, r);
+
+        for (PrintShop p: printshops.findAll()){
+            double distance = DistanceCalculator.distance(latitude, longitude, p.getLatitude(), p.getLongitude());
+            pshops.put(distance,p);
         }
-        response.add("reprogs", GSON.toJsonTree(pshops.values()));
+        response.add("printshops", GSON.toJsonTree(new LinkedList(pshops.values())));
 
         return GSON.toJson(response);
-    }
-
-    @RequestMapping(value = "/printshops/test", method = RequestMethod.GET)
-    public String test(WebRequest request) {
-        PrintShop p = printshops.findByName("CopyScan");
-        if (p != null) {
-            printshops.delete(p);
-        }
-        p = new PrintShop("CopyScan", "asd", Double.MIN_NORMAL, Double.MIN_VALUE, "123123", "asdasd", 0);
-        p.addPriceItem(new PriceItem(PaperItem.Format.A4, PaperItem.Sides.SIMPLEX, PaperItem.Colors.COLOR, 0, 20), 1.23f);
-        p.addPriceItem(new PriceItem(PaperItem.Format.A4, PaperItem.Sides.SIMPLEX, PaperItem.Colors.COLOR, 0, 20), 1.43f);
-        printshops.save(p);
-        return "";
     }
 
     @Secured({"ROLE_MANAGER"})

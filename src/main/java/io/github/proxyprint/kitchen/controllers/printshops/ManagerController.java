@@ -1,7 +1,6 @@
 package io.github.proxyprint.kitchen.controllers.printshops;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.PaperTableItem;
@@ -21,7 +20,8 @@ public class ManagerController {
 
     @Autowired
     private PrintShopDAO printshops;
-    private final static Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    @Autowired
+    private Gson GSON;
 
     @Secured("ROLE_MANAGER")
     @RequestMapping(value = "/printshops/{id}/pricetable/newpaperitem", method = RequestMethod.POST)

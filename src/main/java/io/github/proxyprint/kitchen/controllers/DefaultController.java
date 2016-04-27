@@ -17,7 +17,6 @@
 package io.github.proxyprint.kitchen.controllers;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import io.github.proxyprint.kitchen.models.User;
 import io.github.proxyprint.kitchen.models.repositories.*;
@@ -51,7 +50,7 @@ public class DefaultController {
     @Autowired
     private EmployeeDAO employees;
     @Autowired
-    private final static Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    private Gson GSON;
 
     @RequestMapping(method = RequestMethod.OPTIONS, value = "/*")
     @ResponseBody
