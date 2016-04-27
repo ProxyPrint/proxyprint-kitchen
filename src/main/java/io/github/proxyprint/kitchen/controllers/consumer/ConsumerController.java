@@ -26,7 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
  * Created by daniel on 04-04-2016.
  */
 @RestController
-public class BaseController {
+public class ConsumerController {
 
     @Autowired
     private ConsumerDAO consumers;

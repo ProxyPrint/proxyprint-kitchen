@@ -20,7 +20,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import io.github.proxyprint.kitchen.models.User;
-import io.github.proxyprint.kitchen.models.repositories.UserDAO;
+import io.github.proxyprint.kitchen.models.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,9 +40,17 @@ import java.io.IOException;
  */
 @RestController
 public class DefaultController {
-
     @Autowired
     private UserDAO users;
+    @Autowired
+    private ConsumerDAO consumers;
+    @Autowired
+    private AdminDAO admins;
+    @Autowired
+    private ManagerDAO managers;
+    @Autowired
+    private EmployeeDAO employees;
+    @Autowired
     private final static Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     @RequestMapping(method = RequestMethod.OPTIONS, value = "/*")
@@ -75,7 +83,7 @@ public class DefaultController {
         if (username == null || password == null) {
             auth = false;
         } else {
-            User user = users.findByUsername(username);
+            User user = createUser(username);
             if (user == null) {
                 auth = false;
             } else {
@@ -88,5 +96,30 @@ public class DefaultController {
 
         response.addProperty("success", auth);
         return GSON.toJson(response);
+    }
+
+    /**
+     * Find the username in the database and create its concrete type.
+     * http://stackoverflow.com/questions/25991191/spring-autowired-bean-causes-null-pointer
+     * @param username, the username submited in the log in process.
+     * @return An user object instantiated with its concrete type.
+     */
+    public User createUser(String username) {
+
+        User u = users.findByUsername(username);
+
+        if (u != null) {
+            if (u.getRolesSet().contains(User.Roles.ROLE_USER.toString())) {
+                return consumers.findByUsername(username);
+            } else if (u.getRolesSet().contains((User.Roles.ROLE_ADMIN.toString()))) {
+                return admins.findByUsername(username);
+            } else if (u.getRolesSet().contains((User.Roles.ROLE_MANAGER.toString()))) {
+                return managers.findByUsername(username);
+            } else if (u.getRolesSet().contains((User.Roles.ROLE_EMPLOYEE.toString()))) {
+                return employees.findByUsername(username);
+            }
+        }
+
+        return null;
     }
 }
