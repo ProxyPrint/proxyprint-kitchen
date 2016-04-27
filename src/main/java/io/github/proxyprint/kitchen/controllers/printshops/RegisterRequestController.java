@@ -120,8 +120,8 @@ public class RegisterRequestController {
             registerRequests.delete(id);
 
             // Send email
-            // MailBox m = new MailBox();
-            // boolean res = m.sedMailRejectedRequest(registerRequest);
+            MailBox m = new MailBox();
+            m.sedMailRejectedRequest(registerRequest);
 
             response.addProperty("success", true);
             return GSON.toJson(response);
