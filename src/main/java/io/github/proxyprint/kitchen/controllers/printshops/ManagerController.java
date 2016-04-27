@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.PaperTableItem;
-import io.github.proxyprint.kitchen.models.printshops.pricetable.PriceItem;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.RangePaperItem;
 import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
@@ -49,8 +49,8 @@ public class ManagerController {
 
         if(pshop!=null) {
             // Remove price items
-            List<PriceItem> itemsToDelete = pshop.convertPaperTableItemToPaperItems(pti);
-            for(PriceItem pi : itemsToDelete) {
+            List<RangePaperItem> itemsToDelete = pshop.convertPaperTableItemToPaperItems(pti);
+            for(RangePaperItem pi : itemsToDelete) {
                 pshop.getPriceTable().remove(pi.toString());
             }
             printshops.save(pshop);

@@ -19,12 +19,12 @@ package io.github.proxyprint.kitchen.models.printshops.pricetable;
  *
  * @author josesousa
  */
-public class PriceItem extends PaperItem {
+public class RangePaperItem extends PaperItem {
 
     private int infLim;
     private int supLim;
 
-    public PriceItem(Format format, Sides sides, Colors colors, int infLim, int supLim) {
+    public RangePaperItem(Format format, Sides sides, Colors colors, int infLim, int supLim) {
         super(format, sides, colors);
         this.infLim = infLim;
         this.supLim = supLim;
