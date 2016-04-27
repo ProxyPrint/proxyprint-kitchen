@@ -31,10 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 
 import java.util.*;
@@ -84,7 +81,7 @@ public class PrintShopController {
         return "";
     }
 
-    // @Secured({"ROLE_MANAGER"})
+    @Secured({"ROLE_MANAGER"})
     @RequestMapping(value = "/printshops/{id}/pricetable", method = RequestMethod.GET)
     public ResponseEntity<Map<String,Set<PaperTableItem>>> getPrintShopPriceTable(@PathVariable(value = "id") long id) {
         PrintShop pshop = printshops.findOne(id);
@@ -102,6 +99,7 @@ public class PrintShopController {
                     // Create new PaperTableItem
                     PaperTableItem pti = new PaperTableItem(pi.getInfLim(),pi.getSupLim());
                     pti.addPriceToPaperTableItem(pi,pshop.getPrice(pi));
+                    pti.setColors(pi.getColors().toString());
 
                     // Add new range and associated PaperTableItem instance
                     Map<String,PaperTableItem> map = new HashMap<>();
@@ -118,10 +116,12 @@ public class PrintShopController {
                     if(pti!=null) {
                         // PriceTableItem instance already exists add price
                         pti.addPriceToPaperTableItem(pi,pshop.getPrice(pi));
+                        pti.setColors(pi.getColors().toString());
                         table.get(pi.getColors().toString()).put(pti.genKey(),pti);
                     } else {
                         // Create new PaperTableItem
                         pti = new PaperTableItem(pi.getInfLim(),pi.getSupLim());
+                        pti.setColors(pi.getColors().toString());
                         pti.addPriceToPaperTableItem(pi,pshop.getPrice(pi));
 
                         // Add new range and associated PaperTableItem instance

@@ -4,6 +4,7 @@ package io.github.proxyprint.kitchen.models.printshops.pricetable;
  * Created by daniel on 26-04-2016.
  */
 public class PaperTableItem implements Comparable<PaperTableItem> {
+    public static String DEFAULT = "-";
     public static String A4Simplex = "A4SIMPLEX";
     public static String A4Duplex = "A4DUPLEX";
     public static String A3Simplex = "A3SIMPLEX";
@@ -11,6 +12,7 @@ public class PaperTableItem implements Comparable<PaperTableItem> {
 
     private int infLim;
     private int supLim;
+    private String colors;
     private String priceA4SIMPLEX;
     private String priceA4DUPLEX;
     private String priceA3SIMPLEX;
@@ -74,6 +76,10 @@ public class PaperTableItem implements Comparable<PaperTableItem> {
     public void setPriceA3DUPLEX(String priceA3DUPLEX) {
         this.priceA3DUPLEX = priceA3DUPLEX;
     }
+
+    public String getColors() { return colors; }
+
+    public void setColors(String colors) { this.colors = colors; }
 
     public String genKey() {
         return this.infLim+";"+this.supLim;

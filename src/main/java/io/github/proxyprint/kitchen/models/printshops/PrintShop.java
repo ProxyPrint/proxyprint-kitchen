@@ -2,6 +2,7 @@ package io.github.proxyprint.kitchen.models.printshops;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.PaperItem;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.PaperTableItem;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.PriceItem;
 
 import javax.persistence.*;
@@ -143,6 +144,29 @@ public class PrintShop {
         supLim = Integer.parseInt(parts[4]);
 
         return new PriceItem(format,sides,colors,infLim,supLim);
+    }
+
+    /**
+     * Insert a PaperTableItem in the price table
+     * @param pti, a new entry in the price table
+     */
+    public void insertPaperItemsInPriceTable(PaperTableItem pti) {
+        if(!pti.getPriceA4SIMPLEX().equals(PaperTableItem.DEFAULT)) {
+            PriceItem a4s = new PriceItem(PaperItem.Format.A4, PaperItem.Sides.SIMPLEX, PaperItem.Colors.valueOf(pti.getColors()), pti.getInfLim(), pti.getSupLim());
+            this.priceTable.put(a4s.toString(), Float.parseFloat(pti.getPriceA4SIMPLEX()));
+        }
+        if(!pti.getPriceA4DUPLEX().equals(PaperTableItem.DEFAULT)) {
+            PriceItem a4d = new PriceItem(PaperItem.Format.A4, PaperItem.Sides.DUPLEX, PaperItem.Colors.valueOf(pti.getColors()), pti.getInfLim(), pti.getSupLim());
+            this.priceTable.put(a4d.toString(), Float.parseFloat(pti.getPriceA4DUPLEX()));
+        }
+        if(!pti.getPriceA3SIMPLEX().equals(PaperTableItem.DEFAULT)) {
+            PriceItem a3s = new PriceItem(PaperItem.Format.A3, PaperItem.Sides.SIMPLEX, PaperItem.Colors.valueOf(pti.getColors()), pti.getInfLim(), pti.getSupLim());
+            this.priceTable.put(a3s.toString(), Float.parseFloat(pti.getPriceA3SIMPLEX()));
+        }
+        if(!pti.getPriceA3DUPLEX().equals(PaperTableItem.DEFAULT)) {
+            PriceItem a3d = new PriceItem(PaperItem.Format.A3, PaperItem.Sides.DUPLEX, PaperItem.Colors.valueOf(pti.getColors()), pti.getInfLim(), pti.getSupLim());
+            this.priceTable.put(a3d.toString(),Float.parseFloat(pti.getPriceA3DUPLEX()));
+        }
     }
 
     public float getPrice(PriceItem item) {
