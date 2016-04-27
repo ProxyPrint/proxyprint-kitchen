@@ -52,6 +52,6 @@ public class CoverItem {
     // COVER_TYPE+","+FORMAT
     @Override
     public String toString() {
-        return this.coverType.toString()+","+this.format.toString();
+        return String.format("%s,%s", this.coverType.toString(), this.format.toString());
     }
 }

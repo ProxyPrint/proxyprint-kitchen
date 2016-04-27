@@ -22,8 +22,7 @@ public class Consumer extends User {
     @Column(name = "longitude", nullable = true)
     private String longitude;
 
-    public Consumer() {
-    }
+    public Consumer() {}
 
     public Consumer(String name, String username, String password, String email, String latitude, String longitude) {
         super(username, password);

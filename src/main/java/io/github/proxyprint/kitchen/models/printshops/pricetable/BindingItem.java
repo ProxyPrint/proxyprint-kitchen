@@ -5,6 +5,8 @@ package io.github.proxyprint.kitchen.models.printshops.pricetable;
  */
 public class BindingItem {
 
+    public static String STAPLING = "STAPLING";
+
     public static enum RING_TYPE {
         PLASTIC, SPIRAL, WIRE, STEELMAT
     }
@@ -61,6 +63,6 @@ public class BindingItem {
     // RINGS_TYPE+","+INF_LIM+","+SUP_LIM
     @Override
     public String toString() {
-        return this.ringsType.toString()+","+this.ringThicknessInfLim+","+this.ringThicknessSupLim;
+        return String.format("%s,%d,%d", this.ringsType.toString(), this.ringThicknessInfLim, this.ringThicknessSupLim);
     }
 }
