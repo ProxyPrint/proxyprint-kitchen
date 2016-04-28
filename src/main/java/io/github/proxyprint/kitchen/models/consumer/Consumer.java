@@ -4,6 +4,7 @@ import io.github.proxyprint.kitchen.models.User;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -83,6 +84,22 @@ public class Consumer extends User {
     public Set<PrintingSchema> getPrintingSchemas() { return printingSchemas; }
 
     public void setPrintingSchemas(Set<PrintingSchema> printingSchemas) { this.printingSchemas = printingSchemas; }
+
+    public boolean addPrintingSchema(PrintingSchema ps) {
+        return this.printingSchemas.add(ps);
+    }
+
+    public boolean deletePrintingSchema(long psID) {
+        Iterator it = this.printingSchemas.iterator();
+        while (it.hasNext()) {
+            PrintingSchema ps = (PrintingSchema)it.next();
+            if(ps.getId() == psID){
+                it.remove();
+                return true;
+            }
+        }
+        return false;
+    }
 
     @Override
     public String toString() {

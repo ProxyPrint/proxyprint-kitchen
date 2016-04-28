@@ -29,6 +29,8 @@ public class ConsumerController {
     @Autowired
     private ConsumerDAO consumers;
     @Autowired
+    private PrintingSchemaDAO printingSchemas;
+    @Autowired
     private Gson GSON;
 
     @RequestMapping(value = "/consumer/register", method = RequestMethod.POST)
@@ -88,7 +90,7 @@ public class ConsumerController {
     }
 
     /**
-     *
+     * Get all the consumer PrintingSchemas.
      * @param id, the id of the consumer.
      * @return set of the printing schemas belonging to the consumer matched by the id.
      */
@@ -103,32 +105,40 @@ public class ConsumerController {
         }
     }
 
+    /**
+     * Add a new PrintingSchema to user's printing schemas collection.
+     * Test
+     * curl --data "name=MyFancySchema&bindingSpecs=SPIRAL&coverSpecs=CRISTAL_ACETATE&paperSpecs=COLOR,A4,SIMPLEX" -u joao:1234 localhost:8080/consumer/1001/printingschemas
+     * @param id, the id of the consumer.
+     * @param ps, the PrintingSchema created by the consumer.
+     * @return HttpStatus.OK if everything went well.
+     */
     @Secured({"ROLE_USER"})
-
-    /*
-    *
-    *     @RequestMapping(value = "/request/register", method = RequestMethod.POST)
-    public ResponseEntity<RegisterRequest> registerRequest(@RequestBody RegisterRequest registerRequest) {
-        registerRequests.save(registerRequest);
-        return new ResponseEntity<>(registerRequest, HttpStatus.OK);
-    }
-    *
-    * */
-
-    // public ResponseEntity<Map<String,Set<PaperTableItem>>> getPrintShopPriceTable(@PathVariable(value = "id") long id)
-
-    // TESTING
-    @RequestMapping(value = "/schema", method = RequestMethod.GET)
-    public String testPrintinSchema(WebRequest request) {
-        JsonObject response = new JsonObject();
-        List<PrintingSchema> list = new ArrayList<>();
-        long id = 1001;
+    @RequestMapping(value = "/consumer/{id}/printingschemas", method = RequestMethod.POST)
+    public ResponseEntity<String> addNewConsumerPrintingSchema(@PathVariable(value = "id") long id, PrintingSchema ps) {
         Consumer c = consumers.findOne(id);
-
-        for(PrintingSchema ps : c.getPrintingSchemas()) {
-            list.add(ps);
+        boolean res = c.addPrintingSchema(ps);
+        if(res) {
+            consumers.save(c);
+            return new ResponseEntity<>("OK", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("SERVER ERROR", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        return GSON.toJsonTree(list).toString();
     }
+
+    /**
+     * Delete a new PrintingSchema to user's printing schemas collection.
+     * Test
+     * curl -u joao:1234 -X DELETE localhost:8080/consumer/1001/printingschemas/{printingSchemaID}
+     * @param cid, the id of the consumer.
+     * @param psid, the id of the printing schema to delete.
+     * @return HttpStatus.OK if everything went well.
+     */
+    @Secured({"ROLE_USER"})
+    @RequestMapping(value = "/consumer/{consumerID}/printingschemas/{printingSchemaID}", method = RequestMethod.DELETE)
+    public ResponseEntity<String> addNewConsumerPrintingSchema(@PathVariable(value = "consumerID") long cid, @PathVariable(value = "printingSchemaID") long psid) {
+        printingSchemas.delete(psid);
+        return new ResponseEntity<>("OK", HttpStatus.OK);
+    }
+
 }
