@@ -4,32 +4,32 @@ package io.github.proxyprint.kitchen.models.printshops.pricetable;
  * Created by daniel on 27-04-2016.
  */
 public class BindingItem {
-
+    public static String KEY_BASE = "BINDING";
     public static String STAPLING = "STAPLING";
 
-    public static enum RING_TYPE {
+    public static enum RingType {
         PLASTIC, SPIRAL, WIRE, STEELMAT
     }
 
-    private RING_TYPE ringsType;
+    private RingType ringsType;
     private int ringThicknessInfLim; // in millimeters
     private int ringThicknessSupLim; // in millimeters
 
     public BindingItem() {
-        this.ringsType = RING_TYPE.PLASTIC;
+        this.ringsType = RingType.PLASTIC;
         this.ringThicknessInfLim = 0;
         this.ringThicknessInfLim = 0;
     }
 
-    public BindingItem(RING_TYPE ringsType, int ringThicknessInfLim, int ringThicknessSupLim) {
+    public BindingItem(RingType ringsType, int ringThicknessInfLim, int ringThicknessSupLim) {
         this.ringsType = ringsType;
         this.ringThicknessInfLim = ringThicknessInfLim;
         this.ringThicknessSupLim = ringThicknessSupLim;
     }
 
-    public RING_TYPE getRingsType() { return ringsType; }
+    public RingType getRingsType() { return ringsType; }
 
-    public void setRingsType(RING_TYPE ringsType) { this.ringsType = ringsType; }
+    public void setRingsType(RingType ringsType) { this.ringsType = ringsType; }
 
     public int getRingThicknessInfLim() { return ringThicknessInfLim; }
 
@@ -61,8 +61,7 @@ public class BindingItem {
     }
 
     // RINGS_TYPE+","+INF_LIM+","+SUP_LIM
-    @Override
-    public String toString() {
-        return String.format("%s,%d,%d", this.ringsType.toString(), this.ringThicknessInfLim, this.ringThicknessSupLim);
+    public String genKey() {
+        return String.format("%s,%s,%d,%d",KEY_BASE, this.ringsType.toString(), this.ringThicknessInfLim, this.ringThicknessSupLim);
     }
 }

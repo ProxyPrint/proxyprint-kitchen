@@ -51,7 +51,7 @@ public class ManagerController {
             // Remove price items
             List<RangePaperItem> itemsToDelete = pshop.convertPaperTableItemToPaperItems(pti);
             for(RangePaperItem pi : itemsToDelete) {
-                pshop.getPriceTable().remove(pi.toString());
+                pshop.getPriceTable().remove(pi.genKey());
             }
             printshops.save(pshop);
             response.addProperty("success", true);

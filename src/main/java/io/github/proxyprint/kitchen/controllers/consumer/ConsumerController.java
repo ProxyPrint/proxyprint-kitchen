@@ -85,6 +85,8 @@ public class ConsumerController {
         return GSON.toJson(response);
     }
 
+
+    // TESTING
     @RequestMapping(value = "/schema", method = RequestMethod.GET)
     public String testPrintinSchema(WebRequest request) {
         JsonObject response = new JsonObject();
@@ -96,7 +98,6 @@ public class ConsumerController {
             list.add(ps);
         }
 
-        response.add("printingSchemas", GSON.toJsonTree(list));
-        return GSON.toJson(response);
+        return GSON.toJsonTree(list).toString();
     }
 }

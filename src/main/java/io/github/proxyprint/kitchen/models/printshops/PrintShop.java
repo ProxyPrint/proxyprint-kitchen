@@ -1,9 +1,7 @@
 package io.github.proxyprint.kitchen.models.printshops;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.github.proxyprint.kitchen.models.printshops.pricetable.PaperItem;
-import io.github.proxyprint.kitchen.models.printshops.pricetable.PaperTableItem;
-import io.github.proxyprint.kitchen.models.printshops.pricetable.RangePaperItem;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.*;
 import io.github.proxyprint.kitchen.utils.gson.Exclude;
 
 import javax.persistence.*;
@@ -123,7 +121,7 @@ public class PrintShop {
     }
 
     public void addPriceItem(RangePaperItem item, float price) {
-        this.priceTable.put(item.toString(), price);
+        this.priceTable.put(item.genKey(), price);
     }
 
     /**
@@ -137,17 +135,30 @@ public class PrintShop {
         PaperItem.Format format;
         PaperItem.Sides sides;
         int infLim, supLim;
+        String itemType;
 
         String[] parts = priceItem.split(",");
-        colors = PaperItem.Colors.valueOf(parts[0]);
-        format = PaperItem.Format.valueOf(parts[1]);
-        sides = PaperItem.Sides.valueOf(parts[2]);
+        itemType = parts[0];
 
-        infLim = Integer.parseInt(parts[3]);
-        supLim = Integer.parseInt(parts[4]);
+        if(itemType.equals(RangePaperItem.KEY_BASE)) {
+            colors = PaperItem.Colors.valueOf(parts[1]);
+            format = PaperItem.Format.valueOf(parts[2]);
+            sides = PaperItem.Sides.valueOf(parts[3]);
 
-        return new RangePaperItem(format,sides,colors,infLim,supLim);
-    }
+            infLim = Integer.parseInt(parts[4]);
+            supLim = Integer.parseInt(parts[5]);
+
+            return new RangePaperItem(format,sides,colors,infLim,supLim);
+        }
+        else if(itemType.equals(BindingItem.KEY_BASE)) {
+            // ...
+        }
+        else if(itemType.equals(CoverItem.KEY_BASE)) {
+            // ...
+        }
+
+        return null;
+     }
 
     /**
      * Insert a PaperTableItem in the price table
@@ -156,19 +167,19 @@ public class PrintShop {
     public void insertPaperItemsInPriceTable(PaperTableItem pti) {
         if(!pti.getPriceA4SIMPLEX().equals(PaperTableItem.DEFAULT)) {
             RangePaperItem a4s = new RangePaperItem(PaperItem.Format.A4, PaperItem.Sides.SIMPLEX, PaperItem.Colors.valueOf(pti.getColors()), pti.getInfLim(), pti.getSupLim());
-            this.priceTable.put(a4s.toString(), Float.parseFloat(pti.getPriceA4SIMPLEX()));
+            this.priceTable.put(a4s.genKey(), Float.parseFloat(pti.getPriceA4SIMPLEX()));
         }
         if(!pti.getPriceA4DUPLEX().equals(PaperTableItem.DEFAULT)) {
             RangePaperItem a4d = new RangePaperItem(PaperItem.Format.A4, PaperItem.Sides.DUPLEX, PaperItem.Colors.valueOf(pti.getColors()), pti.getInfLim(), pti.getSupLim());
-            this.priceTable.put(a4d.toString(), Float.parseFloat(pti.getPriceA4DUPLEX()));
+            this.priceTable.put(a4d.genKey(), Float.parseFloat(pti.getPriceA4DUPLEX()));
         }
         if(!pti.getPriceA3SIMPLEX().equals(PaperTableItem.DEFAULT)) {
             RangePaperItem a3s = new RangePaperItem(PaperItem.Format.A3, PaperItem.Sides.SIMPLEX, PaperItem.Colors.valueOf(pti.getColors()), pti.getInfLim(), pti.getSupLim());
-            this.priceTable.put(a3s.toString(), Float.parseFloat(pti.getPriceA3SIMPLEX()));
+            this.priceTable.put(a3s.genKey(), Float.parseFloat(pti.getPriceA3SIMPLEX()));
         }
         if(!pti.getPriceA3DUPLEX().equals(PaperTableItem.DEFAULT)) {
             RangePaperItem a3d = new RangePaperItem(PaperItem.Format.A3, PaperItem.Sides.DUPLEX, PaperItem.Colors.valueOf(pti.getColors()), pti.getInfLim(), pti.getSupLim());
-            this.priceTable.put(a3d.toString(),Float.parseFloat(pti.getPriceA3DUPLEX()));
+            this.priceTable.put(a3d.genKey(),Float.parseFloat(pti.getPriceA3DUPLEX()));
         }
     }
 
@@ -197,7 +208,7 @@ public class PrintShop {
     }
 
     public float getPrice(RangePaperItem item) {
-        return this.priceTable.get(item.toString());
+        return this.priceTable.get(item.genKey());
     }
     
     public Map<String, Float> getPriceTable(){

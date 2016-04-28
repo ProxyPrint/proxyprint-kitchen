@@ -29,9 +29,9 @@ public class PrintingSchema {
     public PrintingSchema(String name , PaperSpecItem psi, BindingItem bi, CoverItem ci) {
         this.paperSpecs = psi.toString();
         if(bi!=null) {
-            this.bindingSpecs = bi.toString();
+            this.bindingSpecs = bi.genKey();
             if(ci!=null) {
-                this.coverSpecs = ci.toString();
+                this.coverSpecs = ci.genKey();
             }
         } else {
             this.bindingSpecs = BindingItem.STAPLING;

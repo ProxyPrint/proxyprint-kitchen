@@ -4,27 +4,27 @@ package io.github.proxyprint.kitchen.models.printshops.pricetable;
  * Created by daniel on 27-04-2016.
  */
 public class CoverItem {
-
-    public static enum COVER_TYPE {
+    public static String KEY_BASE = "COVER";
+    public static enum CoverType {
         CRISTAL_ACETATE, PVC_TRANSPARENT, PVC_OPAQUE
     }
 
-    private COVER_TYPE coverType;
+    private CoverType coverType;
     private PaperItem.Format format;
 
     public CoverItem() {
-        this.coverType = COVER_TYPE.CRISTAL_ACETATE;
+        this.coverType = CoverType.CRISTAL_ACETATE;
         this.format = PaperItem.Format.A4;
     }
 
-    public CoverItem(COVER_TYPE coverType, PaperItem.Format format) {
+    public CoverItem(CoverType coverType, PaperItem.Format format) {
         this.coverType = coverType;
         this.format = format;
     }
 
-    public COVER_TYPE getCoverType() { return coverType; }
+    public CoverType getCoverType() { return coverType; }
 
-    public void setCoverType(COVER_TYPE coverType) { this.coverType = coverType; }
+    public void setCoverType(CoverType coverType) { this.coverType = coverType; }
 
     public PaperItem.Format getFormat() { return format; }
 
@@ -49,9 +49,8 @@ public class CoverItem {
         return result;
     }
 
-    // COVER_TYPE+","+FORMAT
-    @Override
-    public String toString() {
-        return String.format("%s,%s", this.coverType.toString(), this.format.toString());
+    // CoverType+","+FORMAT
+    public String genKey() {
+        return String.format("%%s,s,%s",KEY_BASE, this.coverType.toString(), this.format.toString());
     }
 }
