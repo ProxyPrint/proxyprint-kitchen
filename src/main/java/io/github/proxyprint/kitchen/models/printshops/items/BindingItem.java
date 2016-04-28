@@ -5,7 +5,6 @@ package io.github.proxyprint.kitchen.models.printshops.items;
  */
 public class BindingItem extends Item {
     public static String KEY_BASE = "BINDING";
-    public static String STAPLING = "STAPLING";
 
     private RingType ringsType;
     private int ringThicknessInfLim; // in millimeters
