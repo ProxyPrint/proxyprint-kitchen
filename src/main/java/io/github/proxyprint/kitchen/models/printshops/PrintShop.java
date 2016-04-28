@@ -2,11 +2,13 @@ package io.github.proxyprint.kitchen.models.printshops;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.proxyprint.kitchen.controllers.printshops.PaperTableItem;
-import io.github.proxyprint.kitchen.models.printshops.pricetable.*;
+import io.github.proxyprint.kitchen.models.printshops.items.Item;
+import io.github.proxyprint.kitchen.models.printshops.items.ItemFactory;
+import io.github.proxyprint.kitchen.models.printshops.items.PaperItem;
+import io.github.proxyprint.kitchen.models.printshops.items.RangePaperItem;
 import io.github.proxyprint.kitchen.utils.gson.Exclude;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,9 +44,16 @@ public class PrintShop {
     @JsonIgnore
     @Exclude
     private Map<String, Float> priceTable;
+    @JsonIgnore
+    @Exclude
+    @Transient
+    private ItemFactory itemFactory;
 
 
-    public PrintShop() {}
+    public PrintShop() {
+        this.priceTable = new HashMap<>();
+        itemFactory = new ItemFactory();
+    }
 
     public PrintShop(String name, String address, Double latitude, Double longitude, String nif, String logo, float avgRating) {
         this.name = name;
@@ -55,6 +64,7 @@ public class PrintShop {
         this.logo = logo;
         this.avgRating = avgRating;
         this.priceTable = new HashMap<>();
+        this.itemFactory = new ItemFactory();
     }
 
     public long getId() {
@@ -125,47 +135,15 @@ public class PrintShop {
         this.priceTable.put(item.genKey(), price);
     }
 
-    /**
-     * Load a price item concrete instance.
-     * @param priceItem, String that represents the item specs as stored in the database
-     * @return A concrete instance of RangePaperItem derived from the input String
-     * which is parsed along the function cut in pieces and feeded to the returned object.
-     */
-    public RangePaperItem loadPriceItem(String priceItem) {
-        PaperItem.Colors colors;
-        PaperItem.Format format;
-        PaperItem.Sides sides;
-        int infLim, supLim;
-        String itemType;
-
-        String[] parts = priceItem.split(",");
-        itemType = parts[0];
-
-        if(itemType.equals(RangePaperItem.KEY_BASE)) {
-            colors = PaperItem.Colors.valueOf(parts[1]);
-            format = PaperItem.Format.valueOf(parts[2]);
-            sides = PaperItem.Sides.valueOf(parts[3]);
-
-            infLim = Integer.parseInt(parts[4]);
-            supLim = Integer.parseInt(parts[5]);
-
-            return new RangePaperItem(format,sides,colors,infLim,supLim);
-        }
-        else if(itemType.equals(BindingItem.KEY_BASE)) {
-            // ...
-        }
-        else if(itemType.equals(CoverItem.KEY_BASE)) {
-            // ...
-        }
-
-        return null;
-     }
+    public Item loadPriceItem(String item) {
+        return itemFactory.createItem(item);
+    }
 
     /**
      * Insert a PaperTableItem in the price table
      * @param pti, a new entry in the price table
      */
-    public void insertPaperItemsInPriceTable(PaperTableItem pti) {
+    public void insertPaperTableItemsInPriceTable(PaperTableItem pti) {
         if(!pti.getPriceA4SIMPLEX().equals(PaperTableItem.DEFAULT)) {
             RangePaperItem a4s = new RangePaperItem(PaperItem.Format.A4, PaperItem.Sides.SIMPLEX, PaperItem.Colors.valueOf(pti.getColors()), pti.getInfLim(), pti.getSupLim());
             this.priceTable.put(a4s.genKey(), Float.parseFloat(pti.getPriceA4SIMPLEX()));
@@ -184,31 +162,12 @@ public class PrintShop {
         }
     }
 
-    /**
-     * Convert a PaperTableItem to its respective PriceItems
-     * @param pti, a new entry in the price table
-     * @return List<RangePaperItem>, List of price items which result from the conversion.
-     */
     public List<RangePaperItem> convertPaperTableItemToPaperItems(PaperTableItem pti) {
-        List<RangePaperItem> res = new ArrayList<>();
-
-        if(!pti.getPriceA4SIMPLEX().equals(PaperTableItem.DEFAULT)) {
-            res.add(new RangePaperItem(PaperItem.Format.A4, PaperItem.Sides.SIMPLEX, PaperItem.Colors.valueOf(pti.getColors()), pti.getInfLim(), pti.getSupLim()));
-        }
-        if(!pti.getPriceA4DUPLEX().equals(PaperTableItem.DEFAULT)) {
-           res.add(new RangePaperItem(PaperItem.Format.A4, PaperItem.Sides.DUPLEX, PaperItem.Colors.valueOf(pti.getColors()), pti.getInfLim(), pti.getSupLim()));
-        }
-        if(!pti.getPriceA3SIMPLEX().equals(PaperTableItem.DEFAULT)) {
-            res.add(new RangePaperItem(PaperItem.Format.A3, PaperItem.Sides.SIMPLEX, PaperItem.Colors.valueOf(pti.getColors()), pti.getInfLim(), pti.getSupLim()));
-        }
-        if(!pti.getPriceA3DUPLEX().equals(PaperTableItem.DEFAULT)) {
-            res.add(new RangePaperItem(PaperItem.Format.A3, PaperItem.Sides.DUPLEX, PaperItem.Colors.valueOf(pti.getColors()), pti.getInfLim(), pti.getSupLim()));
-        }
-
+        List<RangePaperItem> res = itemFactory.fromPaperTableItemToPaperItems(pti);
         return res;
     }
 
-    public float getPrice(RangePaperItem item) {
+    public float getPrice(Item item) {
         return this.priceTable.get(item.genKey());
     }
     

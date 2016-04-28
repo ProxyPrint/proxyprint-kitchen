@@ -3,7 +3,7 @@ package io.github.proxyprint.kitchen.controllers.printshops;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
-import io.github.proxyprint.kitchen.models.printshops.pricetable.RangePaperItem;
+import io.github.proxyprint.kitchen.models.printshops.items.RangePaperItem;
 import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
@@ -29,7 +29,7 @@ public class ManagerController {
         JsonObject response = new JsonObject();
 
         if(pshop!=null) {
-            pshop.insertPaperItemsInPriceTable(pti);
+            pshop.insertPaperTableItemsInPriceTable(pti);
             printshops.save(pshop);
             response.addProperty("success", true);
             return GSON.toJson(response);

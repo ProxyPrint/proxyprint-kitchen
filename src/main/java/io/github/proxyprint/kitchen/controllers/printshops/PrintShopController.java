@@ -18,7 +18,7 @@ package io.github.proxyprint.kitchen.controllers.printshops;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
-import io.github.proxyprint.kitchen.models.printshops.pricetable.RangePaperItem;
+import io.github.proxyprint.kitchen.models.printshops.items.RangePaperItem;
 import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
 import io.github.proxyprint.kitchen.utils.DistanceCalculator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +77,7 @@ public class PrintShopController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
             for(String key : pshop.getPriceTable().keySet()) {
-                RangePaperItem pi = pshop.loadPriceItem(key);
+                RangePaperItem pi = (RangePaperItem)pshop.loadPriceItem(key);
 
                 if(!table.containsKey(pi.getColors().toString())) { // The color is new
                     // Create new PaperTableItem

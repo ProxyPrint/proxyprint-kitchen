@@ -1,8 +1,8 @@
 package io.github.proxyprint.kitchen.models.consumer;
 
-import io.github.proxyprint.kitchen.models.printshops.pricetable.BindingItem;
-import io.github.proxyprint.kitchen.models.printshops.pricetable.CoverItem;
-import io.github.proxyprint.kitchen.models.printshops.pricetable.PaperItem;
+import io.github.proxyprint.kitchen.models.printshops.items.BindingItem;
+import io.github.proxyprint.kitchen.models.printshops.items.CoverItem;
+import io.github.proxyprint.kitchen.models.printshops.items.PaperItem;
 
 import javax.persistence.*;
 
