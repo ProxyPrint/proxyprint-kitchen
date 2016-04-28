@@ -7,10 +7,7 @@ import io.github.proxyprint.kitchen.models.printshops.pricetable.PriceItem;
 import io.github.proxyprint.kitchen.utils.gson.Exclude;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by daniel on 18-04-2016.
@@ -44,6 +41,8 @@ public class PrintShop {
     @Exclude
     private Map<String, Float> priceTable;
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<PrintRequest> printrequests;
 
     public PrintShop() {}
 
@@ -125,6 +124,10 @@ public class PrintShop {
     public void addPriceItem(PriceItem item, float price) {
         this.priceTable.put(item.toString(), price);
     }
+
+    public Set<PrintRequest> getPrintRequests() { return printrequests; }
+
+    public void setPrintingSchemas(Set<PrintRequest> printingReq) { this.printrequests = printingReq; }
 
     /**
      * Load a price item concrete instance.

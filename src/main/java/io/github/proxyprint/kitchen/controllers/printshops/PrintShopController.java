@@ -17,6 +17,8 @@ package io.github.proxyprint.kitchen.controllers.printshops;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
+import io.github.proxyprint.kitchen.models.printshops.PrintRequest;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.PaperTableItem;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.PriceItem;
@@ -32,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
+import java.lang.reflect.Type;
 import java.util.*;
 
 /**
@@ -131,6 +134,28 @@ public class PrintShopController {
 
             return new ResponseEntity<>(finalTable, HttpStatus.OK);
         }
+    }
+
+    @Secured({"ROLE_MANAGER", "ROLE_EMPLOYEE"})
+    @RequestMapping(value = "/printshops/{id}/requests", method = RequestMethod.GET)
+    public String getPrintShopRequests(@PathVariable(value = "id") long id) {
+        JsonObject response = new JsonObject();
+        System.out.println("ola");
+        List<PrintRequest> printRequestList = new ArrayList<>();
+        for (PrintRequest pRequest : printshops.findOne(id).getPrintRequests()) {
+            if(pRequest.getStatus().equals(PrintRequest.Status.PENDING)
+                    || pRequest.getStatus().equals(PrintRequest.Status.IN_PROGRESS)) {
+                printRequestList.add(pRequest);
+            }
+        }
+
+        Type listOfPRequests = new TypeToken<List<PrintRequest>>(){}.getType();
+        String res = GSON.toJson(printRequestList, listOfPRequests);
+
+        response.addProperty("printrequest", res);
+        response.addProperty("success", true);
+        return GSON.toJson(response);
+
     }
 
 }
