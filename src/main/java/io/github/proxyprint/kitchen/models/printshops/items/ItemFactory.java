@@ -20,34 +20,54 @@ public class ItemFactory {
      * which is parsed along the function cut in pieces and feeded to the returned object.
      */
     public Item createItem(String item) {
-        PaperItem.Colors colors;
-        PaperItem.Format format;
-        PaperItem.Sides sides;
-        int infLim, supLim;
         String itemType;
 
         String[] parts = item.split(",");
         itemType = parts[0];
 
         if(itemType.equals(RangePaperItem.KEY_BASE)) {
+            PaperItem.Colors colors;
+            PaperItem.Format format;
+            PaperItem.Sides sides;
+
             colors = PaperItem.Colors.valueOf(parts[1]);
             format = PaperItem.Format.valueOf(parts[2]);
             sides = PaperItem.Sides.valueOf(parts[3]);
 
             if(parts[4]!=null && parts[5]!=null) {
+                int infLim, supLim;
                 infLim = Integer.parseInt(parts[4]);
                 supLim = Integer.parseInt(parts[5]);
-
                 return new RangePaperItem(format, sides, colors, infLim, supLim);
             } else {
                 return new PaperItem(format,sides,colors);
             }
         }
         else if(itemType.equals(BindingItem.KEY_BASE)) {
-            
+            BindingItem.RingType ringsType;
+
+            ringsType = BindingItem.RingType.valueOf(parts[1]);
+            if(parts[2]!=null && parts[3]!=null) {
+                int infLim, supLim;
+                infLim = Integer.parseInt(parts[2]);
+                supLim = Integer.parseInt(parts[3]);
+                return new BindingItem(ringsType,infLim,supLim);
+            } else {
+                return new BindingItem(ringsType,0,0);
+            }
+
         }
         else if(itemType.equals(CoverItem.KEY_BASE)) {
-            // ...
+            CoverItem.CoverType coverType;
+
+            coverType = CoverItem.CoverType.valueOf(parts[1]);
+            if(parts[2]!=null) {
+                PaperItem.Format format = PaperItem.Format.valueOf(parts[2]);
+                return new CoverItem(coverType,format);
+            } else {
+                // by default create an A4 cover
+                return new CoverItem(coverType,PaperItem.Format.A4);
+            }
         }
 
         return null;

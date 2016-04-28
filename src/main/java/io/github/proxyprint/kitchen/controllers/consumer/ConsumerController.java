@@ -5,18 +5,20 @@ import com.google.gson.JsonObject;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.consumer.PrintingSchema;
 import io.github.proxyprint.kitchen.models.repositories.ConsumerDAO;
+import io.github.proxyprint.kitchen.models.repositories.PrintingSchemaDAO;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by daniel on 04-04-2016.
@@ -85,6 +87,35 @@ public class ConsumerController {
         return GSON.toJson(response);
     }
 
+    /**
+     *
+     * @param id, the id of the consumer.
+     * @return set of the printing schemas belonging to the consumer matched by the id.
+     */
+    @Secured({"ROLE_USER"})
+    @RequestMapping(value = "/consumer/{id}/printingschemas", method = RequestMethod.GET)
+    public ResponseEntity<Set<PrintingSchema>> getConsumerPrintingSchemas(@PathVariable(value = "id") long id) {
+        Set<PrintingSchema> consumerSchemas = consumers.findOne(id).getPrintingSchemas();
+        if(consumerSchemas!=null) {
+            return new ResponseEntity<>(consumerSchemas, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Secured({"ROLE_USER"})
+
+    /*
+    *
+    *     @RequestMapping(value = "/request/register", method = RequestMethod.POST)
+    public ResponseEntity<RegisterRequest> registerRequest(@RequestBody RegisterRequest registerRequest) {
+        registerRequests.save(registerRequest);
+        return new ResponseEntity<>(registerRequest, HttpStatus.OK);
+    }
+    *
+    * */
+
+    // public ResponseEntity<Map<String,Set<PaperTableItem>>> getPrintShopPriceTable(@PathVariable(value = "id") long id)
 
     // TESTING
     @RequestMapping(value = "/schema", method = RequestMethod.GET)
