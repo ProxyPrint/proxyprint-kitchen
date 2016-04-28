@@ -20,13 +20,11 @@ package io.github.proxyprint.kitchen.models.printshops.pricetable;
  * @author josesousa
  */
 public class RangePaperItem extends PaperItem {
-
-    public static String KEY_BASE = "PAPER";
     private int infLim;
     private int supLim;
 
     public RangePaperItem(Format format, Sides sides, Colors colors, int infLim, int supLim) {
-        super(format, sides, colors);
+        super(format,sides,colors);
         this.infLim = infLim;
         this.supLim = supLim;
     }
@@ -47,6 +45,7 @@ public class RangePaperItem extends PaperItem {
         this.supLim = supLim;
     }
 
+    @Override
     public String genKey() {
         return String.format("%s,%s,%s,%s,%d,%d",KEY_BASE, this.colors, this.format, this.sides, infLim, supLim);
     }

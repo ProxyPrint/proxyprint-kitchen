@@ -2,7 +2,7 @@ package io.github.proxyprint.kitchen.models.consumer;
 
 import io.github.proxyprint.kitchen.models.printshops.pricetable.BindingItem;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.CoverItem;
-import io.github.proxyprint.kitchen.models.printshops.pricetable.PaperSpecItem;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.PaperItem;
 
 import javax.persistence.*;
 
@@ -26,7 +26,7 @@ public class PrintingSchema {
 
     public PrintingSchema() {}
 
-    public PrintingSchema(String name , PaperSpecItem psi, BindingItem bi, CoverItem ci) {
+    public PrintingSchema(String name , PaperItem psi, BindingItem bi, CoverItem ci) {
         this.paperSpecs = psi.toString();
         if(bi!=null) {
             this.bindingSpecs = bi.genKey();

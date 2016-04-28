@@ -3,11 +3,8 @@ package io.github.proxyprint.kitchen.models.printshops.pricetable;
 /**
  * Created by daniel on 27-04-2016.
  */
-public class CoverItem {
+public class CoverItem extends Item {
     public static String KEY_BASE = "COVER";
-    public static enum CoverType {
-        CRISTAL_ACETATE, PVC_TRANSPARENT, PVC_OPAQUE
-    }
 
     private CoverType coverType;
     private PaperItem.Format format;
@@ -49,8 +46,8 @@ public class CoverItem {
         return result;
     }
 
-    // CoverType+","+FORMAT
+    @Override
     public String genKey() {
-        return String.format("%%s,s,%s",KEY_BASE, this.coverType.toString(), this.format.toString());
+        return String.format("%s,%s,%s",KEY_BASE, this.coverType.toString(), this.format.toString());
     }
 }

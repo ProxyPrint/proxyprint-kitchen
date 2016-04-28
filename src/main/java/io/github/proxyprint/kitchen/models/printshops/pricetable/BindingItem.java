@@ -3,13 +3,9 @@ package io.github.proxyprint.kitchen.models.printshops.pricetable;
 /**
  * Created by daniel on 27-04-2016.
  */
-public class BindingItem {
+public class BindingItem extends Item {
     public static String KEY_BASE = "BINDING";
     public static String STAPLING = "STAPLING";
-
-    public static enum RingType {
-        PLASTIC, SPIRAL, WIRE, STEELMAT
-    }
 
     private RingType ringsType;
     private int ringThicknessInfLim; // in millimeters
@@ -60,7 +56,7 @@ public class BindingItem {
         return result;
     }
 
-    // RINGS_TYPE+","+INF_LIM+","+SUP_LIM
+    @Override
     public String genKey() {
         return String.format("%s,%s,%d,%d",KEY_BASE, this.ringsType.toString(), this.ringThicknessInfLim, this.ringThicknessSupLim);
     }

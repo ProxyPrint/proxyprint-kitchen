@@ -1,6 +1,7 @@
 package io.github.proxyprint.kitchen.models.printshops;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.github.proxyprint.kitchen.controllers.printshops.PaperTableItem;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.*;
 import io.github.proxyprint.kitchen.utils.gson.Exclude;
 
