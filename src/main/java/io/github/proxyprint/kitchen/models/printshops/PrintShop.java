@@ -37,11 +37,11 @@ public class PrintShop {
     @JoinTable(name = "pricetables", joinColumns = @JoinColumn(name = "printshop_id"))
     @MapKeyColumn(name = "item")
     @Column(name = "price")
-    @JsonIgnore // This JsonIgnore is not working
     @Exclude
     private Map<String, Float> priceTable;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "printshop")
     private Set<PrintRequest> printrequests;
 
     public PrintShop() {}
@@ -207,6 +207,10 @@ public class PrintShop {
         return this.priceTable;
     }
 
+    public void addPrintRequest(PrintRequest printrequest){
+        this.printrequests.add(printrequest);
+    }
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -19,9 +19,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import io.github.proxyprint.kitchen.models.printshops.PrintRequest;
+import io.github.proxyprint.kitchen.models.printshops.PrintRequest.Status;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.PaperTableItem;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.PriceItem;
+import io.github.proxyprint.kitchen.models.repositories.PrintRequestDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
 import io.github.proxyprint.kitchen.utils.DistanceCalculator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
 import java.lang.reflect.Type;
+import java.time.Instant;
 import java.util.*;
 
 /**
@@ -46,6 +49,8 @@ public class PrintShopController {
 
     @Autowired
     private PrintShopDAO printshops;
+    @Autowired
+    private PrintRequestDAO printrequests;
     @Autowired
     private Gson GSON;
 
@@ -60,9 +65,9 @@ public class PrintShopController {
         TreeMap<Double, PrintShop> pshops = new TreeMap<>();
         JsonObject response = new JsonObject();
 
-        for (PrintShop p: printshops.findAll()){
+        for (PrintShop p : printshops.findAll()) {
             double distance = DistanceCalculator.distance(latitude, longitude, p.getLatitude(), p.getLongitude());
-            pshops.put(distance,p);
+            pshops.put(distance, p);
         }
         response.add("printshops", GSON.toJsonTree(new LinkedList(pshops.values())));
 
@@ -71,65 +76,65 @@ public class PrintShopController {
 
     @Secured({"ROLE_MANAGER"})
     @RequestMapping(value = "/printshops/{id}/pricetable", method = RequestMethod.GET)
-    public ResponseEntity<Map<String,Set<PaperTableItem>>> getPrintShopPriceTable(@PathVariable(value = "id") long id) {
+    public ResponseEntity<Map<String, Set<PaperTableItem>>> getPrintShopPriceTable(@PathVariable(value = "id") long id) {
         PrintShop pshop = printshops.findOne(id);
 
-        Map<String,Set<PaperTableItem>> finalTable = new HashMap<>();
-        Map<String,Map<String,PaperTableItem>> table = new HashMap<>();
+        Map<String, Set<PaperTableItem>> finalTable = new HashMap<>();
+        Map<String, Map<String, PaperTableItem>> table = new HashMap<>();
 
         if (pshop == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
-            for(String key : pshop.getPriceTable().keySet()) {
+            for (String key : pshop.getPriceTable().keySet()) {
                 PriceItem pi = pshop.loadPriceItem(key);
 
-                if(!table.containsKey(pi.getColors().toString())) { // The color is new
+                if (!table.containsKey(pi.getColors().toString())) { // The color is new
                     // Create new PaperTableItem
-                    PaperTableItem pti = new PaperTableItem(pi.getInfLim(),pi.getSupLim());
-                    pti.addPriceToPaperTableItem(pi,pshop.getPrice(pi));
+                    PaperTableItem pti = new PaperTableItem(pi.getInfLim(), pi.getSupLim());
+                    pti.addPriceToPaperTableItem(pi, pshop.getPrice(pi));
                     pti.setColors(pi.getColors().toString());
 
                     // Add new range and associated PaperTableItem instance
-                    Map<String,PaperTableItem> map = new HashMap<>();
-                    map.put(pti.genKey(),pti);
+                    Map<String, PaperTableItem> map = new HashMap<>();
+                    map.put(pti.genKey(), pti);
 
                     // Add to table
-                    table.put(pi.getColors().toString(),map);
+                    table.put(pi.getColors().toString(), map);
 
                 } else { // The color already exists
-                    String ptiKey = pi.getInfLim()+";"+pi.getSupLim();
-                    Map<String,PaperTableItem> aux = table.get(pi.getColors().toString());
+                    String ptiKey = pi.getInfLim() + ";" + pi.getSupLim();
+                    Map<String, PaperTableItem> aux = table.get(pi.getColors().toString());
                     PaperTableItem pti = aux.get(ptiKey);
 
-                    if(pti!=null) {
+                    if (pti != null) {
                         // PriceTableItem instance already exists add price
-                        pti.addPriceToPaperTableItem(pi,pshop.getPrice(pi));
+                        pti.addPriceToPaperTableItem(pi, pshop.getPrice(pi));
                         pti.setColors(pi.getColors().toString());
-                        table.get(pi.getColors().toString()).put(pti.genKey(),pti);
+                        table.get(pi.getColors().toString()).put(pti.genKey(), pti);
                     } else {
                         // Create new PaperTableItem
-                        pti = new PaperTableItem(pi.getInfLim(),pi.getSupLim());
+                        pti = new PaperTableItem(pi.getInfLim(), pi.getSupLim());
                         pti.setColors(pi.getColors().toString());
-                        pti.addPriceToPaperTableItem(pi,pshop.getPrice(pi));
+                        pti.addPriceToPaperTableItem(pi, pshop.getPrice(pi));
 
                         // Add new range and associated PaperTableItem instance
-                        Map<String,PaperTableItem> map = table.get(pi.getColors().toString());
-                        map.put(pti.genKey(),pti);
+                        Map<String, PaperTableItem> map = table.get(pi.getColors().toString());
+                        map.put(pti.genKey(), pti);
 
                         // Add to table
-                        table.put(pi.getColors().toString(),map);
+                        table.put(pi.getColors().toString(), map);
                     }
                 }
             }
 
             // Covert Map<String,PaperTableItem> to Set<PaperTableItem>
-            for(String color : table.keySet()) {
-                Map<String,PaperTableItem> map = table.get(color);
+            for (String color : table.keySet()) {
+                Map<String, PaperTableItem> map = table.get(color);
                 Set<PaperTableItem> set = new TreeSet<>();
-                for(PaperTableItem pti : map.values()) {
+                for (PaperTableItem pti : map.values()) {
                     set.add(pti);
                 }
-                finalTable.put(color,set);
+                finalTable.put(color, set);
             }
 
             return new ResponseEntity<>(finalTable, HttpStatus.OK);
@@ -140,17 +145,20 @@ public class PrintShopController {
     @RequestMapping(value = "/printshops/{id}/requests", method = RequestMethod.GET)
     public String getPrintShopRequests(@PathVariable(value = "id") long id) {
         JsonObject response = new JsonObject();
-        System.out.println("ola");
-        List<PrintRequest> printRequestList = new ArrayList<>();
-        for (PrintRequest pRequest : printshops.findOne(id).getPrintRequests()) {
-            if(pRequest.getStatus().equals(PrintRequest.Status.PENDING)
-                    || pRequest.getStatus().equals(PrintRequest.Status.IN_PROGRESS)) {
-                printRequestList.add(pRequest);
-            }
+        PrintShop printshop = printshops.findOne(id);
+        if (printshop == null) {
+            response.addProperty("success", false);
+            return GSON.toJson(response);
         }
 
-        Type listOfPRequests = new TypeToken<List<PrintRequest>>(){}.getType();
-        String res = GSON.toJson(printRequestList, listOfPRequests);
+        List<Status> status = new ArrayList<>();
+        status.add(Status.PENDING);
+        status.add(Status.IN_PROGRESS);
+
+        Type listOfPRequests = new TypeToken<List<PrintRequest>>() {
+        }.getType();
+
+        String res = GSON.toJson(printrequests.findByStatusInAndPrintshop(status, printshop), listOfPRequests);
 
         response.addProperty("printrequest", res);
         response.addProperty("success", true);
@@ -158,4 +166,19 @@ public class PrintShopController {
 
     }
 
+    //remover isto no pull request
+    @RequestMapping(value = "/printshops/requests/test", method = RequestMethod.GET)
+    public String test() {
+        PrintShop printshop = printshops.findAll().iterator().next();
+        printshop.addPrintRequest(new PrintRequest(20, Date.from(Instant.now()), "1", PrintRequest.Status.PENDING));
+        printshop.addPrintRequest(new PrintRequest(25, Date.from(Instant.now()), "1", PrintRequest.Status.PENDING));
+        printshop.addPrintRequest(new PrintRequest(30, Date.from(Instant.now()), "1", PrintRequest.Status.PENDING));
+        printshop.addPrintRequest(new PrintRequest(35, Date.from(Instant.now()), "1", PrintRequest.Status.PENDING));
+        printshop.addPrintRequest(new PrintRequest(20, Date.from(Instant.now()), "1", PrintRequest.Status.IN_PROGRESS));
+        printshop.addPrintRequest(new PrintRequest(25, Date.from(Instant.now()), "1", PrintRequest.Status.LIFTED));
+        printshop.addPrintRequest(new PrintRequest(30, Date.from(Instant.now()), "1", PrintRequest.Status.FINISHED));
+        printshop.addPrintRequest(new PrintRequest(35, Date.from(Instant.now()), "1", PrintRequest.Status.PENDING));
+        printshops.save(printshop);
+        return "yeas";
+    }
 }
