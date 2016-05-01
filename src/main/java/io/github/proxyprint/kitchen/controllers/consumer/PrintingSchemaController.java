@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Set;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * Created by daniel on 28-04-2016.
@@ -51,7 +53,7 @@ public class PrintingSchemaController {
      */
     @Secured({"ROLE_USER"})
     @RequestMapping(value = "/consumer/{consumerID}/printingschemas", method = RequestMethod.POST)
-    public ResponseEntity<String> addNewConsumerPrintingSchema(@PathVariable(value = "consumerID") long id, PrintingSchema ps) {
+    public ResponseEntity<String> addNewConsumerPrintingSchema(@PathVariable(value = "consumerID") long id, @RequestBody PrintingSchema ps) {
         Consumer c = consumers.findOne(id);
         boolean res = c.addPrintingSchema(ps);
         if(res) {
@@ -87,7 +89,7 @@ public class PrintingSchemaController {
      */
     @Secured({"ROLE_USER"})
     @RequestMapping(value = "/consumer/{consumerID}/printingschemas/{printingSchemaID}", method = RequestMethod.PUT)
-    public ResponseEntity<String> editConsumerPrintingSchema(@PathVariable(value = "consumerID") long cid, @PathVariable(value = "printingSchemaID") long psid, PrintingSchema pschema) {
+    public ResponseEntity<String> editConsumerPrintingSchema(@PathVariable(value = "consumerID") long cid, @PathVariable(value = "printingSchemaID") long psid, @RequestBody PrintingSchema pschema) {
         printingSchemas.delete(psid);
 
         Consumer c = consumers.findOne(cid);
