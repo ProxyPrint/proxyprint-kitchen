@@ -142,10 +142,12 @@ public class PrintShopController {
     }
 
     @Secured({"ROLE_MANAGER", "ROLE_EMPLOYEE"})
-    @RequestMapping(value = "/printshops/{id}/requests", method = RequestMethod.GET)
-    public String getPrintShopRequests(@PathVariable(value = "id") long id) {
+    @RequestMapping(value = "/printshops/requests", method = RequestMethod.GET)
+    public String getPrintShopRequests() {
         JsonObject response = new JsonObject();
-        PrintShop printshop = printshops.findOne(id);
+        //PrintShop printshop = printshops.findOne(id);
+        PrintShop printshop = printshops.findAll().iterator().next();
+
         if (printshop == null) {
             response.addProperty("success", false);
             return GSON.toJson(response);
@@ -155,15 +157,14 @@ public class PrintShopController {
         status.add(Status.PENDING);
         status.add(Status.IN_PROGRESS);
 
-        Type listOfPRequests = new TypeToken<List<PrintRequest>>() {
-        }.getType();
+        List<PrintRequest> printRequestsList = printrequests.findByStatusInAndPrintshop(status, printshop);
+        Type listOfPRequests = new TypeToken<List<PrintShop>>(){}.getType();
+        String res = GSON.toJson(printRequestsList,listOfPRequests);
 
-        String res = GSON.toJson(printrequests.findByStatusInAndPrintshop(status, printshop), listOfPRequests);
-
+        System.out.println(res);
         response.addProperty("printrequest", res);
         response.addProperty("success", true);
         return GSON.toJson(response);
-
     }
 
     //remover isto no pull request
@@ -171,13 +172,12 @@ public class PrintShopController {
     public String test() {
         PrintShop printshop = printshops.findAll().iterator().next();
         printshop.addPrintRequest(new PrintRequest(20, Date.from(Instant.now()), "1", PrintRequest.Status.PENDING));
-        printshop.addPrintRequest(new PrintRequest(25, Date.from(Instant.now()), "1", PrintRequest.Status.PENDING));
-        printshop.addPrintRequest(new PrintRequest(30, Date.from(Instant.now()), "1", PrintRequest.Status.PENDING));
-        printshop.addPrintRequest(new PrintRequest(35, Date.from(Instant.now()), "1", PrintRequest.Status.PENDING));
-        printshop.addPrintRequest(new PrintRequest(20, Date.from(Instant.now()), "1", PrintRequest.Status.IN_PROGRESS));
-        printshop.addPrintRequest(new PrintRequest(25, Date.from(Instant.now()), "1", PrintRequest.Status.LIFTED));
-        printshop.addPrintRequest(new PrintRequest(30, Date.from(Instant.now()), "1", PrintRequest.Status.FINISHED));
-        printshop.addPrintRequest(new PrintRequest(35, Date.from(Instant.now()), "1", PrintRequest.Status.PENDING));
+        printshop.addPrintRequest(new PrintRequest(25, Date.from(Instant.now()), "2", PrintRequest.Status.PENDING));
+        printshop.addPrintRequest(new PrintRequest(30, Date.from(Instant.now()), "3", PrintRequest.Status.PENDING));
+        printshop.addPrintRequest(new PrintRequest(35, Date.from(Instant.now()), "4", PrintRequest.Status.PENDING));
+        printshop.addPrintRequest(new PrintRequest(20, Date.from(Instant.now()), "5", PrintRequest.Status.IN_PROGRESS));
+        printshop.addPrintRequest(new PrintRequest(25, Date.from(Instant.now()), "6", PrintRequest.Status.LIFTED));
+        printshop.addPrintRequest(new PrintRequest(30, Date.from(Instant.now()), "7", PrintRequest.Status.FINISHED));
         printshops.save(printshop);
         return "yeas";
     }
