@@ -5,9 +5,15 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import io.github.proxyprint.kitchen.models.Admin;
 import io.github.proxyprint.kitchen.models.User;
+import io.github.proxyprint.kitchen.models.consumer.Consumer;
+import io.github.proxyprint.kitchen.models.printshops.Employee;
+import io.github.proxyprint.kitchen.models.printshops.Manager;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
+import io.github.proxyprint.kitchen.models.printshops.RegisterRequest;
 import io.github.proxyprint.kitchen.models.repositories.AdminDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
+import io.github.proxyprint.kitchen.models.repositories.RegisterRequestDAO;
+import io.github.proxyprint.kitchen.models.repositories.UserDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +38,10 @@ public class AdminController {
     @Autowired
     private AdminDAO admins;
     @Autowired
+    private UserDAO users;
+    @Autowired
+    private RegisterRequestDAO registerRequests;
+    @Autowired
     private Gson GSON;
 
     // NOT WORKING YET!
@@ -45,19 +55,43 @@ public class AdminController {
             printShopsList.add(pshop);
         }
 
-        Type listOfPShops = new TypeToken<List<PrintShop>>(){}.getType();
+        Type listOfPShops = new TypeToken<List<PrintShop>>() {
+        }.getType();
         String res = GSON.toJson(printShopsList, listOfPShops);
 
         response.addProperty("prinshops", res);
         response.addProperty("success", true);
         return GSON.toJson(response);
     }
-    
+
     @RequestMapping(value = "/admin/register", method = RequestMethod.POST)
     public ResponseEntity<Admin> newAdmin(@RequestBody Admin admin) {
         admin.addRole(User.Roles.ROLE_ADMIN.toString());
         this.admins.save(admin);
         return new ResponseEntity<>(admin, HttpStatus.OK);
     }
-}
 
+    @RequestMapping(value = "/admin/seed", method = RequestMethod.POST)
+    public ResponseEntity<String> seed() {
+        JsonObject response = new JsonObject();
+
+        Admin master = new Admin("master", "1234", "danielcaldas@sapo.pt");
+        Consumer joao = new Consumer("João dos Santos", "joao", "1234", "joao@gmail.com", "69", "69");
+        PrintShop printshop = new PrintShop("Video Norte", "Rua Nova de Santa Cruz", 41.5594, 8.3972, "123444378", "logo", 0);
+        Manager manager = new Manager("joaquim", "1234", "Joaquim Pereira", "joaquim@gmail.com");
+        Employee employee = new Employee("mafalda", "1234", "Mafalda Sofia Pinto");
+        RegisterRequest registerRequest = new RegisterRequest("Ana Pinto", "danielcaldas@sapo,pt", "1234", "Rua das Cruzes n20", 43.221, 41.121, "124555321", "Printer Style", false);
+        
+        users.save(master);
+        users.save(joao);
+        users.save(employee);
+        users.save(manager);
+        printShops.save(printshop);
+        registerRequests.save(registerRequest);
+        
+        response.addProperty("message", "seeding completed");
+        
+        
+        return new ResponseEntity<>(GSON.toJson(response), HttpStatus.OK);
+    }
+}
