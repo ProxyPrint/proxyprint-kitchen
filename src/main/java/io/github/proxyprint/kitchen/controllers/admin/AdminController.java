@@ -10,6 +10,8 @@ import io.github.proxyprint.kitchen.models.printshops.Employee;
 import io.github.proxyprint.kitchen.models.printshops.Manager;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
 import io.github.proxyprint.kitchen.models.printshops.RegisterRequest;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.PaperItem;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.PriceItem;
 import io.github.proxyprint.kitchen.models.repositories.AdminDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
 import io.github.proxyprint.kitchen.models.repositories.RegisterRequestDAO;
@@ -81,6 +83,34 @@ public class AdminController {
         Manager manager = new Manager("joaquim", "1234", "Joaquim Pereira", "joaquim@gmail.com");
         Employee employee = new Employee("mafalda", "1234", "Mafalda Sofia Pinto");
         RegisterRequest registerRequest = new RegisterRequest("Ana Pinto", "danielcaldas@sapo,pt", "1234", "Rua das Cruzes n20", 43.221, 41.121, "124555321", "Printer Style", false);
+
+        printshop.addPriceItem(new PriceItem(PaperItem.Format.A4, PaperItem.Sides.SIMPLEX, PaperItem.Colors.BW, 1, 20), 0.1f);
+        printshop.addPriceItem(new PriceItem(PaperItem.Format.A4, PaperItem.Sides.SIMPLEX, PaperItem.Colors.BW, 21, 50), 0.08f);
+        printshop.addPriceItem(new PriceItem(PaperItem.Format.A4, PaperItem.Sides.SIMPLEX, PaperItem.Colors.BW, 51, 100), 0.06f);
+        printshop.addPriceItem(new PriceItem(PaperItem.Format.A4, PaperItem.Sides.DUPLEX, PaperItem.Colors.BW, 1, 20), 0.19f);
+        printshop.addPriceItem(new PriceItem(PaperItem.Format.A4, PaperItem.Sides.DUPLEX, PaperItem.Colors.BW, 21, 50), 0.15f);
+        printshop.addPriceItem(new PriceItem(PaperItem.Format.A4, PaperItem.Sides.DUPLEX, PaperItem.Colors.BW, 51, 100), 0.11f);
+
+        printshop.addPriceItem(new PriceItem(PaperItem.Format.A3, PaperItem.Sides.SIMPLEX, PaperItem.Colors.BW, 1, 20), 0.18f);
+        printshop.addPriceItem(new PriceItem(PaperItem.Format.A3, PaperItem.Sides.SIMPLEX, PaperItem.Colors.BW, 21, 50), 0.16f);
+        printshop.addPriceItem(new PriceItem(PaperItem.Format.A3, PaperItem.Sides.SIMPLEX, PaperItem.Colors.BW, 51, 100), 0.14f);
+        printshop.addPriceItem(new PriceItem(PaperItem.Format.A3, PaperItem.Sides.DUPLEX, PaperItem.Colors.BW, 1, 20), 0.35f);
+        printshop.addPriceItem(new PriceItem(PaperItem.Format.A3, PaperItem.Sides.DUPLEX, PaperItem.Colors.BW, 21, 50), 0.31f);
+        printshop.addPriceItem(new PriceItem(PaperItem.Format.A3, PaperItem.Sides.DUPLEX, PaperItem.Colors.BW, 51, 100), 0.27f);
+
+        printshop.addPriceItem(new PriceItem(PaperItem.Format.A4, PaperItem.Sides.SIMPLEX, PaperItem.Colors.COLOR, 1, 20), 0.75f);
+        printshop.addPriceItem(new PriceItem(PaperItem.Format.A4, PaperItem.Sides.SIMPLEX, PaperItem.Colors.COLOR, 21, 50), 0.60f);
+        printshop.addPriceItem(new PriceItem(PaperItem.Format.A4, PaperItem.Sides.SIMPLEX, PaperItem.Colors.COLOR, 51, 100), 0.50f);
+        printshop.addPriceItem(new PriceItem(PaperItem.Format.A4, PaperItem.Sides.DUPLEX, PaperItem.Colors.COLOR, 1, 20), 1.49f);
+        printshop.addPriceItem(new PriceItem(PaperItem.Format.A4, PaperItem.Sides.DUPLEX, PaperItem.Colors.COLOR, 21, 50), 1.19f);
+        printshop.addPriceItem(new PriceItem(PaperItem.Format.A4, PaperItem.Sides.DUPLEX, PaperItem.Colors.COLOR, 51, 100), 0.99f);
+
+        printshop.addPriceItem(new PriceItem(PaperItem.Format.A3, PaperItem.Sides.SIMPLEX, PaperItem.Colors.COLOR, 1, 20), 1.4f);
+        printshop.addPriceItem(new PriceItem(PaperItem.Format.A3, PaperItem.Sides.SIMPLEX, PaperItem.Colors.COLOR, 21, 50), 1.10f);
+        printshop.addPriceItem(new PriceItem(PaperItem.Format.A3, PaperItem.Sides.SIMPLEX, PaperItem.Colors.COLOR, 51, 100), 0.95f);
+        printshop.addPriceItem(new PriceItem(PaperItem.Format.A3, PaperItem.Sides.DUPLEX, PaperItem.Colors.COLOR, 1, 20), 2.79f);
+        printshop.addPriceItem(new PriceItem(PaperItem.Format.A3, PaperItem.Sides.DUPLEX, PaperItem.Colors.COLOR, 21, 50), 2.19f);
+        printshop.addPriceItem(new PriceItem(PaperItem.Format.A3, PaperItem.Sides.DUPLEX, PaperItem.Colors.COLOR, 51, 100), 1.89f);
         
         users.save(master);
         users.save(joao);
@@ -88,10 +118,9 @@ public class AdminController {
         users.save(manager);
         printShops.save(printshop);
         registerRequests.save(registerRequest);
-        
+
         response.addProperty("message", "seeding completed");
-        
-        
+
         return new ResponseEntity<>(GSON.toJson(response), HttpStatus.OK);
     }
 }
