@@ -23,7 +23,7 @@ public class ManagerController {
     private Gson GSON;
 
     @Secured("ROLE_MANAGER")
-    @RequestMapping(value = "/printshops/{id}/pricetable/newpaperitem", method = RequestMethod.POST)
+    @RequestMapping(value = "/printshops/{id}/pricetable", method = RequestMethod.POST)
     public String addNewPaperItem(@PathVariable(value = "id") long id, @RequestBody PaperTableItem pti) {
         PrintShop pshop = printshops.findOne(id);
         JsonObject response = new JsonObject();
