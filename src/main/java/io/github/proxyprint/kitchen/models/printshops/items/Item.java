@@ -4,6 +4,19 @@ package io.github.proxyprint.kitchen.models.printshops.items;
  * Created by daniel on 28-04-2016.
  */
 public abstract class Item {
+
+    public static String PAPER = "PAPER";
+    public static String COVER = "COVER";
+    public static String BINDING = "BINDING";
+
+    public static String checkItemType(String item) {
+        String[] chunks = item.split(",");
+        if (chunks[0] != null && (chunks[0].equals(PAPER) || chunks[0].equals(COVER) || chunks[0].equals(BINDING))) {
+            return chunks[0];
+        }
+        return "";
+    }
+
     // Paper
     public static enum Format {
         A4, A3
@@ -23,18 +36,19 @@ public abstract class Item {
     }
 
     // Binding
-    public static String STAPLING = "STAPLING";
-
     public static enum RingType {
-        PLASTIC, SPIRAL, WIRE, STEELMAT
+        PLASTIC, SPIRAL, WIRE, STEELMAT, STAPLING
     }
 
-    public Item() {}
+    public Item() {
+    }
 
     /**
      * Generates a key which identifies (and describes) a certain item.
+     *
      * @return the key which identifies the item by the
      * concatenation of its characteristics.
      */
     public abstract String genKey();
+
 }

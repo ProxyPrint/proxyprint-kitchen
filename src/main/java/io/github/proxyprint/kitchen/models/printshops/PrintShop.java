@@ -1,7 +1,7 @@
 package io.github.proxyprint.kitchen.models.printshops;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.github.proxyprint.kitchen.controllers.printshops.PaperTableItem;
+import io.github.proxyprint.kitchen.controllers.printshops.pricetable.PaperTableItem;
 import io.github.proxyprint.kitchen.models.printshops.items.Item;
 import io.github.proxyprint.kitchen.models.printshops.items.ItemFactory;
 import io.github.proxyprint.kitchen.models.printshops.items.PaperItem;
@@ -130,6 +130,8 @@ public class PrintShop {
     public void setAvgRating(float avgRating) {
         this.avgRating = avgRating;
     }
+
+    public void addItemPriceTable(String i, float price) { this.priceTable.put(i,price); }
 
     public void addPriceItem(RangePaperItem item, float price) {
         this.priceTable.put(item.genKey(), price);

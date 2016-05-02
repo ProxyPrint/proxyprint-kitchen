@@ -1,6 +1,6 @@
 package io.github.proxyprint.kitchen.models.printshops.items;
 
-import io.github.proxyprint.kitchen.controllers.printshops.PaperTableItem;
+import io.github.proxyprint.kitchen.controllers.printshops.pricetable.PaperTableItem;
 
 import java.util.ArrayList;
 import java.util.List;

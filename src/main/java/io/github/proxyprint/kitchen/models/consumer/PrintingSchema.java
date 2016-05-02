@@ -34,7 +34,7 @@ public class PrintingSchema {
                 this.coverSpecs = ci.genKey();
             }
         } else {
-            this.bindingSpecs = BindingItem.STAPLING;
+            this.bindingSpecs = BindingItem.RingType.STAPLING.toString();
         }
     }
 
