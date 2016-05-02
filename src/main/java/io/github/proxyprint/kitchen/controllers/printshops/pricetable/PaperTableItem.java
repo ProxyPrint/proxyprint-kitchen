@@ -3,7 +3,7 @@ package io.github.proxyprint.kitchen.controllers.printshops.pricetable;
 import io.github.proxyprint.kitchen.models.printshops.items.PaperItem;
 
 /**
- * Created by daniel on 26-04-2016.
+ * Created by daniel on 02-05-2016.
  */
 public class PaperTableItem implements Comparable<PaperTableItem> {
     public static String DEFAULT = "-";

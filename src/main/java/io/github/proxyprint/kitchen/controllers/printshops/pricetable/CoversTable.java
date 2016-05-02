@@ -16,15 +16,18 @@ public class CoversTable {
     public class CoverTableItem {
         public String format;
         public String coverType;
+        public String price;
 
         public CoverTableItem() {
             this.format = DEFAULT;
             this.coverType = DEFAULT;
+            this.price = DEFAULT;
         }
 
-        public CoverTableItem(String format, String coverType) {
+        public CoverTableItem(String format, String coverType, String price) {
             this.format = format;
             this.coverType = coverType;
+            this.price = price;
         }
 
         public String getFormat() { return format; }
@@ -35,6 +38,9 @@ public class CoversTable {
 
         public void setCoverType(String coverType) {this.coverType = coverType; }
 
+        public String getPrice() { return price; }
+
+        public void setPrice(String price) { this.price = price; }
     }
 
     private Map<String,Set<CoverTableItem>> items;
@@ -47,8 +53,8 @@ public class CoversTable {
 
     public void setItems(Map<String, Set<CoverTableItem>> items) { this.items = items; }
 
-    public void addCoverItem(CoverItem ci) {
-        CoverTableItem cti = new CoverTableItem(ci.getFormat().toString(),ci.getCoverType().toString());
+    public void addCoverItem(CoverItem ci, float price) {
+        CoverTableItem cti = new CoverTableItem(ci.getFormat().toString(),ci.getCoverType().toString(), String.valueOf(price));
         if(this.items.containsKey(cti.getCoverType())) {
             this.items.get(cti.getCoverType()).add(cti);
         }

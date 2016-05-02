@@ -131,7 +131,7 @@ public class PrintShop {
         this.avgRating = avgRating;
     }
 
-    public void addItem<PriceTable(String i, float price) { this.priceTable.put(i,price); }
+    public void addItemPriceTable(String i, float price) { this.priceTable.put(i,price); }
 
     public void addPriceItem(RangePaperItem item, float price) {
         this.priceTable.put(item.genKey(), price);

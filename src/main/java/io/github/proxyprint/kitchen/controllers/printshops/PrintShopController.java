@@ -18,7 +18,7 @@ package io.github.proxyprint.kitchen.controllers.printshops;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.CoversTable;
-import io.github.proxyprint.kitchen.controllers.printshops.pricetable.PaperTableItem;
+import io.github.proxyprint.kitchen.controllers.printshops.pricetable.PapersTable;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.RingsTable;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
 import io.github.proxyprint.kitchen.models.printshops.items.BindingItem;
@@ -35,7 +35,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.TreeMap;
 
 /**
  *
@@ -125,10 +126,7 @@ public class PrintShopController {
         PrintShop pshop = printshops.findOne(id);
         JsonObject response = new JsonObject();
 
-        Map<String,Set<PaperTableItem>> finalTable = new HashMap<>();
-
-
-        Map<String,Map<String,PaperTableItem>> table = new HashMap<>();
+        PapersTable papersTable = new PapersTable();
         RingsTable ringsTable = new RingsTable();
         CoversTable coversTable = new CoversTable();
 
@@ -138,27 +136,19 @@ public class PrintShopController {
             for(String key : pshop.getPriceTable().keySet()) {
                 String type = Item.checkItemType(key);
                 if (type.equals(Item.PAPER)) {
-                    RangePaperItem pi = (RangePaperItem) pshop.loadPriceItem(key);
-                    processPaperItem(table, pi, pshop);
+                    RangePaperItem rpi = (RangePaperItem) pshop.loadPriceItem(key);
+                    papersTable.addRangePaperItem(rpi,pshop);
                 } else if (type.equals(Item.BINDING)) {
                     BindingItem bi = (BindingItem) pshop.loadPriceItem(key);
                     ringsTable.addBindingItem(bi, pshop.getPrice(bi));
 
                 } else if (type.equals(Item.COVER)) {
                     CoverItem ci = (CoverItem) pshop.loadPriceItem(key);
-                    coversTable.addCoverItem(ci);
+                    coversTable.addCoverItem(ci,pshop.getPrice(ci));
                 }
             }
-            // Covert Map<String,PaperTableItem> to Set<PaperTableItem>
-            for(String color : table.keySet()) {
-                Map<String,PaperTableItem> map = table.get(color);
-                Set<PaperTableItem> set = new TreeSet<>();
-                for(PaperTableItem pti : map.values()) {
-                    set.add(pti);
-                }
-                finalTable.put(color,set);
-            }
-            response.add("printcopy", GSON.toJsonTree(finalTable));
+
+            response.add("printcopy", GSON.toJsonTree(papersTable.getFinalTable()));
             response.add("rings", GSON.toJsonTree(ringsTable.getItems()));
             response.addProperty("stapling", ringsTable.getStaplingPrice());
             response.add("covers", GSON.toJsonTree(coversTable.getItems()));
@@ -166,55 +156,6 @@ public class PrintShopController {
         }
 
         return GSON.toJson(response);
-    }
-
-    /**
-     * Insert a (Range)PaperItem in a pricetable.
-     * @param table, current table being builded.
-     * @param pi, the PaperItem to be inserted.
-     * @param pshop, the current print shop instance.
-     * @return the updated price table.
-     */
-    public Map<String,Map<String,PaperTableItem>> processPaperItem(Map<String,Map<String,PaperTableItem>> table, RangePaperItem pi, PrintShop pshop) {
-        if (!table.containsKey(pi.getColors().toString())) { // The color is new
-            // Create new PaperTableItem
-            PaperTableItem pti = new PaperTableItem(pi.getInfLim(), pi.getSupLim());
-            pti.addPriceToPaperTableItem(pi, pshop.getPrice(pi));
-            pti.setColors(pi.getColors().toString());
-
-            // Add new range and associated PaperTableItem instance
-            Map<String, PaperTableItem> map = new HashMap<>();
-            map.put(pti.genKey(), pti);
-
-            // Add to table
-            table.put(pi.getColors().toString(), map);
-
-        } else { // The color already exists
-            String ptiKey = pi.getInfLim() + ";" + pi.getSupLim();
-            Map<String, PaperTableItem> aux = table.get(pi.getColors().toString());
-            PaperTableItem pti = aux.get(ptiKey);
-
-            if (pti != null) {
-                // PriceTableItem instance already exists add price
-                pti.addPriceToPaperTableItem(pi, pshop.getPrice(pi));
-                pti.setColors(pi.getColors().toString());
-                table.get(pi.getColors().toString()).put(pti.genKey(), pti);
-            } else {
-                // Create new PaperTableItem
-                pti = new PaperTableItem(pi.getInfLim(), pi.getSupLim());
-                pti.setColors(pi.getColors().toString());
-                pti.addPriceToPaperTableItem(pi, pshop.getPrice(pi));
-
-                // Add new range and associated PaperTableItem instance
-                Map<String, PaperTableItem> map = table.get(pi.getColors().toString());
-                map.put(pti.genKey(), pti);
-
-                // Add to table
-                table.put(pi.getColors().toString(), map);
-            }
-        }
-
-        return table;
     }
 
 }
