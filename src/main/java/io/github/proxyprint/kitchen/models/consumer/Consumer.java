@@ -1,10 +1,11 @@
 package io.github.proxyprint.kitchen.models.consumer;
 
 import io.github.proxyprint.kitchen.models.User;
+import io.github.proxyprint.kitchen.models.printshops.PrintRequest;
+import io.github.proxyprint.kitchen.utils.gson.Exclude;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Set;
 
 /**
  * Created by daniel on 04-04-2016.
@@ -21,6 +22,11 @@ public class Consumer extends User {
     private String latitude;
     @Column(name = "longitude", nullable = true)
     private String longitude;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "consumer")
+    @Exclude
+    private Set<PrintRequest> printrequests;
 
     public Consumer() {
     }
@@ -65,6 +71,15 @@ public class Consumer extends User {
     public void setLongitude(String longitude) {
         this.longitude = longitude;
     }
+
+    public Set<PrintRequest> getPrintRequests() { return printrequests; }
+
+    public void setPrintingSchemas(Set<PrintRequest> printingReq) { this.printrequests = printingReq; }
+
+    public void addPrintRequest(PrintRequest printrequest){
+        this.printrequests.add(printrequest);
+    }
+
 
     @Override
     public String toString() {

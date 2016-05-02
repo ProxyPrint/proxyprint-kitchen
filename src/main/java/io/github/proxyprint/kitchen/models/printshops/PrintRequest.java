@@ -1,5 +1,6 @@
 package io.github.proxyprint.kitchen.models.printshops;
 
+import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.utils.gson.Exclude;
 import java.io.Serializable;
 import java.util.Date;
@@ -34,21 +35,21 @@ public class PrintRequest implements Serializable {
     private String empAttended;
     @Column(nullable = true, name = "empdelivered")
     private String empDelivered;
-    @Column(nullable = false, name = "customer")
-    private String customerID;
     @Column(nullable = false, name = "status")
     @Enumerated(EnumType.STRING)
     private Status status;
     @ManyToOne
     @Exclude private PrintShop printshop;
+    @ManyToOne
+    private Consumer consumer;
 
     public PrintRequest() {
     }
 
-    public PrintRequest(float cost, Date arrivalTimestamp, String customerID, Status status) {
+    public PrintRequest(float cost, Date arrivalTimestamp, Consumer consumer, Status status) {
         this.cost = cost;
         this.arrivalTimestamp = arrivalTimestamp;
-        this.customerID = customerID;
+        this.consumer = consumer;
         this.status = status;
     }
 
@@ -80,8 +81,8 @@ public class PrintRequest implements Serializable {
         return empDelivered;
     }
 
-    public String getCustomerID() {
-        return customerID;
+    public Consumer getConsumer() {
+        return consumer;
     }
 
     public Status getStatus() {
@@ -116,8 +117,8 @@ public class PrintRequest implements Serializable {
         this.status = status;
     }
 
-    public void setCustomerID(String customerID) {
-        this.customerID = customerID;
+    public void setConsumer(Consumer consumer) {
+        this.consumer = consumer;
     }
 
     public PrintShop getPrintshop() {

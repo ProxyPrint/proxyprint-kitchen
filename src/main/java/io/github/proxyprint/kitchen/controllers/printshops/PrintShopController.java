@@ -18,11 +18,13 @@ package io.github.proxyprint.kitchen.controllers.printshops;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.printshops.PrintRequest;
 import io.github.proxyprint.kitchen.models.printshops.PrintRequest.Status;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.PaperTableItem;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.PriceItem;
+import io.github.proxyprint.kitchen.models.repositories.ConsumerDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintRequestDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
 import io.github.proxyprint.kitchen.utils.DistanceCalculator;
@@ -46,6 +48,11 @@ import java.util.*;
  */
 @RestController
 public class PrintShopController {
+
+    //remover isto no pull request
+    @Autowired
+    private ConsumerDAO consumers;
+
 
     @Autowired
     private PrintShopDAO printshops;
@@ -171,13 +178,14 @@ public class PrintShopController {
     @RequestMapping(value = "/printshops/requests/test", method = RequestMethod.GET)
     public String test() {
         PrintShop printshop = printshops.findAll().iterator().next();
-        printshop.addPrintRequest(new PrintRequest(20, Date.from(Instant.now()), "1", PrintRequest.Status.PENDING));
-        printshop.addPrintRequest(new PrintRequest(25, Date.from(Instant.now()), "2", PrintRequest.Status.PENDING));
-        printshop.addPrintRequest(new PrintRequest(30, Date.from(Instant.now()), "3", PrintRequest.Status.PENDING));
-        printshop.addPrintRequest(new PrintRequest(35, Date.from(Instant.now()), "4", PrintRequest.Status.PENDING));
-        printshop.addPrintRequest(new PrintRequest(20, Date.from(Instant.now()), "5", PrintRequest.Status.IN_PROGRESS));
-        printshop.addPrintRequest(new PrintRequest(25, Date.from(Instant.now()), "6", PrintRequest.Status.LIFTED));
-        printshop.addPrintRequest(new PrintRequest(30, Date.from(Instant.now()), "7", PrintRequest.Status.FINISHED));
+        Consumer consumer = consumers.findAll().iterator().next();
+        printshop.addPrintRequest(new PrintRequest(20, Date.from(Instant.now()), consumer, PrintRequest.Status.PENDING));
+        printshop.addPrintRequest(new PrintRequest(25, Date.from(Instant.now()), consumer, PrintRequest.Status.PENDING));
+        printshop.addPrintRequest(new PrintRequest(30, Date.from(Instant.now()), consumer, PrintRequest.Status.PENDING));
+        printshop.addPrintRequest(new PrintRequest(35, Date.from(Instant.now()), consumer, PrintRequest.Status.PENDING));
+        printshop.addPrintRequest(new PrintRequest(20, Date.from(Instant.now()), consumer, PrintRequest.Status.IN_PROGRESS));
+        printshop.addPrintRequest(new PrintRequest(25, Date.from(Instant.now()), consumer, PrintRequest.Status.LIFTED));
+        printshop.addPrintRequest(new PrintRequest(30, Date.from(Instant.now()), consumer, PrintRequest.Status.FINISHED));
         printshops.save(printshop);
         return "yeas";
     }
