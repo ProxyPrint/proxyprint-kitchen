@@ -51,4 +51,15 @@ public abstract class Item {
      */
     public abstract String genKey();
 
+    public static String getPresentationString(CoverType ct) {
+        if(ct.equals(CoverType.CRISTAL_ACETATE)) {
+            return "Acetato Cristal";
+        } else if(ct.equals(CoverType.PVC_TRANSPARENT)) {
+            return "PVC Transparente";
+        } else if(ct.equals(CoverType.PVC_OPAQUE)) {
+            return "PVC Opaco";
+        }
+        return "";
+    }
+
 }

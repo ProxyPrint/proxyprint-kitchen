@@ -42,7 +42,7 @@ public class ManagerController {
     }
 
     @Secured("ROLE_MANAGER")
-    @RequestMapping(value = "/printshops/{id}/pricetable/deletepaperitem", method = RequestMethod.POST)
+    @RequestMapping(value = "/printshops/{id}/pricetable/deletepaperitem", method = RequestMethod.DELETE)
     public String deletePaperItem(@PathVariable(value = "id") long id, @RequestBody PaperTableItem pti) {
         PrintShop pshop = printshops.findOne(id);
         JsonObject response = new JsonObject();
@@ -53,6 +53,25 @@ public class ManagerController {
             for(RangePaperItem pi : itemsToDelete) {
                 pshop.getPriceTable().remove(pi.genKey());
             }
+            printshops.save(pshop);
+            response.addProperty("success", true);
+            return GSON.toJson(response);
+        }
+        else{
+            response.addProperty("success", false);
+            return GSON.toJson(response);
+        }
+    }
+
+    @Secured("ROLE_MANAGER")
+    @RequestMapping(value = "/printshops/{printShopID}/pricetable/editstapling", method = RequestMethod.PUT)
+    public String editStaplingPrice(@PathVariable(value = "printShopID") long psid, @RequestBody String newStaplingPrice) {
+        PrintShop pshop = printshops.findOne(psid);
+        JsonObject response = new JsonObject();
+
+        if(pshop!=null) {
+            // Edit stapling price
+            pshop.getPriceTable().put("BINDING,STAPLING,0,0", Float.parseFloat(newStaplingPrice));
             printshops.save(pshop);
             response.addProperty("success", true);
             return GSON.toJson(response);

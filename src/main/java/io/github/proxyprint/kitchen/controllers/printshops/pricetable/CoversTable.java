@@ -1,67 +1,47 @@
 package io.github.proxyprint.kitchen.controllers.printshops.pricetable;
 
 import io.github.proxyprint.kitchen.models.printshops.items.CoverItem;
+import io.github.proxyprint.kitchen.models.printshops.items.Item;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by daniel on 02-05-2016.
  */
 public class CoversTable {
-    public static String DEFAULT = "-";
 
-    public class CoverTableItem {
-        public String format;
-        public String coverType;
-        public String price;
-
-        public CoverTableItem() {
-            this.format = DEFAULT;
-            this.coverType = DEFAULT;
-            this.price = DEFAULT;
-        }
-
-        public CoverTableItem(String format, String coverType, String price) {
-            this.format = format;
-            this.coverType = coverType;
-            this.price = price;
-        }
-
-        public String getFormat() { return format; }
-
-        public void setFormat(String format) { this.format = format; }
-
-        public String getCoverType() { return coverType; }
-
-        public void setCoverType(String coverType) {this.coverType = coverType; }
-
-        public String getPrice() { return price; }
-
-        public void setPrice(String price) { this.price = price; }
-    }
-
-    private Map<String,Set<CoverTableItem>> items;
+    private Map<String,CoverTableItem> items;
 
     public CoversTable() {
         this.items = new HashMap<>();
     }
 
-    public Map<String, Set<CoverTableItem>> getItems() { return items; }
+    public Map<String,CoverTableItem> getItems() { return items; }
 
-    public void setItems(Map<String, Set<CoverTableItem>> items) { this.items = items; }
+    public void setItems(Map<String,CoverTableItem> items) { this.items = items; }
 
     public void addCoverItem(CoverItem ci, float price) {
-        CoverTableItem cti = new CoverTableItem(ci.getFormat().toString(),ci.getCoverType().toString(), String.valueOf(price));
-        if(this.items.containsKey(cti.getCoverType())) {
-            this.items.get(cti.getCoverType()).add(cti);
+        CoverTableItem cti = new CoverTableItem();
+        if(this.items.containsKey(ci.getCoverType().toString())) {
+            cti = this.items.get(ci.getCoverType().toString());
+            if(ci.getFormat().equals(Item.Format.A4)) {
+                cti.setPriceA4(String.valueOf(price));
+            }
+            else if(ci.getFormat().equals(Item.Format.A3)) {
+                cti.setPriceA3(String.valueOf(price));
+            }
+            this.items.put(ci.getCoverType().toString(),cti);
         }
         else {
-            Set<CoverTableItem> newSet = new HashSet<>();
-            newSet.add(cti);
-            this.items.put(cti.getCoverType(),newSet);
+            cti.setCoverType(Item.getPresentationString(ci.getCoverType()));
+            if(ci.getFormat().equals(Item.Format.A4)) {
+                cti.setPriceA4(String.valueOf(price));
+            }
+            else if(ci.getFormat().equals(Item.Format.A3)) {
+                cti.setPriceA3(String.valueOf(price));
+            }
+            this.items.put(ci.getCoverType().toString(),cti);
         }
     }
 }
