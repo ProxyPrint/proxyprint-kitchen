@@ -17,6 +17,7 @@ package io.github.proxyprint.kitchen.controllers.printshops;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import io.github.proxyprint.kitchen.controllers.printshops.pricetable.CoversTable;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.PaperTableItem;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.RingsTable;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
@@ -129,6 +130,7 @@ public class PrintShopController {
 
         Map<String,Map<String,PaperTableItem>> table = new HashMap<>();
         RingsTable ringsTable = new RingsTable();
+        CoversTable coversTable = new CoversTable();
 
         if (pshop == null) {
             response.addProperty("success", false);
@@ -143,7 +145,8 @@ public class PrintShopController {
                     ringsTable.addBindingItem(bi, pshop.getPrice(bi));
 
                 } else if (type.equals(Item.COVER)) {
-                    // CODE...
+                    CoverItem ci = (CoverItem) pshop.loadPriceItem(key);
+                    coversTable.addCoverItem(ci);
                 }
             }
             // Covert Map<String,PaperTableItem> to Set<PaperTableItem>
@@ -158,6 +161,7 @@ public class PrintShopController {
             response.add("printcopy", GSON.toJsonTree(finalTable));
             response.add("rings", GSON.toJsonTree(ringsTable.getItems()));
             response.addProperty("stapling", ringsTable.getStaplingPrice());
+            response.add("covers", GSON.toJsonTree(coversTable.getItems()));
             response.addProperty("success", true);
         }
 

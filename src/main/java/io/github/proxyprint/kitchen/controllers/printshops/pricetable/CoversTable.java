@@ -43,6 +43,10 @@ public class CoversTable {
         this.items = new HashMap<>();
     }
 
+    public Map<String, Set<CoverTableItem>> getItems() { return items; }
+
+    public void setItems(Map<String, Set<CoverTableItem>> items) { this.items = items; }
+
     public void addCoverItem(CoverItem ci) {
         CoverTableItem cti = new CoverTableItem(ci.getFormat().toString(),ci.getCoverType().toString());
         if(this.items.containsKey(cti.getCoverType())) {
