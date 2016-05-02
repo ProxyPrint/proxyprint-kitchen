@@ -5,7 +5,8 @@ import io.github.proxyprint.kitchen.models.printshops.items.PaperItem;
 /**
  * Created by daniel on 26-04-2016.
  */
-public class PaperTableItem extends TableItem implements Comparable<PaperTableItem> {
+public class PaperTableItem implements Comparable<PaperTableItem> {
+    public static String DEFAULT = "-";
     public static String A4Simplex = "A4SIMPLEX";
     public static String A4Duplex = "A4DUPLEX";
     public static String A3Simplex = "A3SIMPLEX";

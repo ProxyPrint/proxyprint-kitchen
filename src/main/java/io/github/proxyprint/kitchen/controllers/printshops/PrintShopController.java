@@ -19,16 +19,14 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.PaperTableItem;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.RingsTable;
-import io.github.proxyprint.kitchen.controllers.printshops.pricetable.TableItem;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
 import io.github.proxyprint.kitchen.models.printshops.items.BindingItem;
+import io.github.proxyprint.kitchen.models.printshops.items.CoverItem;
 import io.github.proxyprint.kitchen.models.printshops.items.Item;
 import io.github.proxyprint.kitchen.models.printshops.items.RangePaperItem;
 import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
 import io.github.proxyprint.kitchen.utils.DistanceCalculator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,7 +34,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
-import java.awt.print.Paper;
 import java.util.*;
 
 /**
@@ -76,6 +73,7 @@ public class PrintShopController {
         long id = 100;
         PrintShop pshop = printshops.findOne(id);
 
+        // Bindings
         BindingItem b = new BindingItem(BindingItem.RingType.PLASTIC,6,10);
         pshop.addItemPriceTable(b.genKey(),(float)1.15);
         b = new BindingItem(BindingItem.RingType.PLASTIC,12,20);
@@ -99,6 +97,21 @@ public class PrintShopController {
         pshop.addItemPriceTable(b.genKey(),(float)3.35);
         b = new BindingItem(BindingItem.RingType.STAPLING,0,0);
         pshop.addItemPriceTable(b.genKey(),(float)0.1);
+
+        // Covers
+        CoverItem c = new CoverItem(Item.CoverType.CRISTAL_ACETATE, Item.Format.A4);
+        pshop.addItemPriceTable(c.genKey(),(float)0.5);
+
+        c = new CoverItem(Item.CoverType.PVC_TRANSPARENT, Item.Format.A4);
+        pshop.addItemPriceTable(c.genKey(),(float)0.7);
+        c = new CoverItem(Item.CoverType.PVC_TRANSPARENT, Item.Format.A3);
+        pshop.addItemPriceTable(c.genKey(),(float)1.5);
+
+        c = new CoverItem(Item.CoverType.PVC_OPAQUE, Item.Format.A4);
+        pshop.addItemPriceTable(c.genKey(),(float)0.7);
+        c = new CoverItem(Item.CoverType.PVC_OPAQUE, Item.Format.A3);
+        pshop.addItemPriceTable(c.genKey(),(float)1.5);
+
 
         printshops.save(pshop);
 

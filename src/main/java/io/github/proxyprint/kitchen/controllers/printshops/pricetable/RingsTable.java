@@ -11,8 +11,9 @@ import java.util.TreeSet;
  * Created by daniel on 01-05-2016.
  */
 public class RingsTable {
+    public static String DEFAULT = "-";
 
-    public class RingTableItem extends TableItem implements Comparable<RingTableItem> {
+    public class RingTableItem implements Comparable<RingTableItem> {
         private String ringType;
         private int infLim;
         private int supLim;
