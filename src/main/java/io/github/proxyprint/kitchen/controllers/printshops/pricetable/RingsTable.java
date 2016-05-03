@@ -39,7 +39,7 @@ public class RingsTable {
             this.staplingPrice = price;
         }
         else {
-            RingTableItem rti = new RingTableItem(Item.getPresentationStringForRings(bi.getRingsType()), bi.getRingThicknessInfLim(), bi.getRingThicknessSupLim(), String.valueOf(price));
+            RingTableItem rti = new RingTableItem(RingTableItem.getPresentationStringForRings(bi.getRingsType()), bi.getRingThicknessInfLim(), bi.getRingThicknessSupLim(), String.valueOf(price));
             if (items.containsKey(bi.getRingsType().toString())) {
                 this.items.get(bi.getRingsType().toString()).add(rti);
             } else {

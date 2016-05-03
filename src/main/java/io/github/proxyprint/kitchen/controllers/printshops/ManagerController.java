@@ -45,25 +45,6 @@ public class ManagerController {
     }
 
     @Secured("ROLE_MANAGER")
-    @RequestMapping(value = "/printshops/{id}/pricetable/rings", method = RequestMethod.POST)
-    public String addNewPaperItem(@PathVariable(value = "id") long id, @RequestBody RingTableItem rti) {
-        PrintShop pshop = printshops.findOne(id);
-        JsonObject response = new JsonObject();
-
-        if(pshop!=null) {
-            BindingItem newBi = new BindingItem(Item.getRingTypeForPresentationString(rti.getRingType()), rti.getInfLim(), rti.getSupLim());
-            pshop.addItemPriceTable(newBi.genKey(),Float.parseFloat(rti.getPrice()));
-            printshops.save(pshop);
-            response.addProperty("success", true);
-            return GSON.toJson(response);
-        }
-        else{
-            response.addProperty("success", false);
-            return GSON.toJson(response);
-        }
-    }
-
-    @Secured("ROLE_MANAGER")
     @RequestMapping(value = "/printshops/{id}/pricetable/deletepaperitem", method = RequestMethod.POST)
     public String deletePaperItem(@PathVariable(value = "id") long id, @RequestBody PaperTableItem pti) {
         PrintShop pshop = printshops.findOne(id);
@@ -86,6 +67,25 @@ public class ManagerController {
     }
 
     @Secured("ROLE_MANAGER")
+    @RequestMapping(value = "/printshops/{id}/pricetable/rings", method = RequestMethod.POST)
+    public String addNewPaperItem(@PathVariable(value = "id") long id, @RequestBody RingTableItem rti) {
+        PrintShop pshop = printshops.findOne(id);
+        JsonObject response = new JsonObject();
+
+        if(pshop!=null) {
+            BindingItem newBi = new BindingItem(Item.RingType.valueOf(rti.getRingType()), rti.getInfLim(), rti.getSupLim());
+            pshop.addItemPriceTable(newBi.genKey(),Float.parseFloat(rti.getPrice()));
+            printshops.save(pshop);
+            response.addProperty("success", true);
+            return GSON.toJson(response);
+        }
+        else{
+            response.addProperty("success", false);
+            return GSON.toJson(response);
+        }
+    }
+
+    @Secured("ROLE_MANAGER")
     @RequestMapping(value = "/printshops/{id}/pricetable/deleteringitem", method = RequestMethod.POST)
     public String deleteRingItem(@PathVariable(value = "id") long id, @RequestBody RingTableItem rti) {
         PrintShop pshop = printshops.findOne(id);
@@ -93,7 +93,7 @@ public class ManagerController {
 
         if(pshop!=null) {
             // Remove price items
-            BindingItem newBi = new BindingItem(Item.getRingTypeForPresentationString(rti.getRingType()), rti.getInfLim(), rti.getSupLim());
+            BindingItem newBi = new BindingItem(RingTableItem.getRingTypeForPresentationString(rti.getRingType()), rti.getInfLim(), rti.getSupLim());
             pshop.getPriceTable().remove(newBi.genKey());
             printshops.save(pshop);
             response.addProperty("success", true);

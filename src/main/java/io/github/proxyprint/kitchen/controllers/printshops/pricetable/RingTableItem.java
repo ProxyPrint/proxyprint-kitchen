@@ -1,5 +1,7 @@
 package io.github.proxyprint.kitchen.controllers.printshops.pricetable;
 
+import io.github.proxyprint.kitchen.models.printshops.items.Item;
+
 /**
  * Created by daniel on 02-05-2016.
  */
@@ -55,5 +57,27 @@ public class RingTableItem implements Comparable<RingTableItem> {
     public int compareTo(RingTableItem rti) {
         if(rti.getSupLim() > this.getSupLim()) return -1;
         else return 1;
+    }
+
+    public static String getPresentationStringForRings(Item.RingType rt) {
+        if(rt.equals(Item.RingType.PLASTIC)) {
+            return "Argolas de Plástico";
+        } else if(rt.equals(Item.RingType.SPIRAL)) {
+            return "Argolas Espiral";
+        } else if(rt.equals(Item.RingType.WIRE)) {
+            return "Argolas de Arame";
+        }
+        return "";
+    }
+
+    public static Item.RingType getRingTypeForPresentationString(String rt) {
+        if(rt.equals("Argolas de Plástico")) {
+            return Item.RingType.PLASTIC;
+        } else if(rt.equals("Argolas Espiral")) {
+            return Item.RingType.SPIRAL;
+        } else if(rt.equals("Argolas de Arame")) {
+            return Item.RingType.WIRE;
+        }
+        return Item.RingType.PLASTIC;
     }
 }

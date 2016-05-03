@@ -120,7 +120,7 @@ public class PrintShopController {
         return "OK";
     }
 
-    @Secured({"ROLE_MANAGER"})
+    @Secured({"ROLE_MANAGER","ROLE_USER"})
     @RequestMapping(value = "/printshops/{id}/pricetable", method = RequestMethod.GET)
     public String getPrintShopPriceTable(@PathVariable(value = "id") long id) {
         PrintShop pshop = printshops.findOne(id);

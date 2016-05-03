@@ -1,5 +1,7 @@
 package io.github.proxyprint.kitchen.controllers.printshops.pricetable;
 
+import io.github.proxyprint.kitchen.models.printshops.items.Item;
+
 /**
  * Created by daniel on 02-05-2016.
  */
@@ -31,4 +33,15 @@ public class CoverTableItem {
     public String getPriceA3() { return priceA3; }
 
     public void setPriceA3(String priceA3) { this.priceA3 = priceA3; }
+
+    public static String getPresentationStringForCover(Item.CoverType ct) {
+        if(ct.equals(Item.CoverType.CRISTAL_ACETATE)) {
+            return "Acetato Cristal";
+        } else if(ct.equals(Item.CoverType.PVC_TRANSPARENT)) {
+            return "PVC Transparente";
+        } else if(ct.equals(Item.CoverType.PVC_OPAQUE)) {
+            return "PVC Opaco";
+        }
+        return "";
+    }
 }

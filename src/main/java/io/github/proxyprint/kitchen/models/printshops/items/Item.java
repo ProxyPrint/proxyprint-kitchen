@@ -51,37 +51,4 @@ public abstract class Item {
      */
     public abstract String genKey();
 
-    public static String getPresentationStringForCover(CoverType ct) {
-        if(ct.equals(CoverType.CRISTAL_ACETATE)) {
-            return "Acetato Cristal";
-        } else if(ct.equals(CoverType.PVC_TRANSPARENT)) {
-            return "PVC Transparente";
-        } else if(ct.equals(CoverType.PVC_OPAQUE)) {
-            return "PVC Opaco";
-        }
-        return "";
-    }
-
-    public static String getPresentationStringForRings(RingType rt) {
-        if(rt.equals(RingType.PLASTIC)) {
-            return "Argolas de Plástico";
-        } else if(rt.equals(RingType.SPIRAL)) {
-            return "Argolas Espiral";
-        } else if(rt.equals(RingType.WIRE)) {
-            return "Argolas de Arame";
-        }
-        return "";
-    }
-
-    public static RingType getRingTypeForPresentationString(String rt) {
-        if(rt.equals("Argolas de Plástico")) {
-            return RingType.PLASTIC;
-        } else if(rt.equals("Argolas Espiral")) {
-            return RingType.SPIRAL;
-        } else if(rt.equals("Argolas de Arame")) {
-            return RingType.WIRE;
-        }
-        return RingType.PLASTIC;
-    }
-
 }
