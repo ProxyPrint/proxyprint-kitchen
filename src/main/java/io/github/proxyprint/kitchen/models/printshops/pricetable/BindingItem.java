@@ -1,4 +1,4 @@
-package io.github.proxyprint.kitchen.models.printshops.items;
+package io.github.proxyprint.kitchen.models.printshops.pricetable;
 
 /**
  * Created by daniel on 27-04-2016.

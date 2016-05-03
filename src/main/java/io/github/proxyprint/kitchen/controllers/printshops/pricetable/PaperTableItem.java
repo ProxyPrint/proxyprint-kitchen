@@ -1,9 +1,9 @@
-package io.github.proxyprint.kitchen.controllers.printshops;
+package io.github.proxyprint.kitchen.controllers.printshops.pricetable;
 
-import io.github.proxyprint.kitchen.models.printshops.items.PaperItem;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.PaperItem;
 
 /**
- * Created by daniel on 26-04-2016.
+ * Created by daniel on 02-05-2016.
  */
 public class PaperTableItem implements Comparable<PaperTableItem> {
     public static String DEFAULT = "-";
@@ -20,15 +20,18 @@ public class PaperTableItem implements Comparable<PaperTableItem> {
     private String priceA3SIMPLEX;
     private String priceA3DUPLEX;
 
-    public PaperTableItem() {}
+    public PaperTableItem() {
+        super();
+    }
 
     public PaperTableItem(int infLim, int supLim) {
+        super();
         this.infLim = infLim;
         this.supLim = supLim;
-        this.priceA4SIMPLEX = "-";
-        this.priceA4DUPLEX = "-";
-        this.priceA3SIMPLEX = "-";
-        this.priceA3DUPLEX = "-";
+        this.priceA4SIMPLEX = DEFAULT;
+        this.priceA4DUPLEX = DEFAULT;
+        this.priceA3SIMPLEX = DEFAULT;
+        this.priceA3DUPLEX = DEFAULT;
     }
 
     public int getInfLim() {
