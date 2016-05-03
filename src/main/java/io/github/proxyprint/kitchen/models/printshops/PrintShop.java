@@ -165,6 +165,10 @@ public class PrintShop {
         this.printrequests.add(printrequest);
     }
 
+    public Item loadPriceItem(String item) {
+        return itemFactory.createItem(item);
+    }
+
     /**
      * Insert a PaperTableItem in the price table
      *
