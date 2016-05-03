@@ -1,5 +1,32 @@
 package io.github.proxyprint.kitchen.controllers.admin;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
+import io.github.proxyprint.kitchen.models.Admin;
+import io.github.proxyprint.kitchen.models.consumer.Consumer;
+import io.github.proxyprint.kitchen.models.printshops.Employee;
+import io.github.proxyprint.kitchen.models.printshops.Manager;
+import io.github.proxyprint.kitchen.models.printshops.PrintShop;
+import io.github.proxyprint.kitchen.models.printshops.RegisterRequest;
+import io.github.proxyprint.kitchen.models.printshops.items.PaperItem;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.PriceItem;
+import io.github.proxyprint.kitchen.models.repositories.AdminDAO;
+import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
+import io.github.proxyprint.kitchen.models.repositories.RegisterRequestDAO;
+import io.github.proxyprint.kitchen.models.repositories.UserDAO;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
 
 /**
  * Created by daniel on 19-04-2016.
@@ -44,6 +71,7 @@ public class AdminController {
         return new ResponseEntity<>(admin, HttpStatus.OK);
     }
 
+    /*
     @RequestMapping(value = "/admin/seed", method = RequestMethod.POST)
     public ResponseEntity<String> seed() {
         JsonObject response = new JsonObject();
@@ -94,4 +122,5 @@ public class AdminController {
 
         return new ResponseEntity<>(GSON.toJson(response), HttpStatus.OK);
     }
+    */
 }
