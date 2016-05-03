@@ -1,5 +1,7 @@
 package io.github.proxyprint.kitchen.controllers.consumer;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.consumer.PrintingSchema;
 import io.github.proxyprint.kitchen.models.repositories.ConsumerDAO;
@@ -26,6 +28,8 @@ public class PrintingSchemaController {
     private ConsumerDAO consumers;
     @Autowired
     private PrintingSchemaDAO printingSchemas;
+    @Autowired
+    private Gson GSON;
 
     /**
      * Get all the consumer's PrintingSchemas.
@@ -54,13 +58,16 @@ public class PrintingSchemaController {
     @Secured({"ROLE_USER"})
     @RequestMapping(value = "/consumer/{consumerID}/printingschemas", method = RequestMethod.POST)
     public ResponseEntity<String> addNewConsumerPrintingSchema(@PathVariable(value = "consumerID") long id, @RequestBody PrintingSchema ps) {
+        JsonObject obj = new JsonObject();
         Consumer c = consumers.findOne(id);
         boolean res = c.addPrintingSchema(ps);
         if(res) {
             consumers.save(c);
-            return new ResponseEntity<>("OK", HttpStatus.OK);
+            obj.addProperty("success", true);
+            return new ResponseEntity<>(GSON.toJson(obj), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("SERVER ERROR", HttpStatus.INTERNAL_SERVER_ERROR);
+            obj.addProperty("success", false);
+            return new ResponseEntity<>(GSON.toJson(obj), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -76,7 +83,9 @@ public class PrintingSchemaController {
     @RequestMapping(value = "/consumer/{consumerID}/printingschemas/{printingSchemaID}", method = RequestMethod.DELETE)
     public ResponseEntity<String> deleteConsumerPrintingSchema(@PathVariable(value = "consumerID") long cid, @PathVariable(value = "printingSchemaID") long psid) {
         printingSchemas.delete(psid);
-        return new ResponseEntity<>("OK", HttpStatus.OK);
+        JsonObject obj = new JsonObject();
+        obj.addProperty("success", true);
+        return new ResponseEntity<>(GSON.toJson(obj), HttpStatus.OK);
     }
 
     /**
@@ -91,14 +100,17 @@ public class PrintingSchemaController {
     @RequestMapping(value = "/consumer/{consumerID}/printingschemas/{printingSchemaID}", method = RequestMethod.PUT)
     public ResponseEntity<String> editConsumerPrintingSchema(@PathVariable(value = "consumerID") long cid, @PathVariable(value = "printingSchemaID") long psid, @RequestBody PrintingSchema pschema) {
         printingSchemas.delete(psid);
-
+        JsonObject obj = new JsonObject();
+        
         Consumer c = consumers.findOne(cid);
         boolean res = c.addPrintingSchema(pschema);
         if(res) {
             consumers.save(c);
-            return new ResponseEntity<>("OK", HttpStatus.OK);
+            obj.addProperty("success", true);
+            return new ResponseEntity<>(GSON.toJson(obj), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("SERVER ERROR", HttpStatus.INTERNAL_SERVER_ERROR);
+            obj.addProperty("success", false);
+            return new ResponseEntity<>(GSON.toJson(obj), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
