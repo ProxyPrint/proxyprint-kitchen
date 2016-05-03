@@ -1,7 +1,7 @@
 package io.github.proxyprint.kitchen.controllers.printshops.pricetable;
 
-import io.github.proxyprint.kitchen.models.printshops.items.CoverItem;
-import io.github.proxyprint.kitchen.models.printshops.items.Item;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.CoverItem;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.Item;
 
 import java.util.HashMap;
 import java.util.Map;

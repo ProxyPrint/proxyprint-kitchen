@@ -21,10 +21,10 @@ import io.github.proxyprint.kitchen.controllers.printshops.pricetable.CoversTabl
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.PapersTable;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.RingsTable;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
-import io.github.proxyprint.kitchen.models.printshops.items.BindingItem;
-import io.github.proxyprint.kitchen.models.printshops.items.CoverItem;
-import io.github.proxyprint.kitchen.models.printshops.items.Item;
-import io.github.proxyprint.kitchen.models.printshops.items.RangePaperItem;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.BindingItem;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.CoverItem;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.Item;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.RangePaperItem;
 import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
 import io.github.proxyprint.kitchen.utils.DistanceCalculator;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -2,10 +2,10 @@ package io.github.proxyprint.kitchen.models.printshops;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.PaperTableItem;
-import io.github.proxyprint.kitchen.models.printshops.items.Item;
-import io.github.proxyprint.kitchen.models.printshops.items.ItemFactory;
-import io.github.proxyprint.kitchen.models.printshops.items.PaperItem;
-import io.github.proxyprint.kitchen.models.printshops.items.RangePaperItem;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.Item;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.ItemFactory;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.PaperItem;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.RangePaperItem;
 import io.github.proxyprint.kitchen.utils.gson.Exclude;
 
 import javax.persistence.*;
