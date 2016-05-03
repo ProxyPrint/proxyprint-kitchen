@@ -29,6 +29,7 @@ public class Consumer extends User {
     private Set<PrintRequest> printrequests;
 
     public Consumer() {
+        super.addRole(User.Roles.ROLE_USER.name());
     }
 
     public Consumer(String name, String username, String password, String email, String latitude, String longitude) {
