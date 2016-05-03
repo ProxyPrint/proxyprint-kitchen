@@ -1,6 +1,8 @@
 package io.github.proxyprint.kitchen.models.consumer;
 
 import io.github.proxyprint.kitchen.models.User;
+import io.github.proxyprint.kitchen.models.printshops.PrintRequest;
+import io.github.proxyprint.kitchen.utils.gson.Exclude;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -26,8 +28,14 @@ public class Consumer extends User {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<PrintingSchema> printingSchemas;
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "consumer")
+    @Exclude
+    private Set<PrintRequest> printrequests;
+
     public Consumer() {
         this.printingSchemas = new HashSet<>();
+        super.addRole(User.Roles.ROLE_USER.name());
     }
 
     public Consumer(String name, String username, String password, String email, String latitude, String longitude) {
@@ -99,6 +107,12 @@ public class Consumer extends User {
             }
         }
         return false;
+    }
+
+    public Set<PrintRequest> getPrintRequests() { return printrequests; }
+
+    public void addPrintRequest(PrintRequest printrequest){
+        this.printrequests.add(printrequest);
     }
 
     @Override

@@ -12,6 +12,7 @@ import javax.persistence.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.*;
 
 /**
  * Created by daniel on 18-04-2016.
@@ -41,7 +42,7 @@ public class PrintShop {
     @JoinTable(name = "pricetables", joinColumns = @JoinColumn(name = "printshop_id"))
     @MapKeyColumn(name = "item")
     @Column(name = "price")
-    @JsonIgnore
+
     @Exclude
     private Map<String, Float> priceTable;
     @JsonIgnore
@@ -49,6 +50,9 @@ public class PrintShop {
     @Transient
     private ItemFactory itemFactory;
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "printshop")
+    private Set<PrintRequest> printrequests;
 
     public PrintShop() {
         this.priceTable = new HashMap<>();
@@ -135,37 +139,10 @@ public class PrintShop {
         this.priceTable.put(item.genKey(), price);
     }
 
-    public Item loadPriceItem(String item) {
-        return itemFactory.createItem(item);
-    }
 
-    /**
-     * Insert a PaperTableItem in the price table
-     * @param pti, a new entry in the price table
-     */
-    public void insertPaperTableItemsInPriceTable(PaperTableItem pti) {
-        if(!pti.getPriceA4SIMPLEX().equals(PaperTableItem.DEFAULT)) {
-            RangePaperItem a4s = new RangePaperItem(PaperItem.Format.A4, PaperItem.Sides.SIMPLEX, PaperItem.Colors.valueOf(pti.getColors()), pti.getInfLim(), pti.getSupLim());
-            this.priceTable.put(a4s.genKey(), Float.parseFloat(pti.getPriceA4SIMPLEX()));
-        }
-        if(!pti.getPriceA4DUPLEX().equals(PaperTableItem.DEFAULT)) {
-            RangePaperItem a4d = new RangePaperItem(PaperItem.Format.A4, PaperItem.Sides.DUPLEX, PaperItem.Colors.valueOf(pti.getColors()), pti.getInfLim(), pti.getSupLim());
-            this.priceTable.put(a4d.genKey(), Float.parseFloat(pti.getPriceA4DUPLEX()));
-        }
-        if(!pti.getPriceA3SIMPLEX().equals(PaperTableItem.DEFAULT)) {
-            RangePaperItem a3s = new RangePaperItem(PaperItem.Format.A3, PaperItem.Sides.SIMPLEX, PaperItem.Colors.valueOf(pti.getColors()), pti.getInfLim(), pti.getSupLim());
-            this.priceTable.put(a3s.genKey(), Float.parseFloat(pti.getPriceA3SIMPLEX()));
-        }
-        if(!pti.getPriceA3DUPLEX().equals(PaperTableItem.DEFAULT)) {
-            RangePaperItem a3d = new RangePaperItem(PaperItem.Format.A3, PaperItem.Sides.DUPLEX, PaperItem.Colors.valueOf(pti.getColors()), pti.getInfLim(), pti.getSupLim());
-            this.priceTable.put(a3d.genKey(),Float.parseFloat(pti.getPriceA3DUPLEX()));
-        }
-    }
+    public Set<PrintRequest> getPrintRequests() { return printrequests; }
 
-    public List<RangePaperItem> convertPaperTableItemToPaperItems(PaperTableItem pti) {
-        List<RangePaperItem> res = itemFactory.fromPaperTableItemToPaperItems(pti);
-        return res;
-    }
+    public void setPrintingSchemas(Set<PrintRequest> printingReq) { this.printrequests = printingReq; }
 
     public float getPrice(Item item) {
         return this.priceTable.get(item.genKey());
@@ -175,6 +152,10 @@ public class PrintShop {
         return this.priceTable;
     }
 
+    public void addPrintRequest(PrintRequest printrequest){
+        this.printrequests.add(printrequest);
+    }
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
