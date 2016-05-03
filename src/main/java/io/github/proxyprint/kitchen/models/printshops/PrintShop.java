@@ -57,6 +57,7 @@ public class PrintShop {
     public PrintShop() {
         this.priceTable = new HashMap<>();
         itemFactory = new ItemFactory();
+        this.printrequests = new HashSet<>();
     }
 
     public PrintShop(String name, String address, Double latitude, Double longitude, String nif, String logo, float avgRating) {
@@ -69,6 +70,7 @@ public class PrintShop {
         this.avgRating = avgRating;
         this.priceTable = new HashMap<>();
         this.itemFactory = new ItemFactory();
+        this.printrequests = new HashSet<>();
     }
 
     public long getId() {
