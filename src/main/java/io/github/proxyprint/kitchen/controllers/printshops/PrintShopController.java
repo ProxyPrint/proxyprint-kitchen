@@ -18,22 +18,33 @@ package io.github.proxyprint.kitchen.controllers.printshops;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import io.github.proxyprint.kitchen.controllers.printshops.pricetable.CoversTable;
+import io.github.proxyprint.kitchen.controllers.printshops.pricetable.PapersTable;
+import io.github.proxyprint.kitchen.controllers.printshops.pricetable.RingsTable;
 import io.github.proxyprint.kitchen.models.printshops.PrintRequest;
 import io.github.proxyprint.kitchen.models.printshops.PrintRequest.Status;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.BindingItem;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.CoverItem;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.Item;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.RangePaperItem;
 import io.github.proxyprint.kitchen.models.repositories.ConsumerDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintRequestDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
 import io.github.proxyprint.kitchen.utils.DistanceCalculator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.TreeMap;
 
 /**
  *
@@ -97,6 +108,44 @@ public class PrintShopController {
         System.out.println(res);
         response.addProperty("printrequest", res);
         response.addProperty("success", true);
+        return GSON.toJson(response);
+    }
+
+    @Secured({"ROLE_MANAGER","ROLE_USER"})
+    @RequestMapping(value = "/printshops/{id}/pricetable", method = RequestMethod.GET)
+    public String getPrintShopPriceTable(@PathVariable(value = "id") long id) {
+        PrintShop pshop = printshops.findOne(id);
+        JsonObject response = new JsonObject();
+
+        PapersTable papersTable = new PapersTable();
+        RingsTable ringsTable = new RingsTable();
+        CoversTable coversTable = new CoversTable();
+
+        if (pshop == null) {
+            response.addProperty("success", false);
+        } else {
+            for(String key : pshop.getPriceTable().keySet()) {
+                String type = Item.checkItemType(key);
+                if (type.equals(Item.PAPER)) {
+                    RangePaperItem rpi = (RangePaperItem) pshop.loadPriceItem(key);
+                    papersTable.addRangePaperItem(rpi,pshop);
+                } else if (type.equals(Item.BINDING)) {
+                    BindingItem bi = (BindingItem) pshop.loadPriceItem(key);
+                    ringsTable.addBindingItem(bi, pshop.getPrice(bi));
+
+                } else if (type.equals(Item.COVER)) {
+                    CoverItem ci = (CoverItem) pshop.loadPriceItem(key);
+                    coversTable.addCoverItem(ci,pshop.getPrice(ci));
+                }
+            }
+
+            response.add("printcopy", GSON.toJsonTree(papersTable.getFinalTable()));
+            response.add("rings", GSON.toJsonTree(ringsTable.getItems()));
+            response.addProperty("stapling", ringsTable.getStaplingPrice());
+            response.add("covers", GSON.toJsonTree(coversTable.getItems()));
+            response.addProperty("success", true);
+        }
+
         return GSON.toJson(response);
     }
 }
