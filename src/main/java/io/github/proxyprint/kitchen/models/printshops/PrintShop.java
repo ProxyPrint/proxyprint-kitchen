@@ -1,11 +1,11 @@
 package io.github.proxyprint.kitchen.models.printshops;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.github.proxyprint.kitchen.controllers.printshops.PaperTableItem;
-import io.github.proxyprint.kitchen.models.printshops.items.Item;
-import io.github.proxyprint.kitchen.models.printshops.items.ItemFactory;
-import io.github.proxyprint.kitchen.models.printshops.items.PaperItem;
-import io.github.proxyprint.kitchen.models.printshops.items.RangePaperItem;
+import io.github.proxyprint.kitchen.controllers.printshops.pricetable.PaperTableItem;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.Item;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.ItemFactory;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.PaperItem;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.RangePaperItem;
 import io.github.proxyprint.kitchen.utils.gson.Exclude;
 
 import javax.persistence.*;
@@ -135,45 +135,98 @@ public class PrintShop {
         this.avgRating = avgRating;
     }
 
+    public void addItemPriceTable(String i, float price) {
+        this.priceTable.put(i, price);
+    }
+
     public void addPriceItem(RangePaperItem item, float price) {
         this.priceTable.put(item.genKey(), price);
     }
 
+    public Set<PrintRequest> getPrintRequests() {
+        return printrequests;
+    }
 
-    public Set<PrintRequest> getPrintRequests() { return printrequests; }
-
-    public void setPrintingSchemas(Set<PrintRequest> printingReq) { this.printrequests = printingReq; }
+    public void setPrintingSchemas(Set<PrintRequest> printingReq) {
+        this.printrequests = printingReq;
+    }
 
     public float getPrice(Item item) {
         return this.priceTable.get(item.genKey());
     }
-    
-    public Map<String, Float> getPriceTable(){
+
+    public Map<String, Float> getPriceTable() {
         return this.priceTable;
     }
 
-    public void addPrintRequest(PrintRequest printrequest){
+    public void addPrintRequest(PrintRequest printrequest) {
         this.printrequests.add(printrequest);
     }
-    
+
+    /**
+     * Insert a PaperTableItem in the price table
+     *
+     * @param pti, a new entry in the price table
+     */
+    public void insertPaperTableItemsInPriceTable(PaperTableItem pti) {
+        if (!pti.getPriceA4SIMPLEX().equals(PaperTableItem.DEFAULT)) {
+            RangePaperItem a4s = new RangePaperItem(PaperItem.Format.A4, PaperItem.Sides.SIMPLEX, PaperItem.Colors.valueOf(pti.getColors()), pti.getInfLim(), pti.getSupLim());
+            this.priceTable.put(a4s.genKey(), Float.parseFloat(pti.getPriceA4SIMPLEX()));
+        }
+        if (!pti.getPriceA4DUPLEX().equals(PaperTableItem.DEFAULT)) {
+            RangePaperItem a4d = new RangePaperItem(PaperItem.Format.A4, PaperItem.Sides.DUPLEX, PaperItem.Colors.valueOf(pti.getColors()), pti.getInfLim(), pti.getSupLim());
+            this.priceTable.put(a4d.genKey(), Float.parseFloat(pti.getPriceA4DUPLEX()));
+        }
+        if (!pti.getPriceA3SIMPLEX().equals(PaperTableItem.DEFAULT)) {
+            RangePaperItem a3s = new RangePaperItem(PaperItem.Format.A3, PaperItem.Sides.SIMPLEX, PaperItem.Colors.valueOf(pti.getColors()), pti.getInfLim(), pti.getSupLim());
+            this.priceTable.put(a3s.genKey(), Float.parseFloat(pti.getPriceA3SIMPLEX()));
+        }
+        if (!pti.getPriceA3DUPLEX().equals(PaperTableItem.DEFAULT)) {
+            RangePaperItem a3d = new RangePaperItem(PaperItem.Format.A3, PaperItem.Sides.DUPLEX, PaperItem.Colors.valueOf(pti.getColors()), pti.getInfLim(), pti.getSupLim());
+            this.priceTable.put(a3d.genKey(), Float.parseFloat(pti.getPriceA3DUPLEX()));
+        }
+    }
+
+    public List<RangePaperItem> convertPaperTableItemToPaperItems(PaperTableItem pti) {
+        List<RangePaperItem> res = itemFactory.fromPaperTableItemToPaperItems(pti);
+        return res;
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof PrintShop)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof PrintShop)) {
+            return false;
+        }
 
         PrintShop printShop = (PrintShop) o;
 
-        if (getId() != printShop.getId()) return false;
-        if (Float.compare(printShop.getAvgRating(), getAvgRating()) != 0) return false;
-        if (getName() != null ? !getName().equals(printShop.getName()) : printShop.getName() != null) return false;
-        if (getAddress() != null ? !getAddress().equals(printShop.getAddress()) : printShop.getAddress() != null)
+        if (getId() != printShop.getId()) {
             return false;
-        if (getLatitude() != null ? !getLatitude().equals(printShop.getLatitude()) : printShop.getLatitude() != null)
+        }
+        if (Float.compare(printShop.getAvgRating(), getAvgRating()) != 0) {
             return false;
-        if (getLongitude() != null ? !getLongitude().equals(printShop.getLongitude()) : printShop.getLongitude() != null)
+        }
+        if (getName() != null ? !getName().equals(printShop.getName()) : printShop.getName() != null) {
             return false;
-        if (getNif() != null ? !getNif().equals(printShop.getNif()) : printShop.getNif() != null) return false;
-        if (getLogo() != null ? !getLogo().equals(printShop.getLogo()) : printShop.getLogo() != null) return false;
+        }
+        if (getAddress() != null ? !getAddress().equals(printShop.getAddress()) : printShop.getAddress() != null) {
+            return false;
+        }
+        if (getLatitude() != null ? !getLatitude().equals(printShop.getLatitude()) : printShop.getLatitude() != null) {
+            return false;
+        }
+        if (getLongitude() != null ? !getLongitude().equals(printShop.getLongitude()) : printShop.getLongitude() != null) {
+            return false;
+        }
+        if (getNif() != null ? !getNif().equals(printShop.getNif()) : printShop.getNif() != null) {
+            return false;
+        }
+        if (getLogo() != null ? !getLogo().equals(printShop.getLogo()) : printShop.getLogo() != null) {
+            return false;
+        }
         return getPriceTable() != null ? getPriceTable().equals(printShop.getPriceTable()) : printShop.getPriceTable() == null;
 
     }
