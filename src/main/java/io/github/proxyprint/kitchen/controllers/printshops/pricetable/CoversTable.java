@@ -34,7 +34,7 @@ public class CoversTable {
             this.items.put(ci.getCoverType().toString(),cti);
         }
         else {
-            cti.setCoverType(Item.getPresentationString(ci.getCoverType()));
+            cti.setCoverType(Item.getPresentationStringForCover(ci.getCoverType()));
             if(ci.getFormat().equals(Item.Format.A4)) {
                 cti.setPriceA4(String.valueOf(price));
             }

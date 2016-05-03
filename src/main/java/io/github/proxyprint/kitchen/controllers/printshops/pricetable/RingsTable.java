@@ -1,6 +1,7 @@
 package io.github.proxyprint.kitchen.controllers.printshops.pricetable;
 
 import io.github.proxyprint.kitchen.models.printshops.items.BindingItem;
+import io.github.proxyprint.kitchen.models.printshops.items.Item;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,13 +39,13 @@ public class RingsTable {
             this.staplingPrice = price;
         }
         else {
-            RingTableItem rti = new RingTableItem(bi.getRingsType().toString(), bi.getRingThicknessInfLim(), bi.getRingThicknessSupLim(), String.valueOf(price));
+            RingTableItem rti = new RingTableItem(Item.getPresentationStringForRings(bi.getRingsType()), bi.getRingThicknessInfLim(), bi.getRingThicknessSupLim(), String.valueOf(price));
             if (items.containsKey(bi.getRingsType().toString())) {
                 this.items.get(bi.getRingsType().toString()).add(rti);
             } else {
                 Set<RingTableItem> newRingSet = new TreeSet<>();
                 newRingSet.add(rti);
-                this.items.put(rti.getRingType(), newRingSet);
+                this.items.put(bi.getRingsType().toString(), newRingSet);
             }
         }
     }
