@@ -5,6 +5,8 @@ import io.github.proxyprint.kitchen.models.printshops.PrintRequest;
 import io.github.proxyprint.kitchen.utils.gson.Exclude;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -22,6 +24,9 @@ public class Consumer extends User {
     private String latitude;
     @Column(name = "longitude", nullable = true)
     private String longitude;
+    @JoinColumn (name="consumer_id")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<PrintingSchema> printingSchemas;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "consumer")
@@ -29,6 +34,7 @@ public class Consumer extends User {
     private Set<PrintRequest> printrequests;
 
     public Consumer() {
+        this.printingSchemas = new HashSet<>();
         super.addRole(User.Roles.ROLE_USER.name());
     }
 
@@ -39,6 +45,16 @@ public class Consumer extends User {
         this.email = email;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.printingSchemas = new HashSet<>();
+    }
+
+    public Consumer(String username, String password, String name, String email, String latitude, String longitude, Set<PrintingSchema> printingSchemas) {
+        super(username, password);
+        this.name = name;
+        this.email = email;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.printingSchemas = printingSchemas;
     }
 
     public String getName() {
@@ -73,14 +89,31 @@ public class Consumer extends User {
         this.longitude = longitude;
     }
 
-    public Set<PrintRequest> getPrintRequests() { return printrequests; }
+    public Set<PrintingSchema> getPrintingSchemas() { return printingSchemas; }
 
-    public void setPrintingSchemas(Set<PrintRequest> printingReq) { this.printrequests = printingReq; }
+    public void setPrintingSchemas(Set<PrintingSchema> printingSchemas) { this.printingSchemas = printingSchemas; }
+
+    public boolean addPrintingSchema(PrintingSchema ps) {
+        return this.printingSchemas.add(ps);
+    }
+
+    public boolean deletePrintingSchema(long psID) {
+        Iterator it = this.printingSchemas.iterator();
+        while (it.hasNext()) {
+            PrintingSchema ps = (PrintingSchema)it.next();
+            if(ps.getId() == psID){
+                it.remove();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Set<PrintRequest> getPrintRequests() { return printrequests; }
 
     public void addPrintRequest(PrintRequest printrequest){
         this.printrequests.add(printrequest);
     }
-
 
     @Override
     public String toString() {

@@ -22,8 +22,7 @@ import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.printshops.PrintRequest;
 import io.github.proxyprint.kitchen.models.printshops.PrintRequest.Status;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
-import io.github.proxyprint.kitchen.models.printshops.pricetable.PaperTableItem;
-import io.github.proxyprint.kitchen.models.printshops.pricetable.PriceItem;
+import io.github.proxyprint.kitchen.models.printshops.items.RangePaperItem;
 import io.github.proxyprint.kitchen.models.repositories.ConsumerDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintRequestDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
@@ -81,72 +80,6 @@ public class PrintShopController {
         return GSON.toJson(response);
     }
 
-    @Secured({"ROLE_MANAGER"})
-    @RequestMapping(value = "/printshops/{id}/pricetable", method = RequestMethod.GET)
-    public ResponseEntity<Map<String, Set<PaperTableItem>>> getPrintShopPriceTable(@PathVariable(value = "id") long id) {
-        PrintShop pshop = printshops.findOne(id);
-
-        Map<String, Set<PaperTableItem>> finalTable = new HashMap<>();
-        Map<String, Map<String, PaperTableItem>> table = new HashMap<>();
-
-        if (pshop == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } else {
-            for (String key : pshop.getPriceTable().keySet()) {
-                PriceItem pi = pshop.loadPriceItem(key);
-
-                if (!table.containsKey(pi.getColors().toString())) { // The color is new
-                    // Create new PaperTableItem
-                    PaperTableItem pti = new PaperTableItem(pi.getInfLim(), pi.getSupLim());
-                    pti.addPriceToPaperTableItem(pi, pshop.getPrice(pi));
-                    pti.setColors(pi.getColors().toString());
-
-                    // Add new range and associated PaperTableItem instance
-                    Map<String, PaperTableItem> map = new HashMap<>();
-                    map.put(pti.genKey(), pti);
-
-                    // Add to table
-                    table.put(pi.getColors().toString(), map);
-
-                } else { // The color already exists
-                    String ptiKey = pi.getInfLim() + ";" + pi.getSupLim();
-                    Map<String, PaperTableItem> aux = table.get(pi.getColors().toString());
-                    PaperTableItem pti = aux.get(ptiKey);
-
-                    if (pti != null) {
-                        // PriceTableItem instance already exists add price
-                        pti.addPriceToPaperTableItem(pi, pshop.getPrice(pi));
-                        pti.setColors(pi.getColors().toString());
-                        table.get(pi.getColors().toString()).put(pti.genKey(), pti);
-                    } else {
-                        // Create new PaperTableItem
-                        pti = new PaperTableItem(pi.getInfLim(), pi.getSupLim());
-                        pti.setColors(pi.getColors().toString());
-                        pti.addPriceToPaperTableItem(pi, pshop.getPrice(pi));
-
-                        // Add new range and associated PaperTableItem instance
-                        Map<String, PaperTableItem> map = table.get(pi.getColors().toString());
-                        map.put(pti.genKey(), pti);
-
-                        // Add to table
-                        table.put(pi.getColors().toString(), map);
-                    }
-                }
-            }
-
-            // Covert Map<String,PaperTableItem> to Set<PaperTableItem>
-            for (String color : table.keySet()) {
-                Map<String, PaperTableItem> map = table.get(color);
-                Set<PaperTableItem> set = new TreeSet<>();
-                for (PaperTableItem pti : map.values()) {
-                    set.add(pti);
-                }
-                finalTable.put(color, set);
-            }
-
-            return new ResponseEntity<>(finalTable, HttpStatus.OK);
-        }
-    }
 
     @Secured({"ROLE_MANAGER", "ROLE_EMPLOYEE"})
     @RequestMapping(value = "/printshops/requests", method = RequestMethod.GET)

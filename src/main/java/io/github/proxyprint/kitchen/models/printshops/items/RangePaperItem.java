@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.proxyprint.kitchen.models.printshops.pricetable;
+package io.github.proxyprint.kitchen.models.printshops.items;
 
 /**
  *
  * @author josesousa
  */
-public class PriceItem extends PaperItem {
-
+public class RangePaperItem extends PaperItem {
     private int infLim;
     private int supLim;
 
-    public PriceItem(Format format, Sides sides, Colors colors, int infLim, int supLim) {
-        super(format, sides, colors);
+    public RangePaperItem(Format format, Sides sides, Colors colors, int infLim, int supLim) {
+        super(format,sides,colors);
         this.infLim = infLim;
         this.supLim = supLim;
     }
@@ -47,8 +46,8 @@ public class PriceItem extends PaperItem {
     }
 
     @Override
-    public String toString() {
-        return String.format("%s,%s,%s,%d,%d", this.colors, this.format, this.sides, infLim, supLim);
+    public String genKey() {
+        return String.format("%s,%s,%s,%s,%d,%d",KEY_BASE, this.colors, this.format, this.sides, infLim, supLim);
     }
 
 }

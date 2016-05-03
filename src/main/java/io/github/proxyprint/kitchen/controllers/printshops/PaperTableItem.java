@@ -1,4 +1,6 @@
-package io.github.proxyprint.kitchen.models.printshops.pricetable;
+package io.github.proxyprint.kitchen.controllers.printshops;
+
+import io.github.proxyprint.kitchen.models.printshops.items.PaperItem;
 
 /**
  * Created by daniel on 26-04-2016.

@@ -59,7 +59,8 @@ public class WebAppConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 // Add REST allowed endpoints...
-                registry.addMapping("/**").allowedOrigins("http://localhost:9000");
+                registry.addMapping("/**").allowedOrigins("http://localhost:9000")
+                        .allowedMethods("POST","GET","DELETE","PUT");
             }
         };
     }

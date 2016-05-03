@@ -13,25 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.proxyprint.kitchen.models.printshops.pricetable;
+package io.github.proxyprint.kitchen.models.printshops.items;
 
 /**
  *
  * @author josesousa
  */
-public abstract class PaperItem {
-
-    public static enum Format {
-        A4, A3
-    }
-
-    public static enum Sides {
-        SIMPLEX, DUPLEX
-    }
-
-    public static enum Colors {
-        BW, GREY_TONES, COLOR
-    }
+public class PaperItem extends Item {
+    public static String KEY_BASE = "PAPER";
 
     protected Format format;
     protected Sides sides;
@@ -70,5 +59,10 @@ public abstract class PaperItem {
     // Get the paper specs hash
     public String getPaperSpecs() {
         return this.format.toString()+this.sides.toString();
+    }
+
+    @Override
+    public String genKey() {
+        return String.format("%s,%s,%s,%s", KEY_BASE, colors.toString(), format.toString(), sides.toString());
     }
 }
