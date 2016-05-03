@@ -7,10 +7,7 @@ import io.github.proxyprint.kitchen.models.printshops.pricetable.PriceItem;
 import io.github.proxyprint.kitchen.utils.gson.Exclude;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by daniel on 18-04-2016.
@@ -40,10 +37,12 @@ public class PrintShop {
     @JoinTable(name = "pricetables", joinColumns = @JoinColumn(name = "printshop_id"))
     @MapKeyColumn(name = "item")
     @Column(name = "price")
-    @JsonIgnore // This JsonIgnore is not working
     @Exclude
     private Map<String, Float> priceTable;
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "printshop")
+    private Set<PrintRequest> printrequests;
 
     public PrintShop() {}
 
@@ -126,6 +125,10 @@ public class PrintShop {
         this.priceTable.put(item.toString(), price);
     }
 
+    public Set<PrintRequest> getPrintRequests() { return printrequests; }
+
+    public void setPrintingSchemas(Set<PrintRequest> printingReq) { this.printrequests = printingReq; }
+
     /**
      * Load a price item concrete instance.
      * @param priceItem, String that represents the item specs as stored in the database
@@ -204,6 +207,10 @@ public class PrintShop {
         return this.priceTable;
     }
 
+    public void addPrintRequest(PrintRequest printrequest){
+        this.printrequests.add(printrequest);
+    }
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
