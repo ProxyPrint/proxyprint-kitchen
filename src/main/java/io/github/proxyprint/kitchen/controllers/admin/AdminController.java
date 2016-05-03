@@ -68,7 +68,6 @@ public class AdminController {
 
     @RequestMapping(value = "/admin/register", method = RequestMethod.POST)
     public ResponseEntity<Admin> newAdmin(@RequestBody Admin admin) {
-        admin.addRole(User.Roles.ROLE_ADMIN.toString());
         this.admins.save(admin);
         return new ResponseEntity<>(admin, HttpStatus.OK);
     }
