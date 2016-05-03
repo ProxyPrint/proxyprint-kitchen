@@ -99,7 +99,7 @@ public abstract class User implements Serializable {
 
     public Set<String> getRolesSet() { return this.roles; }
 
-    public void addRole(String role) {
+    protected void addRole(String role) {
         this.roles.add(role);
     }
 
