@@ -103,10 +103,7 @@ public class PrintShopController {
         List<PrintRequest> printRequestsList = printrequests.findByStatusInAndPrintshop(status, printshop);
         Type listOfPRequests = new TypeToken<List<PrintShop>>() {
         }.getType();
-        String res = GSON.toJson(printRequestsList, listOfPRequests);
-
-        System.out.println(res);
-        response.addProperty("printrequest", res);
+        response.add("printrequest", GSON.toJsonTree(printRequestsList, listOfPRequests));
         response.addProperty("success", true);
         return GSON.toJson(response);
     }
