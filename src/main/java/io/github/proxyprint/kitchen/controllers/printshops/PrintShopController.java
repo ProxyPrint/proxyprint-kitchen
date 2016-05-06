@@ -67,21 +67,27 @@ public class PrintShopController {
 
     @RequestMapping(value = "/printshops/nearest", method = RequestMethod.GET)
     public String getNearestPrintShops(WebRequest request) {
-        System.out.format("Latitude: %s Longitude: %s\n", request.getParameter("latitude"), request.getParameter("longitude"));
-        Double latitude = Double.parseDouble(request.getParameter("latitude"));
-        Double longitude = Double.parseDouble(request.getParameter("longitude"));
+        String lat = request.getParameter("latitude");
+        String lon = request.getParameter("longitude");
 
-        System.out.format("Latitude: %s Longitude: %s\n", latitude, longitude);
-
-        TreeMap<Double, PrintShop> pshops = new TreeMap<>();
         JsonObject response = new JsonObject();
 
-        for (PrintShop p : printshops.findAll()) {
-            double distance = DistanceCalculator.distance(latitude, longitude, p.getLatitude(), p.getLongitude());
-            pshops.put(distance, p);
-        }
-        response.add("printshops", GSON.toJsonTree(new LinkedList(pshops.values())));
+        if(lat!=null && lon!=null) {
+            Double latitude = Double.parseDouble(lat);
+            Double longitude = Double.parseDouble(lon);
+            System.out.format("Latitude: %s Longitude: %s\n", latitude, longitude);
 
+            TreeMap<Double, PrintShop> pshops = new TreeMap<>();
+
+            for (PrintShop p : printshops.findAll()) {
+                double distance = DistanceCalculator.distance(latitude, longitude, p.getLatitude(), p.getLongitude());
+                pshops.put(distance, p);
+            }
+            response.addProperty("success", true);
+            response.add("printshops", GSON.toJsonTree((pshops)));
+        } else {
+            response.addProperty("success", false);
+        }
         return GSON.toJson(response);
     }
 

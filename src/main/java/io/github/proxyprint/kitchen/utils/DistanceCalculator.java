@@ -1,12 +1,15 @@
 package io.github.proxyprint.kitchen.utils;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 /**
  *
  * @author josesousa
  */
 public class DistanceCalculator {
 
-    public static double distance(double lat1, double lat2, double lon1, double lon2) {
+    public static double distance(double lat1, double lon1, double lat2, double lon2) {
 
         final int R = 6371; // Radius of the earth
 
@@ -16,10 +19,19 @@ public class DistanceCalculator {
                 + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
                 * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
         Double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        double distance = R * c * 1000; // convert to meters
+        double distance = R * c;// convert to kilometers
 
         distance = Math.pow(distance, 2);
 
-        return Math.sqrt(distance);
+        // Round on 2 decimal places
+        BigDecimal bd = new BigDecimal(distance);
+        bd = bd.setScale(2, RoundingMode.HALF_UP);
+
+        return Math.sqrt(bd.doubleValue());
+    }
+
+    public static void main(String[] args) {
+        // Test distance calculation
+        System.out.println(distance(41.557973, -8.398398, 41.5594, -8.3972));
     }
 }
