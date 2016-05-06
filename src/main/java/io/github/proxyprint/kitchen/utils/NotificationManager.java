@@ -15,9 +15,12 @@
  */
 package io.github.proxyprint.kitchen.utils;
 
+import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.notifications.Notification;
+import io.github.proxyprint.kitchen.models.repositories.ConsumerDAO;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -27,6 +30,9 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
  */
 public class NotificationManager {
 
+    @Autowired
+    private ConsumerDAO consumers;
+    
     private final ConcurrentHashMap<String, SseEmitter> subscriptions;
 
     public NotificationManager() {
@@ -44,6 +50,9 @@ public class NotificationManager {
     }
 
     public void sendNotification(String username, Notification notification) throws IOException {
+        Consumer consumer = this.consumers.findByUsername(username);
+        consumer.addNotifications(notification);
+        consumers.save(consumer);
         this.subscriptions.get(username).send(notification, MediaType.APPLICATION_JSON);
     }
 }

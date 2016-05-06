@@ -15,28 +15,66 @@
  */
 package io.github.proxyprint.kitchen.models.notifications;
 
+import java.io.Serializable;
+import java.time.Instant;
 import java.util.Date;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
 
 /**
  *
  * @author jose
  */
-public class Notification {
-    private final String message;
-    private final Date timestamp;
+@Entity
+@Table(name = "notification")
+public class Notification implements Serializable {
 
-    public Notification(String message, Date timestamp) {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    @Column(name = "email", nullable = true)
+    private String message;
+
+    @Column(name = "timestamp", nullable = true)
+    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    private Date timestamp;
+
+    public Notification() {
+    }
+
+    public Notification(String message) {
         this.message = message;
-        this.timestamp = timestamp;
+        this.timestamp = Date.from(Instant.now());
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getMessage() {
         return message;
     }
 
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
     public Date getTimestamp() {
         return timestamp;
     }
-    
-    
+
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
+    }
+
 }

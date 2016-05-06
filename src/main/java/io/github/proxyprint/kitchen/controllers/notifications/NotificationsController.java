@@ -15,14 +15,14 @@
  */
 package io.github.proxyprint.kitchen.controllers.notifications;
 
+import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.notifications.Notification;
 import io.github.proxyprint.kitchen.models.repositories.ConsumerDAO;
 import io.github.proxyprint.kitchen.utils.NotificationManager;
 import java.security.Principal;
-import java.time.Instant;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -46,12 +46,19 @@ public class NotificationsController {
     public void greeting(@PathVariable(value = "id") long id, WebRequest request, Principal principal) throws Exception {
         String message = request.getParameter("message");
         String name = consumers.findOne(id).getUsername();
-        notificationManager.sendNotification(name, new Notification(message, Date.from(Instant.now())));
+        notificationManager.sendNotification(name, new Notification(message));
     }
 
-    @RequestMapping(value = "/consumer/subscribe", produces="text/event-stream")
+    @RequestMapping(value = "/consumer/subscribe", produces = "text/event-stream")
     public SseEmitter subscribe(WebRequest request) throws Exception {
         String username = request.getParameter("username");
         return notificationManager.subscribe(username);
+    }
+
+    @Secured({"ROLE_USER"})
+    @RequestMapping(value = "/consumer/notifications", method = RequestMethod.GET)
+    public List<Notification> getConsumerNotifications(Principal principal) {
+        Consumer consumer = this.consumers.findByUsername(principal.getName());
+        return consumer.getNotifications();
     }
 }
