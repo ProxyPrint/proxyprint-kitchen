@@ -17,13 +17,12 @@ package io.github.proxyprint.kitchen.controllers.notifications;
 
 import io.github.proxyprint.kitchen.models.notifications.Notification;
 import io.github.proxyprint.kitchen.models.repositories.ConsumerDAO;
+import io.github.proxyprint.kitchen.utils.NotificationManager;
 import java.security.Principal;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
-import org.hibernate.service.spi.InjectService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -40,21 +39,19 @@ public class NotificationsController {
 
     @Autowired
     private ConsumerDAO consumers;
-    private HashMap<String, SseEmitter> emitters = new HashMap<>();
+    @Autowired
+    private NotificationManager notificationManager;
 
     @RequestMapping(value = "/consumer/{id}/notify", method = RequestMethod.POST)
     public void greeting(@PathVariable(value = "id") long id, WebRequest request, Principal principal) throws Exception {
         String message = request.getParameter("message");
-        System.out.println(consumers.findOne(id));
         String name = consumers.findOne(id).getUsername();
-        this.emitters.get(name).send(new Notification(message, Date.from(Instant.now())));
+        notificationManager.sendNotification(name, new Notification(message, Date.from(Instant.now())));
     }
 
     @RequestMapping(value = "/consumer/subscribe", produces="text/event-stream")
     public SseEmitter subscribe(WebRequest request) throws Exception {
         String username = request.getParameter("username");
-        System.out.println(username + " subscribed to sse");
-        this.emitters.put(username, new SseEmitter());
-        return this.emitters.get(username);
+        return notificationManager.subscribe(username);
     }
 }
