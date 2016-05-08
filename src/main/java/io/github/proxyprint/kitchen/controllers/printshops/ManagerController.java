@@ -68,7 +68,7 @@ public class ManagerController {
 
     @Secured("ROLE_MANAGER")
     @RequestMapping(value = "/printshops/{id}/pricetable/rings", method = RequestMethod.POST)
-    public String addNewPaperItem(@PathVariable(value = "id") long id, @RequestBody RingTableItem rti) {
+    public String addNewRingsItem(@PathVariable(value = "id") long id, @RequestBody RingTableItem rti) {
         PrintShop pshop = printshops.findOne(id);
         JsonObject response = new JsonObject();
 
@@ -132,6 +132,26 @@ public class ManagerController {
 
         if(pshop!=null) {
             pshop.insertPaperTableItemsInPriceTable(pti);
+            printshops.save(pshop);
+            response.addProperty("success", true);
+            return GSON.toJson(response);
+        }
+        else{
+            response.addProperty("success", false);
+            return GSON.toJson(response);
+        }
+    }
+
+    @Secured("ROLE_MANAGER")
+    @RequestMapping(value = "/printshops/{id}/pricetable/rings", method = RequestMethod.PUT)
+    public String editRingsItem(@PathVariable(value = "id") long id, @RequestBody RingTableItem rti) {
+        PrintShop pshop = printshops.findOne(id);
+        JsonObject response = new JsonObject();
+
+        if(pshop!=null) {
+            BindingItem newBi = new BindingItem(Item.RingType.valueOf(rti.getRingType()), rti.getInfLim(), rti.getSupLim());
+            pshop.getPriceTable().remove(newBi.genKey());
+            pshop.addItemPriceTable(newBi.genKey(),Float.parseFloat(rti.getPrice()));
             printshops.save(pshop);
             response.addProperty("success", true);
             return GSON.toJson(response);
