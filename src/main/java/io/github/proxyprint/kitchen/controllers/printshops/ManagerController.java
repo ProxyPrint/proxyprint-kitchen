@@ -68,7 +68,7 @@ public class ManagerController {
     }
 
     @Secured("ROLE_MANAGER")
-    @RequestMapping(value = "/printshops/{id}/pricetable/deletepaperitem", method = RequestMethod.POST)
+    @RequestMapping(value = "/printshops/{id}/pricetable/deletepaper", method = RequestMethod.POST)
     public String deletePaperItem(@PathVariable(value = "id") long id, @RequestBody PaperTableItem pti) {
         PrintShop pshop = printshops.findOne(id);
         JsonObject response = new JsonObject();
@@ -134,7 +134,7 @@ public class ManagerController {
     }
 
     @Secured("ROLE_MANAGER")
-    @RequestMapping(value = "/printshops/{id}/pricetable/deleteringitem", method = RequestMethod.POST)
+    @RequestMapping(value = "/printshops/{id}/pricetable/deletering", method = RequestMethod.POST)
     public String deleteRingItem(@PathVariable(value = "id") long id, @RequestBody RingTableItem rti) {
         PrintShop pshop = printshops.findOne(id);
         JsonObject response = new JsonObject();
@@ -171,6 +171,28 @@ public class ManagerController {
                 } else {
                     pshop.addItemPriceTable(newCi.genKey(), Float.parseFloat(cti.getPriceA3()));
                 }
+            }
+            printshops.save(pshop);
+            response.addProperty("success", true);
+            return GSON.toJson(response);
+        }
+        else{
+            response.addProperty("success", false);
+            return GSON.toJson(response);
+        }
+    }
+
+    @Secured("ROLE_MANAGER")
+    @RequestMapping(value = "/printshops/{id}/pricetable/deletecover", method = RequestMethod.POST)
+    public String deleteCoverItem(@PathVariable(value = "id") long id, @RequestBody CoverTableItem cti) {
+        PrintShop pshop = printshops.findOne(id);
+        JsonObject response = new JsonObject();
+
+        if(pshop!=null) {
+            // Remove price items
+            List<CoverItem> toRemoveCoverItems = cti.convertToCoverItems();
+            for(CoverItem oldCi : toRemoveCoverItems) {
+                pshop.getPriceTable().remove(oldCi.genKey());
             }
             printshops.save(pshop);
             response.addProperty("success", true);
