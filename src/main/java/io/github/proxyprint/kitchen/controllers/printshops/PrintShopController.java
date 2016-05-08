@@ -54,10 +54,6 @@ import java.util.TreeMap;
 @RestController
 public class PrintShopController {
 
-    //remover isto no pull request
-    @Autowired
-    private ConsumerDAO consumers;
-
     @Autowired
     private PrintShopDAO printshops;
     @Autowired

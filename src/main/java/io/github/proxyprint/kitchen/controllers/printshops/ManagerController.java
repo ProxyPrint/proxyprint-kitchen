@@ -123,4 +123,22 @@ public class ManagerController {
             return GSON.toJson(response);
         }
     }
+
+    @Secured("ROLE_MANAGER")
+    @RequestMapping(value = "/printshops/{id}/pricetable/papers", method = RequestMethod.PUT)
+    public String editPaperItem(@PathVariable(value = "id") long id, @RequestBody PaperTableItem pti) {
+        PrintShop pshop = printshops.findOne(id);
+        JsonObject response = new JsonObject();
+
+        if(pshop!=null) {
+            pshop.insertPaperTableItemsInPriceTable(pti);
+            printshops.save(pshop);
+            response.addProperty("success", true);
+            return GSON.toJson(response);
+        }
+        else{
+            response.addProperty("success", false);
+            return GSON.toJson(response);
+        }
+    }
 }
