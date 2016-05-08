@@ -30,8 +30,4 @@ public class DistanceCalculator {
         return Math.sqrt(bd.doubleValue());
     }
 
-    public static void main(String[] args) {
-        // Test distance calculation
-        System.out.println(distance(41.557973, -8.398398, 41.5594, -8.3972));
-    }
 }
