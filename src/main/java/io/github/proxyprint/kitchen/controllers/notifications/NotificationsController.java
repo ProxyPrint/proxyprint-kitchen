@@ -22,6 +22,8 @@ import io.github.proxyprint.kitchen.utils.NotificationManager;
 import java.security.Principal;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,9 +52,18 @@ public class NotificationsController {
     }
 
     @RequestMapping(value = "/consumer/subscribe", produces = "text/event-stream")
-    public SseEmitter subscribe(WebRequest request) throws Exception {
+    public ResponseEntity<SseEmitter> subscribe(WebRequest request) throws Exception {
         String username = request.getParameter("username");
-        return notificationManager.subscribe(username);
+        String password = request.getParameter("password");
+
+        Consumer consumer = this.consumers.findByUsername(username);
+        if (consumer == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } else if (consumer.getPassword().equals(password)) {
+            return new ResponseEntity<>(this.notificationManager.subscribe(username), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
     }
 
     @Secured({"ROLE_USER"})
