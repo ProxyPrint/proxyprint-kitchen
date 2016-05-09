@@ -11,10 +11,13 @@ import io.github.proxyprint.kitchen.models.printshops.pricetable.Item;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.RangePaperItem;
 import io.github.proxyprint.kitchen.models.repositories.EmployeeDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -151,19 +154,23 @@ public class ManagerController {
 
     @Secured("ROLE_MANAGER")
     @RequestMapping(value = "/printshops/{printShopID}/employees", method = RequestMethod.POST)
-    public String addEmployee(@PathVariable(value = "printShopID") long psid, @RequestBody Employee emp) {
+    public String addEmployee(@PathVariable(value = "printShopID") long psid, HttpServletRequest request) {
         PrintShop pshop = printshops.findOne(psid);
         JsonObject response = new JsonObject();
 
-        // #BUG BUG BUG BUG!
-        if(emp.getPassword()==null) {
-            emp.setPassword("1234");
+        String requestJSON = null;
+        Employee newEmp = null;
+        try {
+            requestJSON = IOUtils.toString( request.getInputStream());
+            newEmp = GSON.fromJson(requestJSON, Employee.class);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        if(pshop!=null && emp.getName()!=null && emp.getUsername()!=null && emp.getPassword()!=null) {
-            Employee e = employees.findByUsername(emp.getUsername());
+        if(pshop!=null && newEmp!=null && newEmp.getName()!=null && newEmp.getUsername()!=null && newEmp.getPassword()!=null) {
+            Employee e = employees.findByUsername(newEmp.getName());
             if(e==null) {
-                e = new Employee(emp.getUsername(), emp.getPassword(), emp.getName(), pshop);
+                e = new Employee(newEmp.getUsername(), newEmp.getPassword(), newEmp.getName(), pshop);
                 employees.save(e);
                 e = employees.findByUsername(e.getUsername());
                 response.addProperty("success", true);
