@@ -1,12 +1,15 @@
 package io.github.proxyprint.kitchen.models.consumer;
 
 import io.github.proxyprint.kitchen.models.User;
+import io.github.proxyprint.kitchen.models.notifications.Notification;
 import io.github.proxyprint.kitchen.models.printshops.PrintRequest;
 import io.github.proxyprint.kitchen.utils.gson.Exclude;
+import java.util.ArrayList;
 
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -24,7 +27,8 @@ public class Consumer extends User {
     private String latitude;
     @Column(name = "longitude", nullable = true)
     private String longitude;
-    @JoinColumn (name="consumer_id")
+
+    @JoinColumn(name = "consumer_id")
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<PrintingSchema> printingSchemas;
 
@@ -33,8 +37,14 @@ public class Consumer extends User {
     @Exclude
     private Set<PrintRequest> printrequests;
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "consumer")
+    @Exclude
+    private List<Notification> notifications;
+
     public Consumer() {
         this.printingSchemas = new HashSet<>();
+        this.notifications = new ArrayList<>();
         super.addRole(User.Roles.ROLE_USER.name());
     }
 
@@ -46,6 +56,7 @@ public class Consumer extends User {
         this.latitude = latitude;
         this.longitude = longitude;
         this.printingSchemas = new HashSet<>();
+        this.notifications = new ArrayList<>();
     }
 
     public Consumer(String username, String password, String name, String email, String latitude, String longitude, Set<PrintingSchema> printingSchemas) {
@@ -89,9 +100,13 @@ public class Consumer extends User {
         this.longitude = longitude;
     }
 
-    public Set<PrintingSchema> getPrintingSchemas() { return printingSchemas; }
+    public Set<PrintingSchema> getPrintingSchemas() {
+        return printingSchemas;
+    }
 
-    public void setPrintingSchemas(Set<PrintingSchema> printingSchemas) { this.printingSchemas = printingSchemas; }
+    public void setPrintingSchemas(Set<PrintingSchema> printingSchemas) {
+        this.printingSchemas = printingSchemas;
+    }
 
     public boolean addPrintingSchema(PrintingSchema ps) {
         return this.printingSchemas.add(ps);
@@ -100,8 +115,8 @@ public class Consumer extends User {
     public boolean deletePrintingSchema(long psID) {
         Iterator it = this.printingSchemas.iterator();
         while (it.hasNext()) {
-            PrintingSchema ps = (PrintingSchema)it.next();
-            if(ps.getId() == psID){
+            PrintingSchema ps = (PrintingSchema) it.next();
+            if (ps.getId() == psID) {
                 it.remove();
                 return true;
             }
@@ -109,10 +124,20 @@ public class Consumer extends User {
         return false;
     }
 
-    public Set<PrintRequest> getPrintRequests() { return printrequests; }
+    public Set<PrintRequest> getPrintRequests() {
+        return printrequests;
+    }
 
-    public void addPrintRequest(PrintRequest printrequest){
+    public void addPrintRequest(PrintRequest printrequest) {
         this.printrequests.add(printrequest);
+    }
+
+    public void addNotifications(Notification notification) {
+        this.notifications.add(notification);
+    }
+
+    public List<Notification> getNotifications() {
+        return new ArrayList<>(notifications);
     }
 
     @Override
