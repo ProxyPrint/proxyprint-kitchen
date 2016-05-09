@@ -148,4 +148,21 @@ public class ManagerController {
             return GSON.toJson(response);
         }
     }
+
+    @Secured("ROLE_MANAGER")
+    @RequestMapping(value = "/printshops/{printShopID}/employees/{employeeID}", method = RequestMethod.DELETE)
+    public String deleteEmployee(@PathVariable(value = "printShopID") long psid, @PathVariable(value = "employeeID") long eid) {
+        Employee emp = employees.findOne(eid);
+        JsonObject response = new JsonObject();
+
+        if(emp!=null) {
+            employees.delete(eid);
+            response.addProperty("success", true);
+            return GSON.toJson(response);
+        }
+        else{
+            response.addProperty("success", false);
+            return GSON.toJson(response);
+        }
+    }
 }

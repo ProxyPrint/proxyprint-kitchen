@@ -17,7 +17,7 @@ public class Employee extends User {
     private String name;
     @JsonIgnore
     @Exclude
-    @OneToOne(cascade = CascadeType.REMOVE)
+    @OneToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "printshop_id")
     private PrintShop printShop;
 
