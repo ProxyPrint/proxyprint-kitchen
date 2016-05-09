@@ -65,4 +65,25 @@ public class PaperItem extends Item {
     public String genKey() {
         return String.format("%s,%s,%s,%s", KEY_BASE, colors.toString(), format.toString(), sides.toString());
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PaperItem)) return false;
+
+        PaperItem paperItem = (PaperItem) o;
+
+        if (getFormat() != paperItem.getFormat()) return false;
+        if (getSides() != paperItem.getSides()) return false;
+        return getColors() == paperItem.getColors();
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getFormat() != null ? getFormat().hashCode() : 0;
+        result = 31 * result + (getSides() != null ? getSides().hashCode() : 0);
+        result = 31 * result + (getColors() != null ? getColors().hashCode() : 0);
+        return result;
+    }
 }
