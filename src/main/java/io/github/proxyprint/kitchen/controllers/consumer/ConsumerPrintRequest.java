@@ -9,26 +9,33 @@ import java.util.Map;
  * Created by daniel on 09-05-2016.
  */
 public class ConsumerPrintRequest {
-    private Map<String,List<ConsumerPrintRequestDocumentInfo>> printRequest;
+    private Map<String,List<ConsumerPrintRequestDocumentInfo>> files;
     private List<Long> printshops;
+    int pages;
 
     public ConsumerPrintRequest() {
-        printRequest = new HashMap<>();
+        files = new HashMap<>();
         printshops = new ArrayList<>();
+        pages=0;
     }
 
-    public ConsumerPrintRequest(Map<String, List<ConsumerPrintRequestDocumentInfo>> printRequest, List<Long> printshops) {
-        this.printRequest = printRequest;
+    public ConsumerPrintRequest(Map<String, List<ConsumerPrintRequestDocumentInfo>> files, List<Long> printshops, int pages) {
+        this.files = files;
         this.printshops = printshops;
+        this.pages = pages;
     }
 
-    public Map<String, List<ConsumerPrintRequestDocumentInfo>> getPrintRequest() { return printRequest; }
+    public Map<String, List<ConsumerPrintRequestDocumentInfo>> getFiles() { return files; }
 
-    public void setPrintRequest(Map<String, List<ConsumerPrintRequestDocumentInfo>> printRequest) {
-        this.printRequest = printRequest;
+    public void setFiles(Map<String, List<ConsumerPrintRequestDocumentInfo>> files) {
+        this.files = files;
     }
 
     public List<Long> getPrintshops() { return printshops; }
 
     public void setPrintshops(List<Long> printshops) { this.printshops = printshops; }
+
+    public int getPages() { return pages; }
+
+    public void setPages(int pages) { this.pages = pages; }
 }

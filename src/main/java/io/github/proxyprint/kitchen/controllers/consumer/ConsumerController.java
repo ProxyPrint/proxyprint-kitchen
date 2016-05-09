@@ -103,7 +103,7 @@ public class ConsumerController {
         for(Long pshopID : request.getPrintshops()) {
             PrintShop pshop = printShops.findOne(pshopID);
             float cost=0;
-            for(Map.Entry<String,List<ConsumerPrintRequestDocumentInfo>> printRequest : request.getPrintRequest().entrySet()) {
+            for(Map.Entry<String,List<ConsumerPrintRequestDocumentInfo>> printRequest : request.getFiles().entrySet()) {
                 String documentName = printRequest.getKey();
                 List<ConsumerPrintRequestDocumentInfo> docSpecs = printRequest.getValue();
 
@@ -114,7 +114,7 @@ public class ConsumerController {
                         cost += calculatePrice(spec.getFirstPage(),spec.getLastPage(),spec.getPrintingSchema(),pshop);
                     }
                 }
-
+                budgets.put(pshopID,cost);
             }
         }
 
