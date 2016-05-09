@@ -183,6 +183,32 @@ public class ManagerController {
     }
 
     @Secured("ROLE_MANAGER")
+    @RequestMapping(value = "/printshops/{id}/pricetable/covers", method = RequestMethod.PUT)
+    public String editCoverItem(@PathVariable(value = "id") long id, @RequestBody CoverTableItem cti) {
+        PrintShop pshop = printshops.findOne(id);
+        JsonObject response = new JsonObject();
+
+        if(pshop!=null) {
+            List<CoverItem> newCoverItems = cti.convertToCoverItems();
+            for(CoverItem newCi : newCoverItems) {
+                pshop.getPriceTable().remove(newCi.genKey());
+                if(newCi.getFormat() == Item.Format.A4) {
+                    pshop.addItemPriceTable(newCi.genKey(), Float.parseFloat(cti.getPriceA4()));
+                } else {
+                    pshop.addItemPriceTable(newCi.genKey(), Float.parseFloat(cti.getPriceA3()));
+                }
+            }
+            printshops.save(pshop);
+            response.addProperty("success", true);
+            return GSON.toJson(response);
+        }
+        else{
+            response.addProperty("success", false);
+            return GSON.toJson(response);
+        }
+    }
+
+    @Secured("ROLE_MANAGER")
     @RequestMapping(value = "/printshops/{id}/pricetable/deletecover", method = RequestMethod.POST)
     public String deleteCoverItem(@PathVariable(value = "id") long id, @RequestBody CoverTableItem cti) {
         PrintShop pshop = printshops.findOne(id);
