@@ -21,8 +21,8 @@ import com.google.gson.reflect.TypeToken;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.CoversTable;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.PapersTable;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.RingsTable;
-import io.github.proxyprint.kitchen.models.printshops.PrintRequest;
-import io.github.proxyprint.kitchen.models.printshops.PrintRequest.Status;
+import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
+import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest.Status;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.BindingItem;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.CoverItem;
@@ -43,7 +43,6 @@ import org.springframework.web.context.request.WebRequest;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeMap;
 

@@ -7,7 +7,7 @@ import io.github.proxyprint.kitchen.models.Admin;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.printshops.Employee;
 import io.github.proxyprint.kitchen.models.printshops.Manager;
-import io.github.proxyprint.kitchen.models.printshops.PrintRequest;
+import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
 import io.github.proxyprint.kitchen.models.printshops.RegisterRequest;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.BindingItem;

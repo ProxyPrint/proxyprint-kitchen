@@ -1,7 +1,7 @@
 package io.github.proxyprint.kitchen.models.repositories;
 
-import io.github.proxyprint.kitchen.models.printshops.PrintRequest;
-import io.github.proxyprint.kitchen.models.printshops.PrintRequest.Status;
+import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
+import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest.Status;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
 import java.util.List;
 import org.springframework.data.repository.CrudRepository;

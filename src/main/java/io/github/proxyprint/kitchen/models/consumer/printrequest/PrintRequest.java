@@ -1,6 +1,7 @@
-package io.github.proxyprint.kitchen.models.printshops;
+package io.github.proxyprint.kitchen.models.consumer.printrequest;
 
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
+import io.github.proxyprint.kitchen.models.printshops.PrintShop;
 import io.github.proxyprint.kitchen.utils.gson.Exclude;
 import java.io.Serializable;
 import java.util.Date;

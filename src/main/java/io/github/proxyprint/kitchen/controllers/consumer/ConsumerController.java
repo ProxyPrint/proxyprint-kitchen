@@ -17,6 +17,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -88,5 +89,10 @@ public class ConsumerController {
         }
         return GSON.toJson(response);
     }
+
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/consumer/budget", method = RequestMethod.POST)
+    public String getBudget(@RequestBody HashMap<>)
+
 
 }

@@ -1,7 +1,7 @@
 package io.github.proxyprint.kitchen.models.consumer;
 
 import io.github.proxyprint.kitchen.models.User;
-import io.github.proxyprint.kitchen.models.printshops.PrintRequest;
+import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
 import io.github.proxyprint.kitchen.utils.gson.Exclude;
 
 import javax.persistence.*;
