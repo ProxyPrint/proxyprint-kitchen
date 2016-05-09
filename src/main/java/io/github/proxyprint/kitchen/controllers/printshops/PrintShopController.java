@@ -162,10 +162,13 @@ public class PrintShopController {
 
         if (printRequest.getStatus() == Status.PENDING) {
             printRequest.setStatus(Status.IN_PROGRESS);
+            response.addProperty("newStatus", Status.IN_PROGRESS.toString());
         } else if (printRequest.getStatus() == Status.IN_PROGRESS) {
             printRequest.setStatus(Status.FINISHED);
+            response.addProperty("newStatus", Status.FINISHED.toString());
         } else if (printRequest.getStatus() == Status.FINISHED) {
             printRequest.setStatus(Status.LIFTED);
+            response.addProperty("newStatus", Status.LIFTED.toString());
         }
         printrequests.save(printRequest);
         response.addProperty("success", true);
