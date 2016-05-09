@@ -155,7 +155,12 @@ public class ManagerController {
         PrintShop pshop = printshops.findOne(psid);
         JsonObject response = new JsonObject();
 
-        if(pshop!=null) {
+        // #BUG BUG BUG BUG!
+        if(emp.getPassword()==null) {
+            emp.setPassword("1234");
+        }
+
+        if(pshop!=null && emp.getName()!=null && emp.getUsername()!=null && emp.getPassword()!=null) {
             Employee e = employees.findByUsername(emp.getUsername());
             if(e==null) {
                 e = new Employee(emp.getUsername(), emp.getPassword(), emp.getName(), pshop);
@@ -166,7 +171,7 @@ public class ManagerController {
                 return GSON.toJson(response);
             } else {
                 response.addProperty("success", false);
-                response.addProperty("message", "Empregado já existe.");
+                response.addProperty("message", "Empregado já existe");
                 return GSON.toJson(response);
             }
         }
