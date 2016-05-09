@@ -4,10 +4,12 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.PaperTableItem;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.RingTableItem;
+import io.github.proxyprint.kitchen.models.printshops.Employee;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.BindingItem;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.Item;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.RangePaperItem;
+import io.github.proxyprint.kitchen.models.repositories.EmployeeDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
@@ -23,6 +25,8 @@ public class ManagerController {
 
     @Autowired
     private PrintShopDAO printshops;
+    @Autowired
+    private EmployeeDAO employees;
     @Autowired
     private Gson GSON;
 
@@ -115,6 +119,27 @@ public class ManagerController {
             // Edit stapling price
             pshop.getPriceTable().put("BINDING,STAPLING,0,0", Float.parseFloat(newStaplingPrice));
             printshops.save(pshop);
+            response.addProperty("success", true);
+            return GSON.toJson(response);
+        }
+        else{
+            response.addProperty("success", false);
+            return GSON.toJson(response);
+        }
+    }
+
+    /*---------------------
+        Employees
+     ---------------------*/
+    @Secured("ROLE_MANAGER")
+    @RequestMapping(value = "/printshops/{printShopID}/employees", method = RequestMethod.GET)
+    public String getEmployees(@PathVariable(value = "printShopID") long psid) {
+        PrintShop pshop = printshops.findOne(psid);
+        JsonObject response = new JsonObject();
+
+        if(pshop!=null) {
+            List<Employee> employeesList = employees.findByPrintShop(pshop);
+            response.add("employees", GSON.toJsonTree(employeesList));
             response.addProperty("success", true);
             return GSON.toJson(response);
         }

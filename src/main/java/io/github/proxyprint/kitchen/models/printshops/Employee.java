@@ -1,6 +1,8 @@
 package io.github.proxyprint.kitchen.models.printshops;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.proxyprint.kitchen.models.User;
+import io.github.proxyprint.kitchen.utils.gson.Exclude;
 
 import javax.persistence.*;
 
@@ -13,6 +15,8 @@ public class Employee extends User {
 
     @Column(name = "name", nullable = false)
     private String name;
+    @JsonIgnore
+    @Exclude
     @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "printshop_id")
     private PrintShop printShop;
