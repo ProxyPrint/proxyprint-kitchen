@@ -171,4 +171,23 @@ public class PrintShopController {
         response.addProperty("success", true);
         return GSON.toJson(response);
     }
+
+    @Secured({"ROLE_MANAGER", "ROLE_EMPLOYEE"})
+    @RequestMapping(value = "/printshops/requests/{id}", method = RequestMethod.GET)
+    public String getPrintShopRequest(@PathVariable(value = "id") long id) {
+        JsonObject response = new JsonObject();
+        //PrintShop printshop = printshops.findOne(id);
+        PrintShop printshop = printshops.findAll().iterator().next();
+
+        if (printshop == null) {
+            response.addProperty("success", false);
+            return GSON.toJson(response);
+        }
+
+        PrintRequest printRequest = printrequests.findByIdInAndPrintshop(id,printshop);
+
+        response.add("printrequest", GSON.toJsonTree(printRequest));
+        response.addProperty("success", true);
+        return GSON.toJson(response);
+    }
 }
