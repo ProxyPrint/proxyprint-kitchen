@@ -3,9 +3,12 @@ package io.github.proxyprint.kitchen.models.consumer.printrequest;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
 import io.github.proxyprint.kitchen.utils.gson.Exclude;
-import java.io.Serializable;
-import java.util.Date;
+
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by MGonc on 28/04/16.
@@ -43,8 +46,12 @@ public class PrintRequest implements Serializable {
     @Exclude private PrintShop printshop;
     @ManyToOne
     private Consumer consumer;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "document")
+    private List<Document> documents;
 
     public PrintRequest() {
+        this.documents = new ArrayList<>();
     }
 
     public PrintRequest(float cost, Date arrivalTimestamp, Consumer consumer, Status status) {
@@ -52,6 +59,7 @@ public class PrintRequest implements Serializable {
         this.arrivalTimestamp = arrivalTimestamp;
         this.consumer = consumer;
         this.status = status;
+        this.documents = new ArrayList<>();
     }
 
     public long getId() {
@@ -126,4 +134,9 @@ public class PrintRequest implements Serializable {
         return printshop;
     }
 
+    public List<Document> getDocuments() { return documents; }
+
+    public void setDocuments(List<Document> documents) { this.documents = documents; }
+
+    public void addDocument(Document doc) { this.documents.add(doc); }
 }

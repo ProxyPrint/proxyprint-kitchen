@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.consumer.PrintingSchema;
+import io.github.proxyprint.kitchen.models.printshops.PrintShop;
 import io.github.proxyprint.kitchen.models.repositories.ConsumerDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintingSchemaDAO;
 import org.apache.commons.io.FilenameUtils;
@@ -92,7 +93,11 @@ public class ConsumerController {
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/consumer/budget", method = RequestMethod.POST)
-    public String getBudget(@RequestBody HashMap<>)
-
+    public String printRequest(@RequestBody ConsumerPrintRequest printRequest) {
+        JsonObject response = new JsonObject();
+        System.out.println(printRequest);
+        response.addProperty("success", true);
+        return GSON.toJson(response);
+    }
 
 }

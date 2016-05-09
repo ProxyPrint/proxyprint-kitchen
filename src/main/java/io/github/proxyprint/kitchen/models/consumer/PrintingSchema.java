@@ -1,8 +1,6 @@
 package io.github.proxyprint.kitchen.models.consumer;
 
-import io.github.proxyprint.kitchen.models.printshops.pricetable.BindingItem;
-import io.github.proxyprint.kitchen.models.printshops.pricetable.CoverItem;
-import io.github.proxyprint.kitchen.models.printshops.pricetable.PaperItem;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.*;
 
 import javax.persistence.*;
 
@@ -61,6 +59,34 @@ public class PrintingSchema {
     public String getCoverSpecs() { return coverSpecs; }
 
     public void setCoverSpecs(String coverSpecs) { this.coverSpecs = coverSpecs; }
+
+    /**
+     * Converts the string paperSpecs to its respective PaperItem Object.
+     * @return a PaperItem
+     */
+    public PaperItem getPaperItem() {
+        ItemFactory itemf = new ItemFactory();
+        return (PaperItem) itemf.createItem(this.paperSpecs);
+    }
+
+    /**
+     * Converts the string bindingSpecs to its respective PaperItem Object.
+     * @return a BindingItem
+     */
+    public BindingItem getBindingItem() {
+        ItemFactory itemf = new ItemFactory();
+        return (BindingItem) itemf.createItem(this.bindingSpecs);
+    }
+
+    /**
+     * Converts the string coverSpecs to its respective CoverItem Object.
+     * @return CoverItem
+     */
+    public CoverItem getCoverItem() {
+        ItemFactory itemf = new ItemFactory();
+        return (CoverItem) itemf.createItem(this.coverSpecs);
+    }
+
 
     @Override
     public boolean equals(Object o) {

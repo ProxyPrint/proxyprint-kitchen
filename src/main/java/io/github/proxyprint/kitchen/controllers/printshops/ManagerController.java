@@ -2,6 +2,7 @@ package io.github.proxyprint.kitchen.controllers.printshops;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import io.github.proxyprint.kitchen.controllers.consumer.ConsumerPrintRequest;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.PaperTableItem;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.RingTableItem;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
@@ -123,4 +124,5 @@ public class ManagerController {
             return GSON.toJson(response);
         }
     }
+
 }
