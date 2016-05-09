@@ -82,7 +82,6 @@ public class AdminController {
         Consumer joao = new Consumer("João dos Santos", "joao", "1234", "joao@gmail.com", "69", "69");
         PrintShop printshop = new PrintShop("Video Norte", "Rua Nova de Santa Cruz", 41.5594, 8.3972, "123444378", "logo", 0);
         Manager manager = new Manager("joaquim", "1234", "Joaquim Pereira", "joaquim@gmail.com");
-        Employee employee = new Employee("mafalda", "1234", "Mafalda Sofia Pinto");
         RegisterRequest registerRequest = new RegisterRequest("Ana Pinto", "danielcaldas@sapo,pt", "1234", "Rua das Cruzes n20", 43.221, 41.121, "124555321", "Printer Style", false);
 
         // Bindings
@@ -126,7 +125,6 @@ public class AdminController {
 
         users.save(master);
         users.save(joao);
-        users.save(employee);
         users.save(manager);
 
         printshop.addPrintRequest(new PrintRequest(20, Date.from(Instant.now()), joao, PrintRequest.Status.PENDING));
@@ -139,6 +137,31 @@ public class AdminController {
 
         printShops.save(printshop);
         registerRequests.save(registerRequest);
+
+        Employee employee = new Employee("mafalda", "1234", "Mafalda Sofia Pinto", printshop);
+        users.save(employee);
+        employee = new Employee("miguel", "1234", "Miguel Santos", printshop);
+        users.save(employee);
+        employee = new Employee("ana", "1234", "Ana Ferreira", printshop);
+        users.save(employee);
+        employee = new Employee("joana", "1234", "Joana Sofia", printshop);
+        users.save(employee);
+        employee = new Employee("rita", "1234", "Rita Semedo", printshop);
+        users.save(employee);
+        employee = new Employee("rafaela", "1234", "Rafaela Martins", printshop);
+        users.save(employee);
+        employee = new Employee("cristiano", "1234", "Cristiano Costa", printshop);
+        users.save(employee);
+        employee = new Employee("marco", "1234", "Marco Pinheiro", printshop);
+        users.save(employee);
+        employee = new Employee("daniel", "1234", "Daniel Caldas", printshop);
+        users.save(employee);
+        employee = new Employee("carlos", "1234", "Carlos do Mar", printshop);
+        users.save(employee);
+        employee = new Employee("mario", "1234", "Mário Pereira", printshop);
+        users.save(employee);
+        employee = new Employee("fabio", "1234", "Fábio Cruz", printshop);
+        users.save(employee);
 
         response.addProperty("message", "seeding completed");
 
