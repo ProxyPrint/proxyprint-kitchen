@@ -41,19 +41,19 @@ public abstract class User implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    protected long id;
     @Column(name = "username", nullable = false, unique = true)
-    private String username;
+    protected String username;
     @JsonIgnore
     @Column(name = "password", nullable = false)
-    private String password;
+    protected String password;
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "roles",
             joinColumns = @JoinColumn(name = "user_id")
     )
     @Cascade(CascadeType.ALL)
-    private Set<String> roles;
+    protected Set<String> roles;
 
     public User() {
         this.roles = new HashSet<>();

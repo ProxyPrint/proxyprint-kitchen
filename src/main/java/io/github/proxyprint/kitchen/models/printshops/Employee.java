@@ -46,9 +46,15 @@ public class Employee extends User {
 
     @Override
     public String toString() {
-        return "Employee{" +
-                "name='" + name + '\'' +
-                ", printShop=" + printShop.getName() +
-                '}';
+        StringBuilder sb = new StringBuilder();
+        sb.append("Employee{");
+        sb.append("name='" + name + '\'');
+        sb.append("username='" + username + '\'');
+        sb.append("password='" + password + '\'');
+        if(printShop!=null) {
+            sb.append(", printShop=" + printShop.getName());
+        }
+
+        return sb.toString();
     }
 }

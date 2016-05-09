@@ -150,6 +150,33 @@ public class ManagerController {
     }
 
     @Secured("ROLE_MANAGER")
+    @RequestMapping(value = "/printshops/{printShopID}/employees", method = RequestMethod.POST)
+    public String addEmployee(@PathVariable(value = "printShopID") long psid, @RequestBody Employee emp) {
+        PrintShop pshop = printshops.findOne(psid);
+        JsonObject response = new JsonObject();
+
+        if(pshop!=null) {
+            Employee e = employees.findByUsername(emp.getUsername());
+            if(e==null) {
+                e = new Employee(emp.getUsername(), emp.getPassword(), emp.getName(), pshop);
+                employees.save(e);
+                e = employees.findByUsername(e.getUsername());
+                response.addProperty("success", true);
+                response.addProperty("id", e.getId());
+                return GSON.toJson(response);
+            } else {
+                response.addProperty("success", false);
+                response.addProperty("message", "Empregado já existe.");
+                return GSON.toJson(response);
+            }
+        }
+        else{
+            response.addProperty("success", false);
+            return GSON.toJson(response);
+        }
+    }
+
+    @Secured("ROLE_MANAGER")
     @RequestMapping(value = "/printshops/{printShopID}/employees/{employeeID}", method = RequestMethod.DELETE)
     public String deleteEmployee(@PathVariable(value = "printShopID") long psid, @PathVariable(value = "employeeID") long eid) {
         Employee emp = employees.findOne(eid);
