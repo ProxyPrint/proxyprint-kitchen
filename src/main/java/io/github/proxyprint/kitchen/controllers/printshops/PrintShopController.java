@@ -145,4 +145,52 @@ public class PrintShopController {
 
         return GSON.toJson(response);
     }
+
+    @Secured({"ROLE_MANAGER", "ROLE_EMPLOYEE"})
+    @RequestMapping(value = "/printshops/requests/{id}", method = RequestMethod.POST)
+    public String changeStatusPrintShopRequests(@PathVariable(value = "id") long id) {
+        JsonObject response = new JsonObject();
+        //PrintShop printshop = printshops.findOne(id);
+        PrintShop printshop = printshops.findAll().iterator().next();
+
+        if (printshop == null) {
+            response.addProperty("success", false);
+            return GSON.toJson(response);
+        }
+
+        PrintRequest printRequest = printrequests.findOne(id);
+
+        if (printRequest.getStatus() == Status.PENDING) {
+            printRequest.setStatus(Status.IN_PROGRESS);
+            response.addProperty("newStatus", Status.IN_PROGRESS.toString());
+        } else if (printRequest.getStatus() == Status.IN_PROGRESS) {
+            printRequest.setStatus(Status.FINISHED);
+            response.addProperty("newStatus", Status.FINISHED.toString());
+        } else if (printRequest.getStatus() == Status.FINISHED) {
+            printRequest.setStatus(Status.LIFTED);
+            response.addProperty("newStatus", Status.LIFTED.toString());
+        }
+        printrequests.save(printRequest);
+        response.addProperty("success", true);
+        return GSON.toJson(response);
+    }
+
+    @Secured({"ROLE_MANAGER", "ROLE_EMPLOYEE"})
+    @RequestMapping(value = "/printshops/requests/{id}", method = RequestMethod.GET)
+    public String getPrintShopRequest(@PathVariable(value = "id") long id) {
+        JsonObject response = new JsonObject();
+        //PrintShop printshop = printshops.findOne(id);
+        PrintShop printshop = printshops.findAll().iterator().next();
+
+        if (printshop == null) {
+            response.addProperty("success", false);
+            return GSON.toJson(response);
+        }
+
+        PrintRequest printRequest = printrequests.findByIdInAndPrintshop(id,printshop);
+
+        response.add("printrequest", GSON.toJsonTree(printRequest));
+        response.addProperty("success", true);
+        return GSON.toJson(response);
+    }
 }
