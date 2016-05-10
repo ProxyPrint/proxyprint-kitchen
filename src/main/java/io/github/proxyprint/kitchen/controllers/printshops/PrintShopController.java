@@ -109,7 +109,7 @@ public class PrintShopController {
                 if (type.equals(Item.PAPER)) {
                     RangePaperItem rpi = (RangePaperItem) pshop.loadPriceItem(key);
                     papersTable.addRangePaperItem(rpi,pshop);
-                } else if (type.equals(Item.BINDING)) {
+                } else if (type.equals(Item.RingType.BINDING.toString())) {
                     BindingItem bi = (BindingItem) pshop.loadPriceItem(key);
                     ringsTable.addBindingItem(bi, pshop.getPrice(bi));
 

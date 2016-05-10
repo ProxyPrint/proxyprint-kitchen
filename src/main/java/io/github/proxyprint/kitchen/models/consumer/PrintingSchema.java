@@ -26,14 +26,20 @@ public class PrintingSchema {
 
     public PrintingSchema(String name , PaperItem psi, BindingItem bi, CoverItem ci) {
         this.name = name;
-        this.paperSpecs = psi.toString();
+        this.paperSpecs = psi.toString(); // Always required paperSpecs
         if(bi!=null) {
             this.bindingSpecs = bi.genKey();
             if(ci!=null) {
                 this.coverSpecs = ci.genKey();
+            } else {
+                this.coverSpecs = "";
             }
-        } else {
+        } else if(bi.getRingsType().equals(Item.RingType.BINDING.toString())) {
+            bi.setRingThicknessInfLim(0);
+            bi.setRingThicknessSupLim(0);
             this.bindingSpecs = BindingItem.RingType.STAPLING.toString();
+        } else {
+            this.bindingSpecs="";
         }
     }
 
@@ -50,15 +56,24 @@ public class PrintingSchema {
 
     public void setName(String name) { this.name = name; }
 
-    public String getPaperSpecs() { return paperSpecs; }
+    public String getPaperSpecs() {
+        if(paperSpecs!=null) return paperSpecs;
+        else return "";
+    }
 
     public void setPaperSpecs(String paperSpecs) { this.paperSpecs = paperSpecs; }
 
-    public String getBindingSpecs() { return bindingSpecs; }
+    public String getBindingSpecs() {
+        if(bindingSpecs!=null) return bindingSpecs;
+        else return "";
+    }
 
     public void setBindingSpecs(String bindingSpecs) { this.bindingSpecs = bindingSpecs; }
 
-    public String getCoverSpecs() { return coverSpecs; }
+    public String getCoverSpecs() {
+        if(coverSpecs!=null) return coverSpecs;
+        else return "";
+    }
 
     public void setCoverSpecs(String coverSpecs) { this.coverSpecs = coverSpecs; }
 

@@ -107,7 +107,6 @@ public class AdminController {
 
         users.save(master);
         users.save(employee);
-        users.save(manager);
 
         printshop.addPrintRequest(new PrintRequest(20, Date.from(Instant.now()), joao, PrintRequest.Status.PENDING));
         printshop.addPrintRequest(new PrintRequest(25, Date.from(Instant.now()), joao, PrintRequest.Status.PENDING));
@@ -182,6 +181,10 @@ public class AdminController {
 
         // Save printshop
         printShops.save(printshop);
+
+        // Set printshop to manager and save
+        manager.setPrintShop(printshop);
+        users.save(manager);
 
         response.addProperty("message", "seeding completed");
 
