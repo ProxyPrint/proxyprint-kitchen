@@ -189,6 +189,40 @@ public class ManagerController {
     }
 
     @Secured("ROLE_MANAGER")
+    @RequestMapping(value = "/printshops/{printShopID}/employees", method = RequestMethod.PUT)
+    public String editEmployee(@PathVariable(value = "printShopID") long psid, HttpServletRequest request) {
+        PrintShop pshop = printshops.findOne(psid);
+        JsonObject response = new JsonObject();
+
+        String requestJSON = null;
+        Employee editedEmp = null;
+        try {
+            requestJSON = IOUtils.toString( request.getInputStream());
+            editedEmp = GSON.fromJson(requestJSON, Employee.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if(pshop!=null && editedEmp!=null && editedEmp.getName()!=null && editedEmp.getUsername()!=null && editedEmp.getPassword()!=null) {
+            Employee e = employees.findByUsername(editedEmp.getName());
+            if(e==null) {
+                response.addProperty("success", false);
+                response.addProperty("message", "Empregado não existe");
+                return GSON.toJson(response);
+            } else {
+                e = new Employee(editedEmp.getUsername(), editedEmp.getPassword(), editedEmp.getName(), pshop);
+                employees.save(e);
+                response.addProperty("success", true);
+                return GSON.toJson(response);
+            }
+        }
+        else{
+            response.addProperty("success", false);
+            return GSON.toJson(response);
+        }
+    }
+
+    @Secured("ROLE_MANAGER")
     @RequestMapping(value = "/printshops/{printShopID}/employees/{employeeID}", method = RequestMethod.DELETE)
     public String deleteEmployee(@PathVariable(value = "printShopID") long psid, @PathVariable(value = "employeeID") long eid) {
         Employee emp = employees.findOne(eid);
