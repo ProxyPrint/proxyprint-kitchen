@@ -15,4 +15,6 @@ import javax.transaction.Transactional;
 public interface PrintRequestDAO extends CrudRepository<PrintRequest, Long> {
 
     public List<PrintRequest> findByStatusInAndPrintshop(List<Status> statuses, PrintShop printshop);
+    public PrintRequest findByIdInAndPrintshop(long id, PrintShop printshop);
+
 }
