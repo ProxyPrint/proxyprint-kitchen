@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2016 Jorge Caldas, José Cortez
  * José Francisco, Marcelo Gonçalves
  *
@@ -70,6 +70,7 @@ public class WebAppConfig {
         config.addAllowedMethod("GET");
         config.addAllowedMethod("POST");
         config.addAllowedMethod("DELETE");
+        config.addAllowedMethod("PUT");
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
@@ -87,7 +88,7 @@ public class WebAppConfig {
                 .paths(PathSelectors.any())
                 .build();
     }
-    
+
     @Bean
     public NotificationManager notificationSubscriptions(){
      return new NotificationManager();
