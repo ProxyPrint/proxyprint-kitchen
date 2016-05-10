@@ -120,6 +120,10 @@ public class PrintShopController {
         return GSON.toJson(response);
     }
 
+
+    /*-------------------------
+        PrintRequests
+    -------------------------*/
     @Secured({"ROLE_MANAGER", "ROLE_EMPLOYEE"})
     @RequestMapping(value = "/printshops/requests/{id}", method = RequestMethod.POST)
     public String changeStatusPrintShopRequests(@PathVariable(value = "id") long id) {
@@ -166,6 +170,32 @@ public class PrintShopController {
 
         response.add("printrequest", GSON.toJsonTree(printRequest));
 
+        response.addProperty("success", true);
+        return GSON.toJson(response);
+    }
+
+    @Secured({"ROLE_MANAGER", "ROLE_EMPLOYEE"})
+    @RequestMapping(value = "/printshops/requests", method = RequestMethod.GET)
+    public String getPrintShopRequests() {
+        JsonObject response = new JsonObject();
+        //PrintShop printshop = printshops.findOne(id);
+        PrintShop printshop = printshops.findAll().iterator().next();
+
+        if (printshop == null) {
+            response.addProperty("success", false);
+            return GSON.toJson(response);
+        }
+
+        List<Status> status = new ArrayList<>();
+        status.add(Status.PENDING);
+        status.add(Status.IN_PROGRESS);
+
+        List<PrintRequest> printRequestsList = printrequests.findByStatusInAndPrintshop(status, printshop);
+        Type listOfPRequests = new TypeToken<List<PrintShop>>(){}.getType();
+        String res = GSON.toJson(printRequestsList,listOfPRequests);
+
+        System.out.println(res);
+        response.addProperty("printrequest", res);
         response.addProperty("success", true);
         return GSON.toJson(response);
     }
