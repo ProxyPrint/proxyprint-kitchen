@@ -21,8 +21,8 @@ import com.google.gson.reflect.TypeToken;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.CoversTable;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.PapersTable;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.RingsTable;
-import io.github.proxyprint.kitchen.models.printshops.PrintRequest;
-import io.github.proxyprint.kitchen.models.printshops.PrintRequest.Status;
+import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
+import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest.Status;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.BindingItem;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.CoverItem;
@@ -43,7 +43,6 @@ import org.springframework.web.context.request.WebRequest;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -63,21 +62,27 @@ public class PrintShopController {
 
     @RequestMapping(value = "/printshops/nearest", method = RequestMethod.GET)
     public String getNearestPrintShops(WebRequest request) {
-        System.out.format("Latitude: %s Longitude: %s\n", request.getParameter("latitude"), request.getParameter("longitude"));
-        Double latitude = Double.parseDouble(request.getParameter("latitude"));
-        Double longitude = Double.parseDouble(request.getParameter("longitude"));
+        String lat = request.getParameter("latitude");
+        String lon = request.getParameter("longitude");
 
-        System.out.format("Latitude: %s Longitude: %s\n", latitude, longitude);
-
-        TreeMap<Double, PrintShop> pshops = new TreeMap<>();
         JsonObject response = new JsonObject();
 
-        for (PrintShop p : printshops.findAll()) {
-            double distance = DistanceCalculator.distance(latitude, longitude, p.getLatitude(), p.getLongitude());
-            pshops.put(distance, p);
-        }
-        response.add("printshops", GSON.toJsonTree(new LinkedList(pshops.values())));
+        if(lat!=null && lon!=null) {
+            Double latitude = Double.parseDouble(lat);
+            Double longitude = Double.parseDouble(lon);
+            System.out.format("Latitude: %s Longitude: %s\n", latitude, longitude);
 
+            TreeMap<Double, PrintShop> pshops = new TreeMap<>();
+
+            for (PrintShop p : printshops.findAll()) {
+                double distance = DistanceCalculator.distance(latitude, longitude, p.getLatitude(), p.getLongitude());
+                pshops.put(distance, p);
+            }
+            response.addProperty("success", true);
+            response.add("printshops", GSON.toJsonTree((pshops)));
+        } else {
+            response.addProperty("success", false);
+        }
         return GSON.toJson(response);
     }
 
@@ -100,7 +105,7 @@ public class PrintShopController {
                 if (type.equals(Item.PAPER)) {
                     RangePaperItem rpi = (RangePaperItem) pshop.loadPriceItem(key);
                     papersTable.addRangePaperItem(rpi,pshop);
-                } else if (type.equals(Item.BINDING)) {
+                } else if (type.equals(Item.RingType.BINDING.toString())) {
                     BindingItem bi = (BindingItem) pshop.loadPriceItem(key);
                     ringsTable.addBindingItem(bi, pshop.getPrice(bi));
 

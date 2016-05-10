@@ -1,8 +1,6 @@
 package io.github.proxyprint.kitchen.models.consumer;
 
-import io.github.proxyprint.kitchen.models.printshops.pricetable.BindingItem;
-import io.github.proxyprint.kitchen.models.printshops.pricetable.CoverItem;
-import io.github.proxyprint.kitchen.models.printshops.pricetable.PaperItem;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.*;
 
 import javax.persistence.*;
 
@@ -27,18 +25,26 @@ public class PrintingSchema {
     public PrintingSchema() {}
 
     public PrintingSchema(String name , PaperItem psi, BindingItem bi, CoverItem ci) {
-        this.paperSpecs = psi.toString();
+        this.name = name;
+        this.paperSpecs = psi.toString(); // Always required paperSpecs
         if(bi!=null) {
             this.bindingSpecs = bi.genKey();
             if(ci!=null) {
                 this.coverSpecs = ci.genKey();
+            } else {
+                this.coverSpecs = "";
             }
-        } else {
+        } else if(bi.getRingsType().equals(Item.RingType.BINDING.toString())) {
+            bi.setRingThicknessInfLim(0);
+            bi.setRingThicknessSupLim(0);
             this.bindingSpecs = BindingItem.RingType.STAPLING.toString();
+        } else {
+            this.bindingSpecs="";
         }
     }
 
     public PrintingSchema(String name, String paperSpecs, String bindingSpecs, String coverSpecs) {
+        this.name = name;
         this.paperSpecs = paperSpecs;
         this.bindingSpecs = bindingSpecs;
         this.coverSpecs = coverSpecs;
@@ -50,17 +56,54 @@ public class PrintingSchema {
 
     public void setName(String name) { this.name = name; }
 
-    public String getPaperSpecs() { return paperSpecs; }
+    public String getPaperSpecs() {
+        if(paperSpecs!=null) return paperSpecs;
+        else return "";
+    }
 
     public void setPaperSpecs(String paperSpecs) { this.paperSpecs = paperSpecs; }
 
-    public String getBindingSpecs() { return bindingSpecs; }
+    public String getBindingSpecs() {
+        if(bindingSpecs!=null) return bindingSpecs;
+        else return "";
+    }
 
     public void setBindingSpecs(String bindingSpecs) { this.bindingSpecs = bindingSpecs; }
 
-    public String getCoverSpecs() { return coverSpecs; }
+    public String getCoverSpecs() {
+        if(coverSpecs!=null) return coverSpecs;
+        else return "";
+    }
 
     public void setCoverSpecs(String coverSpecs) { this.coverSpecs = coverSpecs; }
+
+    /**
+     * Converts the string paperSpecs to its respective PaperItem Object.
+     * @return a PaperItem
+     */
+    public PaperItem getPaperItem() {
+        ItemFactory itemf = new ItemFactory();
+        return (PaperItem) itemf.createItem(this.paperSpecs);
+    }
+
+    /**
+     * Converts the string bindingSpecs to its respective PaperItem Object.
+     * @return a BindingItem
+     */
+    public BindingItem getBindingItem() {
+        ItemFactory itemf = new ItemFactory();
+        return (BindingItem) itemf.createItem(this.bindingSpecs);
+    }
+
+    /**
+     * Converts the string coverSpecs to its respective CoverItem Object.
+     * @return CoverItem
+     */
+    public CoverItem getCoverItem() {
+        ItemFactory itemf = new ItemFactory();
+        return (CoverItem) itemf.createItem(this.coverSpecs);
+    }
+
 
     @Override
     public boolean equals(Object o) {

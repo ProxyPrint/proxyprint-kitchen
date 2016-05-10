@@ -141,5 +141,4 @@ public class ManagerController {
             return GSON.toJson(response);
         }
     }
-
 }

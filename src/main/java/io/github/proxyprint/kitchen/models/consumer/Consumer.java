@@ -1,16 +1,12 @@
 package io.github.proxyprint.kitchen.models.consumer;
 
 import io.github.proxyprint.kitchen.models.User;
+import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
 import io.github.proxyprint.kitchen.models.notifications.Notification;
-import io.github.proxyprint.kitchen.models.printshops.PrintRequest;
 import io.github.proxyprint.kitchen.utils.gson.Exclude;
-import java.util.ArrayList;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by daniel on 04-04-2016.
