@@ -7,7 +7,7 @@ html-inline target/index.html > docs.html
 mv docs.html ../docs/
 rm -r target
 rm tmp.json
-if [ $1 == "open" ]; then
+if ! [[ -z $1 ]] && [[ $1 == "open" ]]; then
 	sensible-browser ../docs/docs.html
 fi
 

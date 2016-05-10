@@ -48,7 +48,6 @@ public class AdminController {
     @Autowired
     private Gson GSON;
 
-    // NOT WORKING YET!
     @Secured({"ROLE_ADMIN"})
     @RequestMapping(value = "/printshops", method = RequestMethod.GET)
     public String getPrinShopsList() {
@@ -125,7 +124,6 @@ public class AdminController {
 
         users.save(master);
         users.save(joao);
-        users.save(manager);
 
         printshop.addPrintRequest(new PrintRequest(20, Date.from(Instant.now()), joao, PrintRequest.Status.PENDING));
         printshop.addPrintRequest(new PrintRequest(25, Date.from(Instant.now()), joao, PrintRequest.Status.PENDING));
@@ -138,30 +136,47 @@ public class AdminController {
         printShops.save(printshop);
         registerRequests.save(registerRequest);
 
+        manager.setPrintShop(printshop);
+        users.save(manager);
+
+        /*--------------------- Employees ---------------------*/
         Employee employee = new Employee("mafalda", "1234", "Mafalda Sofia Pinto", printshop);
+        employee.setPrintShop(printshop);
         users.save(employee);
         employee = new Employee("miguel", "1234", "Miguel Santos", printshop);
+        employee.setPrintShop(printshop);
         users.save(employee);
         employee = new Employee("ana", "1234", "Ana Ferreira", printshop);
+        employee.setPrintShop(printshop);
         users.save(employee);
         employee = new Employee("joana", "1234", "Joana Sofia", printshop);
+        employee.setPrintShop(printshop);
         users.save(employee);
         employee = new Employee("rita", "1234", "Rita Semedo", printshop);
+        employee.setPrintShop(printshop);
         users.save(employee);
         employee = new Employee("rafaela", "1234", "Rafaela Martins", printshop);
+        employee.setPrintShop(printshop);
         users.save(employee);
         employee = new Employee("cristiano", "1234", "Cristiano Costa", printshop);
+        employee.setPrintShop(printshop);
         users.save(employee);
         employee = new Employee("marco", "1234", "Marco Pinheiro", printshop);
+        employee.setPrintShop(printshop);
         users.save(employee);
         employee = new Employee("daniel", "1234", "Daniel Caldas", printshop);
+        employee.setPrintShop(printshop);
         users.save(employee);
         employee = new Employee("carlos", "1234", "Carlos do Mar", printshop);
+        employee.setPrintShop(printshop);
         users.save(employee);
         employee = new Employee("mario", "1234", "Mário Pereira", printshop);
+        employee.setPrintShop(printshop);
         users.save(employee);
         employee = new Employee("fabio", "1234", "Fábio Cruz", printshop);
+        employee.setPrintShop(printshop);
         users.save(employee);
+        /*--------------------- Employees ---------------------*/
 
         response.addProperty("message", "seeding completed");
 

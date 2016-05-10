@@ -1,6 +1,10 @@
 package io.github.proxyprint.kitchen.controllers.printshops.pricetable;
 
+import io.github.proxyprint.kitchen.models.printshops.pricetable.CoverItem;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.Item;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by daniel on 02-05-2016.
@@ -43,5 +47,22 @@ public class CoverTableItem {
             return "PVC Opaco";
         }
         return "";
+    }
+
+    public List<CoverItem> convertToCoverItems() {
+        List<CoverItem> res = new ArrayList<>();
+        CoverItem ci;
+        if(!this.getPriceA3().equals(DEFAULT)) {
+            // Has A3 price
+            ci = new CoverItem(Item.CoverType.valueOf(this.getCoverType()), Item.Format.A3);
+            res.add(ci);
+        }
+        if(!this.getPriceA4().equals(DEFAULT)) {
+            // Has A4 price
+            ci = new CoverItem(Item.CoverType.valueOf(this.getCoverType()), Item.Format.A4);
+            res.add(ci);
+        }
+
+        return res;
     }
 }
