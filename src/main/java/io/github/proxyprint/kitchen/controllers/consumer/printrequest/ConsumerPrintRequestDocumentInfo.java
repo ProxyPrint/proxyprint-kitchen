@@ -1,4 +1,4 @@
-package io.github.proxyprint.kitchen.controllers.consumer;
+package io.github.proxyprint.kitchen.controllers.consumer.printrequest;
 
 import io.github.proxyprint.kitchen.models.consumer.printrequest.DocumentSpec;
 

@@ -2,6 +2,8 @@ package io.github.proxyprint.kitchen.controllers.consumer;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import io.github.proxyprint.kitchen.controllers.consumer.printrequest.ConsumerPrintRequest;
+import io.github.proxyprint.kitchen.controllers.consumer.printrequest.ConsumerPrintRequestDocumentInfo;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.consumer.PrintingSchema;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.DocumentSpec;

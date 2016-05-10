@@ -1,4 +1,4 @@
-package io.github.proxyprint.kitchen.controllers.consumer;
+package io.github.proxyprint.kitchen.controllers.consumer.printrequest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
