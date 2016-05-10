@@ -18,6 +18,7 @@ package io.github.proxyprint.kitchen;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import io.github.proxyprint.kitchen.utils.NotificationManager;
 import io.github.proxyprint.kitchen.utils.gson.AnnotationExclusionStrategy;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -26,9 +27,9 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.spi.DocumentationType;
@@ -60,19 +61,21 @@ public class WebAppConfig {
     }
 
     @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurerAdapter() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                // Add REST allowed endpoints...
-                registry.addMapping("/**").allowedOrigins("http://localhost:9000")
-                        .allowedMethods("POST","GET","DELETE","PUT");
-            }
-        };
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true); // you USUALLY want this
+        config.addAllowedOrigin("*");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("GET");
+        config.addAllowedMethod("POST");
+        config.addAllowedMethod("DELETE");
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
     }
-    
+
     @Bean
-    public Gson gson(){
+    public Gson gson() {
         return new GsonBuilder().setExclusionStrategies(new AnnotationExclusionStrategy()).create();
     }
 
@@ -83,5 +86,10 @@ public class WebAppConfig {
                 .apis(RequestHandlerSelectors.any())
                 .paths(PathSelectors.any())
                 .build();
+    }
+    
+    @Bean
+    public NotificationManager notificationSubscriptions(){
+     return new NotificationManager();
     }
 }
