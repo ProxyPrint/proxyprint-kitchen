@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Created by daniel on 04-04-2016.
@@ -66,6 +67,7 @@ public class ConsumerController {
         return GSON.toJson(response);
     }
 
+    @Secured("ROLE_USER")
     @RequestMapping(value = "/consumer/upload", method = RequestMethod.POST)
     public String handleFileUpload(@RequestParam("file") MultipartFile file, WebRequest req) {
         JsonObject response = new JsonObject();
@@ -95,17 +97,49 @@ public class ConsumerController {
         return GSON.toJson(response);
     }
 
+    /**
+     * !WARNING
+     * This is a temporary fix while the budget algorithm isn't implemented.
+     * @param request
+     * @return
+     */
     @Secured("ROLE_USER")
     @RequestMapping(value = "/consumer/budget", method = RequestMethod.POST)
     public String printRequest(@RequestBody ConsumerPrintRequest request) {
         JsonObject response = new JsonObject();
 
+        // Uncomment when budget request is done!
+        // Map<Long,Float> budgets = calculateBudget(request);
+
+        Map<Long,Float> budgets = new HashMap<>();
+
+        List<Long> printshopsIDs = request.getPrintshops();
+
+        Random rand = new Random();
+        for(long pid : printshopsIDs) {
+            budgets.put(pid,rand.nextFloat() * (5 - 1) + 1);
+        }
+
+        response.add("budgets", GSON.toJsonTree(budgets));
+        response.addProperty("success", true);
+        return GSON.toJson(response);
+    }
+
+
+
+
+    /**
+     *
+     * @param request
+     * @return
+     */
+    public Map<Long,Float> calculateBudget(ConsumerPrintRequest request) {
         Map<Long,Float> budgets = new HashMap<>();
 
         for(Long pshopID : request.getPrintshops()) {
             PrintShop pshop = printShops.findOne(pshopID);
             float cost=0;
-            for(Map.Entry<String,List<ConsumerPrintRequestDocumentInfo>> printRequest : request.getFiles().entrySet()) {
+            /*for(Map.Entry<String,List<ConsumerPrintRequestDocumentInfo>> printRequest : request.getFiles().entrySet()) {
                 String documentName = printRequest.getKey();
                 List<ConsumerPrintRequestDocumentInfo> docSpecs = printRequest.getValue();
 
@@ -117,12 +151,10 @@ public class ConsumerController {
                     }
                 }
                 budgets.put(pshopID,cost);
-            }
+            }*/
         }
 
-        response.add("budgets", GSON.toJsonTree(budgets));
-        response.addProperty("success", true);
-        return GSON.toJson(response);
+        return budgets;
     }
 
     /**
