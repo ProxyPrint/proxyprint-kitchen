@@ -168,7 +168,7 @@ public class ManagerController {
         }
 
         if(pshop!=null && newEmp!=null && newEmp.getName()!=null && newEmp.getUsername()!=null && newEmp.getPassword()!=null) {
-            Employee e = employees.findByUsername(newEmp.getName());
+            Employee e = employees.findByUsername(newEmp.getUsername());
             if(e==null) {
                 e = new Employee(newEmp.getUsername(), newEmp.getPassword(), newEmp.getName(), pshop);
                 employees.save(e);
@@ -204,13 +204,16 @@ public class ManagerController {
         }
 
         if(pshop!=null && editedEmp!=null && editedEmp.getName()!=null && editedEmp.getUsername()!=null && editedEmp.getPassword()!=null) {
-            Employee e = employees.findByUsername(editedEmp.getName());
+            Employee e = employees.findOne(editedEmp.getId());
             if(e==null) {
                 response.addProperty("success", false);
                 response.addProperty("message", "Empregado não existe");
                 return GSON.toJson(response);
             } else {
-                e = new Employee(editedEmp.getUsername(), editedEmp.getPassword(), editedEmp.getName(), pshop);
+                // Update fields
+                e.setName(editedEmp.getName());
+                e.setUsername(editedEmp.getUsername());
+                e.setPassword(editedEmp.getPassword());
                 employees.save(e);
                 response.addProperty("success", true);
                 return GSON.toJson(response);
