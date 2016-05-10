@@ -5,23 +5,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import io.github.proxyprint.kitchen.models.Admin;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
+import io.github.proxyprint.kitchen.models.consumer.PrintingSchema;
+import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
 import io.github.proxyprint.kitchen.models.printshops.Employee;
 import io.github.proxyprint.kitchen.models.printshops.Manager;
-import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
 import io.github.proxyprint.kitchen.models.printshops.RegisterRequest;
-import io.github.proxyprint.kitchen.models.printshops.pricetable.BindingItem;
-import io.github.proxyprint.kitchen.models.printshops.pricetable.CoverItem;
-import io.github.proxyprint.kitchen.models.printshops.pricetable.Item;
-import io.github.proxyprint.kitchen.models.repositories.AdminDAO;
-import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
-import io.github.proxyprint.kitchen.models.repositories.RegisterRequestDAO;
-import io.github.proxyprint.kitchen.models.repositories.UserDAO;
-import java.lang.reflect.Type;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.*;
+import io.github.proxyprint.kitchen.models.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +21,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.lang.reflect.Type;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by daniel on 19-04-2016.
@@ -43,6 +40,8 @@ public class AdminController {
     private AdminDAO admins;
     @Autowired
     private UserDAO users;
+    @Autowired
+    private PrintingSchemaDAO printingSchemas;
     @Autowired
     private RegisterRequestDAO registerRequests;
     @Autowired
@@ -106,6 +105,31 @@ public class AdminController {
         Employee employee = new Employee("mafalda", "1234", "Mafalda Sofia Pinto");
         RegisterRequest registerRequest = new RegisterRequest("Ana Pinto", "danielcaldas@sapo,pt", "1234", "Rua das Cruzes n20", 43.221, 41.121, "124555321", "Printer Style", false);
 
+        users.save(master);
+        users.save(employee);
+        users.save(manager);
+
+        printshop.addPrintRequest(new PrintRequest(20, Date.from(Instant.now()), joao, PrintRequest.Status.PENDING));
+        printshop.addPrintRequest(new PrintRequest(25, Date.from(Instant.now()), joao, PrintRequest.Status.PENDING));
+        printshop.addPrintRequest(new PrintRequest(30, Date.from(Instant.now()), joao, PrintRequest.Status.PENDING));
+        printshop.addPrintRequest(new PrintRequest(35, Date.from(Instant.now()), joao, PrintRequest.Status.PENDING));
+        printshop.addPrintRequest(new PrintRequest(20, Date.from(Instant.now()), joao, PrintRequest.Status.IN_PROGRESS));
+        printshop.addPrintRequest(new PrintRequest(25, Date.from(Instant.now()), joao, PrintRequest.Status.LIFTED));
+        printshop.addPrintRequest(new PrintRequest(30, Date.from(Instant.now()), joao, PrintRequest.Status.FINISHED));
+
+        registerRequests.save(registerRequest);
+
+        /*-------------------------------------
+            PriceTable
+        ------------------------------------*/
+        // Paper
+        PaperItem p1 = new PaperItem(Item.Format.A4, Item.Sides.DUPLEX, Item.Colors.BW);
+        RangePaperItem rp1 = new RangePaperItem(Item.Format.A4, Item.Sides.DUPLEX, Item.Colors.BW, 1, 20);
+        printshop.addItemPriceTable(rp1.genKey(),(float) 0.1);
+        PaperItem p2 = new PaperItem(Item.Format.A4, Item.Sides.DUPLEX, Item.Colors.COLOR);
+        RangePaperItem rp2 = new RangePaperItem(Item.Format.A4, Item.Sides.DUPLEX, Item.Colors.COLOR, 1, 20);
+        printshop.addItemPriceTable(rp2.genKey(),(float) 0.2);
+
         // Bindings
         BindingItem b = new BindingItem(BindingItem.RingType.PLASTIC, 6, 10);
         printshop.addItemPriceTable(b.genKey(), (float) 1.15);
@@ -128,8 +152,8 @@ public class AdminController {
         printshop.addItemPriceTable(b.genKey(), (float) 2.95);
         b = new BindingItem(BindingItem.RingType.SPIRAL, 44, 50);
         printshop.addItemPriceTable(b.genKey(), (float) 3.35);
-        b = new BindingItem(BindingItem.RingType.STAPLING, 0, 0);
-        printshop.addItemPriceTable(b.genKey(), (float) 0.1);
+        BindingItem bs = new BindingItem(BindingItem.RingType.STAPLING, 0, 0);
+        printshop.addItemPriceTable(bs.genKey(), (float) 0.1);
 
         // Covers
         CoverItem c = new CoverItem(Item.CoverType.CRISTAL_ACETATE, Item.Format.A4);
@@ -145,21 +169,19 @@ public class AdminController {
         c = new CoverItem(Item.CoverType.PVC_OPAQUE, Item.Format.A3);
         printshop.addItemPriceTable(c.genKey(), (float) 1.5);
 
-        users.save(master);
+        // PrintingSchemas
+        PrintingSchema printingSchema1 = new PrintingSchema("A4+2LAD+PB+Encadernar",p1,b,c);
+        PrintingSchema printingSchema2 = new PrintingSchema("A4+2LAD+CORES+Agrafar",p2,bs,null);
+        printingSchemas.save(printingSchema1);
+        printingSchemas.save(printingSchema2);
+
+        // Add printing schemas to joao
+        joao.addPrintingSchema(printingSchema1);
+        joao.addPrintingSchema(printingSchema2);
         users.save(joao);
-        users.save(employee);
-        users.save(manager);
 
-        printshop.addPrintRequest(new PrintRequest(20, Date.from(Instant.now()), joao, PrintRequest.Status.PENDING));
-        printshop.addPrintRequest(new PrintRequest(25, Date.from(Instant.now()), joao, PrintRequest.Status.PENDING));
-        printshop.addPrintRequest(new PrintRequest(30, Date.from(Instant.now()), joao, PrintRequest.Status.PENDING));
-        printshop.addPrintRequest(new PrintRequest(35, Date.from(Instant.now()), joao, PrintRequest.Status.PENDING));
-        printshop.addPrintRequest(new PrintRequest(20, Date.from(Instant.now()), joao, PrintRequest.Status.IN_PROGRESS));
-        printshop.addPrintRequest(new PrintRequest(25, Date.from(Instant.now()), joao, PrintRequest.Status.LIFTED));
-        printshop.addPrintRequest(new PrintRequest(30, Date.from(Instant.now()), joao, PrintRequest.Status.FINISHED));
-
+        // Save printshop
         printShops.save(printshop);
-        registerRequests.save(registerRequest);
 
         response.addProperty("message", "seeding completed");
 

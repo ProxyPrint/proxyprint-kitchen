@@ -25,6 +25,7 @@ public class PrintingSchema {
     public PrintingSchema() {}
 
     public PrintingSchema(String name , PaperItem psi, BindingItem bi, CoverItem ci) {
+        this.name = name;
         this.paperSpecs = psi.toString();
         if(bi!=null) {
             this.bindingSpecs = bi.genKey();
@@ -37,6 +38,7 @@ public class PrintingSchema {
     }
 
     public PrintingSchema(String name, String paperSpecs, String bindingSpecs, String coverSpecs) {
+        this.name = name;
         this.paperSpecs = paperSpecs;
         this.bindingSpecs = bindingSpecs;
         this.coverSpecs = coverSpecs;
