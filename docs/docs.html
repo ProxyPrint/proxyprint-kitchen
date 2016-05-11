@@ -187,6 +187,11 @@
                 </thead>
                 <tbody>
                     <tr>
+                        <td><a href="#operation--consumer-budget-post">POST /consumer/budget</a></td>
+                        <td><p>printRequest</p>
+        </td>
+                    </tr>
+                    <tr>
                         <td><a href="#operation--consumer-register-post">POST /consumer/register</a></td>
                         <td><p>addUser</p>
         </td>
@@ -245,6 +250,11 @@
                     <tr>
                         <td><a href="#operation--printshops-nearest-get">GET /printshops/nearest</a></td>
                         <td><p>getNearestPrintShops</p>
+        </td>
+                    </tr>
+                    <tr>
+                        <td><a href="#operation--printshops-requests-get">GET /printshops/requests</a></td>
+                        <td><p>getPrintShopRequests</p>
         </td>
                     </tr>
                     <tr>
@@ -942,6 +952,142 @@
                                                             
                                                     </div>
                                                 </div></div>
+                                            
+                                            </div>                </dd>
+                                    <dt class="sw-response-401">
+                                        401 Unauthorized
+                                    
+                                    </dt>
+                                    <dd class="sw-response-401">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <p>Unauthorized</p>
+                                            
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                
+                                                <div class="col-md-6 sw-response-model">
+                                            </div>
+                                            
+                                            </div>                </dd>
+                                    <dt class="sw-response-403">
+                                        403 Forbidden
+                                    
+                                    </dt>
+                                    <dd class="sw-response-403">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <p>Forbidden</p>
+                                            
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                
+                                                <div class="col-md-6 sw-response-model">
+                                            </div>
+                                            
+                                            </div>                </dd>
+                                    <dt class="sw-response-404">
+                                        404 Not Found
+                                    
+                                    </dt>
+                                    <dd class="sw-response-404">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <p>Not Found</p>
+                                            
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                
+                                                <div class="col-md-6 sw-response-model">
+                                            </div>
+                                            
+                                            </div>                </dd>
+                            </dl>
+                        </section>
+                </div>
+            </div>    
+        <span id="path--consumer-budget"></span>
+            <div id="operation--consumer-budget-post" class="swagger--panel-operation-post panel">
+                <div class="panel-heading">
+                    <div class="operation-summary">printRequest</div>
+                    <h3 class="panel-title"><span class="operation-name">POST</span> <strong>/consumer/budget</strong></h3>
+                        Tags:
+                            <a href="#tag-consumer-controller">consumer-controller</a>
+                </div>
+                <div class="panel-body">
+                    <section class="sw-operation-description">
+                        
+                    </section>
+                        
+                            <section class="sw-request-body">
+                                
+                                    <p><span class="label label-default">application/json</span> 
+                        </p>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <p><p>pshopIDs</p>
+                        </p>
+                                            </div>
+                                            <div class="col-md-6 sw-request-model">
+                            <div  class="panel panel-definition">
+                                <div class="panel-body">
+                                        
+                                                        <section class="json-schema-array-items">
+                                                            <span class="json-property-type">integer</span>    <span class="json-property-format">(int64)</span>
+                                                            <span class="json-property-range" title="Value limits"></span>
+                                                            
+                                                            <div class="json-inner-schema">
+                                                                
+                                                            </div>
+                                                        </section>    </div>
+                            </div></div>
+                                        </div>
+                            </section>        
+                    
+                        <section class="sw-responses">
+                                <p><span class="label label-default">*/*</span> 
+                    </p>
+                    
+                            <dl>
+                                    <dt class="sw-response-200">
+                                        200 OK
+                                    
+                                    </dt>
+                                    <dd class="sw-response-200">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <p>OK</p>
+                                            
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                
+                                                <div class="col-md-6 sw-response-model">
+                                                <div  class="panel panel-definition">
+                                                    <div class="panel-body">
+                                                            
+                                                    </div>
+                                                </div></div>
+                                            
+                                            </div>                </dd>
+                                    <dt class="sw-response-201">
+                                        201 Created
+                                    
+                                    </dt>
+                                    <dd class="sw-response-201">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <p>Created</p>
+                                            
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                
+                                                <div class="col-md-6 sw-response-model">
+                                            </div>
                                             
                                             </div>                </dd>
                                     <dt class="sw-response-401">
@@ -3952,6 +4098,106 @@
                                 </div>
                             </div></div>
                                         </div>
+                            </section>        
+                    
+                        <section class="sw-responses">
+                                <p><span class="label label-default">*/*</span> 
+                    </p>
+                    
+                            <dl>
+                                    <dt class="sw-response-200">
+                                        200 OK
+                                    
+                                    </dt>
+                                    <dd class="sw-response-200">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <p>OK</p>
+                                            
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                
+                                                <div class="col-md-6 sw-response-model">
+                                                <div  class="panel panel-definition">
+                                                    <div class="panel-body">
+                                                            
+                                                    </div>
+                                                </div></div>
+                                            
+                                            </div>                </dd>
+                                    <dt class="sw-response-401">
+                                        401 Unauthorized
+                                    
+                                    </dt>
+                                    <dd class="sw-response-401">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <p>Unauthorized</p>
+                                            
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                
+                                                <div class="col-md-6 sw-response-model">
+                                            </div>
+                                            
+                                            </div>                </dd>
+                                    <dt class="sw-response-403">
+                                        403 Forbidden
+                                    
+                                    </dt>
+                                    <dd class="sw-response-403">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <p>Forbidden</p>
+                                            
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                
+                                                <div class="col-md-6 sw-response-model">
+                                            </div>
+                                            
+                                            </div>                </dd>
+                                    <dt class="sw-response-404">
+                                        404 Not Found
+                                    
+                                    </dt>
+                                    <dd class="sw-response-404">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <p>Not Found</p>
+                                            
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                
+                                                <div class="col-md-6 sw-response-model">
+                                            </div>
+                                            
+                                            </div>                </dd>
+                            </dl>
+                        </section>
+                </div>
+            </div>    
+        <span id="path--printshops-requests"></span>
+            <div id="operation--printshops-requests-get" class="swagger--panel-operation-get panel">
+                <div class="panel-heading">
+                    <div class="operation-summary">getPrintShopRequests</div>
+                    <h3 class="panel-title"><span class="operation-name">GET</span> <strong>/printshops/requests</strong></h3>
+                        Tags:
+                            <a href="#tag-print-shop-controller">print-shop-controller</a>
+                </div>
+                <div class="panel-body">
+                    <section class="sw-operation-description">
+                        
+                    </section>
+                        
+                            <section class="sw-request-body">
+                                
+                                    <p><span class="label label-default">application/json</span> 
+                        </p>
                             </section>        
                     
                         <section class="sw-responses">
@@ -7192,6 +7438,73 @@
                                     </section>
                     </div>
                 </div>        
+                <div id="definition-BindingItem" class="panel panel-definition">
+                        <div class="panel-heading">
+                                <h3 class="panel-title"><a name="/definitions/BindingItem"></a>BindingItem:
+                                    <span class="json-property-type"><span class="json-property-type">object</span>
+                <span class="json-property-range" title="Value limits"></span>
+                
+                </span>
+                                </h3>
+                        </div>
+                    <div class="panel-body">
+                            
+                                    <section class="json-schema-properties">
+                                        <dl>
+                                                <dt data-property-name="ringThicknessInfLim">
+                                                    <span class="json-property-name">ringThicknessInfLim:</span>
+                                                    <span class="json-property-type">integer</span>    <span class="json-property-format">(int32)</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="ringThicknessSupLim">
+                                                    <span class="json-property-name">ringThicknessSupLim:</span>
+                                                    <span class="json-property-type">integer</span>    <span class="json-property-format">(int32)</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="ringsType">
+                                                    <span class="json-property-name">ringsType:</span>
+                                                    <span class="json-property-type">string</span>    <span class="json-property-enum" title="Possible values">, x &isin; {
+                                                                    <span class="json-property-enum-item">PLASTIC</span>
+                                                                ,
+                                                                    <span class="json-property-enum-item">SPIRAL</span>
+                                                                ,
+                                                                    <span class="json-property-enum-item">WIRE</span>
+                                                                ,
+                                                                    <span class="json-property-enum-item">STEELMAT</span>
+                                                                ,
+                                                                    <span class="json-property-enum-item">STAPLING</span>
+                                                                ,
+                                                                    <span class="json-property-enum-item">BINDING</span>
+                                                                
+                                                            }
+                                                            </span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                        </dl>
+                                    </section>
+                    </div>
+                </div>        
                 <div id="definition-Collection-GrantedAuthority-" class="panel panel-definition">
                         <div class="panel-heading">
                                 <h3 class="panel-title"><a name="/definitions/Collection«GrantedAuthority»"></a>Collection«GrantedAuthority»:
@@ -7203,6 +7516,61 @@
                         </div>
                     <div class="panel-body">
                             
+                    </div>
+                </div>        
+                <div id="definition-CoverItem" class="panel panel-definition">
+                        <div class="panel-heading">
+                                <h3 class="panel-title"><a name="/definitions/CoverItem"></a>CoverItem:
+                                    <span class="json-property-type"><span class="json-property-type">object</span>
+                <span class="json-property-range" title="Value limits"></span>
+                
+                </span>
+                                </h3>
+                        </div>
+                    <div class="panel-body">
+                            
+                                    <section class="json-schema-properties">
+                                        <dl>
+                                                <dt data-property-name="coverType">
+                                                    <span class="json-property-name">coverType:</span>
+                                                    <span class="json-property-type">string</span>    <span class="json-property-enum" title="Possible values">, x &isin; {
+                                                                    <span class="json-property-enum-item">CRISTAL_ACETATE</span>
+                                                                ,
+                                                                    <span class="json-property-enum-item">PVC_TRANSPARENT</span>
+                                                                ,
+                                                                    <span class="json-property-enum-item">PVC_OPAQUE</span>
+                                                                
+                                                            }
+                                                            </span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="format">
+                                                    <span class="json-property-name">format:</span>
+                                                    <span class="json-property-type">string</span>    <span class="json-property-enum" title="Possible values">, x &isin; {
+                                                                    <span class="json-property-enum-item">A4</span>
+                                                                ,
+                                                                    <span class="json-property-enum-item">A3</span>
+                                                                
+                                                            }
+                                                            </span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                        </dl>
+                                    </section>
                     </div>
                 </div>        
                 <div id="definition-CoverTableItem" class="panel panel-definition">
@@ -7589,6 +7957,91 @@
                                     </section>
                     </div>
                 </div>        
+                <div id="definition-PaperItem" class="panel panel-definition">
+                        <div class="panel-heading">
+                                <h3 class="panel-title"><a name="/definitions/PaperItem"></a>PaperItem:
+                                    <span class="json-property-type"><span class="json-property-type">object</span>
+                <span class="json-property-range" title="Value limits"></span>
+                
+                </span>
+                                </h3>
+                        </div>
+                    <div class="panel-body">
+                            
+                                    <section class="json-schema-properties">
+                                        <dl>
+                                                <dt data-property-name="colors">
+                                                    <span class="json-property-name">colors:</span>
+                                                    <span class="json-property-type">string</span>    <span class="json-property-enum" title="Possible values">, x &isin; {
+                                                                    <span class="json-property-enum-item">BW</span>
+                                                                ,
+                                                                    <span class="json-property-enum-item">GREY_TONES</span>
+                                                                ,
+                                                                    <span class="json-property-enum-item">COLOR</span>
+                                                                
+                                                            }
+                                                            </span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="format">
+                                                    <span class="json-property-name">format:</span>
+                                                    <span class="json-property-type">string</span>    <span class="json-property-enum" title="Possible values">, x &isin; {
+                                                                    <span class="json-property-enum-item">A4</span>
+                                                                ,
+                                                                    <span class="json-property-enum-item">A3</span>
+                                                                
+                                                            }
+                                                            </span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="paperSpecs">
+                                                    <span class="json-property-name">paperSpecs:</span>
+                                                    <span class="json-property-type">string</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="sides">
+                                                    <span class="json-property-name">sides:</span>
+                                                    <span class="json-property-type">string</span>    <span class="json-property-enum" title="Possible values">, x &isin; {
+                                                                    <span class="json-property-enum-item">SIMPLEX</span>
+                                                                ,
+                                                                    <span class="json-property-enum-item">DUPLEX</span>
+                                                                
+                                                            }
+                                                            </span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                        </dl>
+                                    </section>
+                    </div>
+                </div>        
                 <div id="definition-PaperTableItem" class="panel panel-definition">
                         <div class="panel-heading">
                                 <h3 class="panel-title"><a name="/definitions/PaperTableItem"></a>PaperTableItem:
@@ -7703,9 +8156,35 @@
                             
                                     <section class="json-schema-properties">
                                         <dl>
+                                                <dt data-property-name="bindingItem">
+                                                    <span class="json-property-name">bindingItem:</span>
+                                                    <span class="json-property-type">    <a class="json-schema-ref" href="#/definitions/BindingItem">BindingItem</a>
+                                                    </span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
                                                 <dt data-property-name="bindingSpecs">
                                                     <span class="json-property-name">bindingSpecs:</span>
                                                     <span class="json-property-type">string</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="coverItem">
+                                                    <span class="json-property-name">coverItem:</span>
+                                                    <span class="json-property-type">    <a class="json-schema-ref" href="#/definitions/CoverItem">CoverItem</a>
+                                                    </span>
                                                     <span class="json-property-range" title="Value limits"></span>
                                                     
                                                 </dt>
@@ -7742,6 +8221,19 @@
                                                 <dt data-property-name="name">
                                                     <span class="json-property-name">name:</span>
                                                     <span class="json-property-type">string</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="paperItem">
+                                                    <span class="json-property-name">paperItem:</span>
+                                                    <span class="json-property-type">    <a class="json-schema-ref" href="#/definitions/PaperItem">PaperItem</a>
+                                                    </span>
                                                     <span class="json-property-range" title="Value limits"></span>
                                                     
                                                 </dt>
@@ -7818,6 +8310,18 @@
                                                 </dd>
                                                 <dt data-property-name="managerPassword">
                                                     <span class="json-property-name">managerPassword:</span>
+                                                    <span class="json-property-type">string</span>
+                                                    <span class="json-property-range" title="Value limits"></span>
+                                                    
+                                                </dt>
+                                                <dd>
+                                                    
+                                                    <div class="json-inner-schema">
+                                                        
+                                                    </div>
+                                                </dd>
+                                                <dt data-property-name="managerUsername">
+                                                    <span class="json-property-name">managerUsername:</span>
                                                     <span class="json-property-type">string</span>
                                                     <span class="json-property-range" title="Value limits"></span>
                                                     

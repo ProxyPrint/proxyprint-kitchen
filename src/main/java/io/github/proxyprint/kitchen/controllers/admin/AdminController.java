@@ -78,6 +78,9 @@ public class AdminController {
 
         Admin master = new Admin("master", "1234", "proxyprint@gmail.pt");
         Consumer joao = new Consumer("João dos Santos", "joao", "1234", "joao@gmail.com", "69", "69");
+        Consumer rui = new Consumer("Rui Moreira Campos", "rui", "1234", "rui@gmail.com", "69", "69");
+        Consumer ana = new Consumer("Ana Monteiro", "anam", "1234", "anamonteiro@gmail.com", "69", "69");
+        Consumer rita = new Consumer("Rita Maria Costinha", "ritinha", "1234", "rita@gmail.com", "69", "69");
 
         // Printshops
         PrintShop printshop = new PrintShop("Copy Scan", "Rua Quinta dos Órfãos 16 S. Vitor (Junto à Universidade do Minho), Braga", 41.557973, -8.398398, "123555378", "logo_1", 0);
@@ -105,6 +108,7 @@ public class AdminController {
 
         users.save(master);
 
+        // joao
         printshop.addPrintRequest(new PrintRequest(20, Date.from(Instant.now()), joao, PrintRequest.Status.PENDING));
         printshop.addPrintRequest(new PrintRequest(25, Date.from(Instant.now()), joao, PrintRequest.Status.PENDING));
         printshop.addPrintRequest(new PrintRequest(30, Date.from(Instant.now()), joao, PrintRequest.Status.PENDING));
@@ -112,6 +116,34 @@ public class AdminController {
         printshop.addPrintRequest(new PrintRequest(20, Date.from(Instant.now()), joao, PrintRequest.Status.IN_PROGRESS));
         printshop.addPrintRequest(new PrintRequest(25, Date.from(Instant.now()), joao, PrintRequest.Status.LIFTED));
         printshop.addPrintRequest(new PrintRequest(30, Date.from(Instant.now()), joao, PrintRequest.Status.FINISHED));
+
+        // rui
+        printshop.addPrintRequest(new PrintRequest(20, Date.from(Instant.now()), rui, PrintRequest.Status.PENDING));
+        printshop.addPrintRequest(new PrintRequest(25, Date.from(Instant.now()), rui, PrintRequest.Status.PENDING));
+        printshop.addPrintRequest(new PrintRequest(30, Date.from(Instant.now()), rui, PrintRequest.Status.PENDING));
+        printshop.addPrintRequest(new PrintRequest(35, Date.from(Instant.now()), rui, PrintRequest.Status.PENDING));
+        printshop.addPrintRequest(new PrintRequest(20, Date.from(Instant.now()), rui, PrintRequest.Status.IN_PROGRESS));
+        printshop.addPrintRequest(new PrintRequest(25, Date.from(Instant.now()), rui, PrintRequest.Status.LIFTED));
+        printshop.addPrintRequest(new PrintRequest(30, Date.from(Instant.now()), rui, PrintRequest.Status.FINISHED));
+
+        // ana
+        printshop.addPrintRequest(new PrintRequest(20, Date.from(Instant.now()), ana, PrintRequest.Status.PENDING));
+        printshop.addPrintRequest(new PrintRequest(25, Date.from(Instant.now()), ana, PrintRequest.Status.PENDING));
+        printshop.addPrintRequest(new PrintRequest(30, Date.from(Instant.now()), ana, PrintRequest.Status.PENDING));
+        printshop.addPrintRequest(new PrintRequest(35, Date.from(Instant.now()), ana, PrintRequest.Status.PENDING));
+        printshop.addPrintRequest(new PrintRequest(20, Date.from(Instant.now()), ana, PrintRequest.Status.IN_PROGRESS));
+        printshop.addPrintRequest(new PrintRequest(25, Date.from(Instant.now()), ana, PrintRequest.Status.LIFTED));
+        printshop.addPrintRequest(new PrintRequest(30, Date.from(Instant.now()), ana, PrintRequest.Status.FINISHED));
+
+        // rita
+        printshop.addPrintRequest(new PrintRequest(20, Date.from(Instant.now()), rita, PrintRequest.Status.PENDING));
+        printshop.addPrintRequest(new PrintRequest(25, Date.from(Instant.now()), rita, PrintRequest.Status.PENDING));
+        printshop.addPrintRequest(new PrintRequest(30, Date.from(Instant.now()), rita, PrintRequest.Status.PENDING));
+        printshop.addPrintRequest(new PrintRequest(35, Date.from(Instant.now()), rita, PrintRequest.Status.PENDING));
+        printshop.addPrintRequest(new PrintRequest(20, Date.from(Instant.now()), rita, PrintRequest.Status.IN_PROGRESS));
+        printshop.addPrintRequest(new PrintRequest(25, Date.from(Instant.now()), rita, PrintRequest.Status.LIFTED));
+        printshop.addPrintRequest(new PrintRequest(30, Date.from(Instant.now()), rita, PrintRequest.Status.FINISHED));
+
 
         registerRequests.save(registerRequest);
 
@@ -175,6 +207,9 @@ public class AdminController {
         joao.addPrintingSchema(printingSchema1);
         joao.addPrintingSchema(printingSchema2);
         users.save(joao);
+        users.save(rui);
+        users.save(ana);
+        users.save(rita);
 
         // Save printshops
         printShops.save(printshop);
