@@ -23,12 +23,14 @@ import io.github.proxyprint.kitchen.controllers.printshops.pricetable.PapersTabl
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.RingsTable;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest.Status;
+import io.github.proxyprint.kitchen.models.printshops.Employee;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.BindingItem;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.CoverItem;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.Item;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.RangePaperItem;
 import io.github.proxyprint.kitchen.models.repositories.ConsumerDAO;
+import io.github.proxyprint.kitchen.models.repositories.EmployeeDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintRequestDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
 import io.github.proxyprint.kitchen.utils.DistanceCalculator;
@@ -42,7 +44,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
 import java.lang.reflect.Type;
+import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -57,6 +61,8 @@ public class PrintShopController {
     private PrintShopDAO printshops;
     @Autowired
     private PrintRequestDAO printrequests;
+    @Autowired
+    private EmployeeDAO employees;
     @Autowired
     private Gson GSON;
 
@@ -131,23 +137,25 @@ public class PrintShopController {
     -------------------------*/
     @Secured({"ROLE_MANAGER", "ROLE_EMPLOYEE"})
     @RequestMapping(value = "/printshops/requests/{id}", method = RequestMethod.POST)
-    public String changeStatusPrintShopRequests(@PathVariable(value = "id") long id) {
+    public String changeStatusPrintShopRequests(@PathVariable(value = "id") long id, Principal principal) {
         JsonObject response = new JsonObject();
-        PrintShop printshop = printshops.findOne((long)8);
-        // PrintShop printshop = printshops.findAll().iterator().next(); // Now there are many prinshops on db ...
+        Employee e = employees.findByUsername(principal.getName());
+        PrintShop printshop = e.getPrintShop();
 
         if (printshop == null) {
             response.addProperty("success", false);
             return GSON.toJson(response);
         }
 
-        PrintRequest printRequest = printrequests.findOne(id);
+        PrintRequest printRequest = printrequests.findByIdInAndPrintshop(id,printshop);
 
         if (printRequest.getStatus() == Status.PENDING) {
             printRequest.setStatus(Status.IN_PROGRESS);
+            printRequest.setEmpAttended(principal.getName());
             response.addProperty("newStatus", Status.IN_PROGRESS.toString());
         } else if (printRequest.getStatus() == Status.IN_PROGRESS) {
             printRequest.setStatus(Status.FINISHED);
+            printRequest.setFinishedTimestamp(new Date());
             response.addProperty("newStatus", Status.FINISHED.toString());
         } else if (printRequest.getStatus() == Status.FINISHED) {
             printRequest.setStatus(Status.LIFTED);
@@ -160,11 +168,11 @@ public class PrintShopController {
 
     @Secured({"ROLE_MANAGER", "ROLE_EMPLOYEE"})
     @RequestMapping(value = "/printshops/requests/{id}", method = RequestMethod.GET)
-    public String getPrintShopRequest(@PathVariable(value = "id") long id) {
+    public String getPrintShopRequest(@PathVariable(value = "id") long id, Principal principal) {
 
         JsonObject response = new JsonObject();
-        PrintShop printshop = printshops.findOne((long)8);
-        // PrintShop printshop = printshops.findAll().iterator().next(); // Now there are many prinshops on db ...
+        Employee e = employees.findByUsername(principal.getName());
+        PrintShop printshop = e.getPrintShop();
 
         if (printshop == null) {
             response.addProperty("success", false);
@@ -181,10 +189,10 @@ public class PrintShopController {
 
     @Secured({"ROLE_MANAGER", "ROLE_EMPLOYEE"})
     @RequestMapping(value = "/printshops/requests", method = RequestMethod.GET)
-    public String getPrintShopRequests() {
+    public String getPrintShopRequests(Principal principal) {
         JsonObject response = new JsonObject();
-        PrintShop printshop = printshops.findOne((long)8);
-        // PrintShop printshop = printshops.findAll().iterator().next(); // Now there are many prinshops on db ...
+        Employee e = employees.findByUsername(principal.getName());
+        PrintShop printshop = e.getPrintShop();
 
         if (printshop == null) {
             response.addProperty("success", false);
@@ -199,6 +207,31 @@ public class PrintShopController {
         Type listOfPRequests = new TypeToken<List<PrintShop>>(){}.getType();
 
         response.add("printrequest", GSON.toJsonTree(printRequestsList,listOfPRequests));
+        response.addProperty("success", true);
+        return GSON.toJson(response);
+    }
+
+    @Secured({"ROLE_MANAGER", "ROLE_EMPLOYEE"})
+    @RequestMapping(value = "/printshops/satisfied", method = RequestMethod.GET)
+    public String getPrintShopSatisfiedRequests(Principal principal) {
+        JsonObject response = new JsonObject();
+
+        Employee e = employees.findByUsername(principal.getName());
+
+        PrintShop printshop = e.getPrintShop();
+
+        if (printshop == null) {
+            response.addProperty("success", false);
+            return GSON.toJson(response);
+        }
+
+        List<Status> status = new ArrayList<>();
+        status.add(Status.FINISHED);
+
+        List<PrintRequest> printRequestsList = printrequests.findByStatusInAndPrintshop(status, printshop);
+        Type listOfPRequests = new TypeToken<List<PrintShop>>(){}.getType();
+
+        response.add("satisfiedrequests", GSON.toJsonTree(printRequestsList,listOfPRequests));
         response.addProperty("success", true);
         return GSON.toJson(response);
     }
