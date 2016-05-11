@@ -183,8 +183,8 @@ public class PrintShopController {
     @RequestMapping(value = "/printshops/requests", method = RequestMethod.GET)
     public String getPrintShopRequests() {
         JsonObject response = new JsonObject();
-        //PrintShop printshop = printshops.findOne(id);
-        PrintShop printshop = printshops.findAll().iterator().next();
+        PrintShop printshop = printshops.findOne((long)8);
+        // PrintShop printshop = printshops.findAll().iterator().next(); // Now there are many prinshops on db ...
 
         if (printshop == null) {
             response.addProperty("success", false);
