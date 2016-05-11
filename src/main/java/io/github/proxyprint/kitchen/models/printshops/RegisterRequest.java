@@ -36,6 +36,8 @@ public class RegisterRequest implements Serializable {
     private long id;
     @Column(nullable = false, name = "manager_name")
     private String managerName;
+    @Column(nullable = false, name = "manager_username")
+    private String managerUsername;
     @Column(nullable = false, name = "manager_email")
     private String managerEmail;
     @Column(nullable = false, name = "manager_password")
@@ -64,8 +66,9 @@ public class RegisterRequest implements Serializable {
         this.pShopDateRequestAccepted = null;
     }
 
-    public RegisterRequest(String managerName, String managerEmail, String managerPassword, String pShopAddress, Double pShopLatitude, Double pShopLongitude, String pShopNIF, String pShopName, boolean accepted) {
+    public RegisterRequest(String managerName, String managerUsername, String managerEmail, String managerPassword, String pShopAddress, Double pShopLatitude, Double pShopLongitude, String pShopNIF, String pShopName, boolean accepted) {
         this.managerName = managerName;
+        this.managerUsername = managerUsername;
         this.managerEmail = managerEmail;
         this.managerPassword = managerPassword;
         this.pShopAddress = pShopAddress;
@@ -83,6 +86,12 @@ public class RegisterRequest implements Serializable {
     public String getManagerName() { return managerName; }
 
     public void setManagerName(String managerName) { this.managerName = managerName; }
+
+    public void setId(long id) { this.id = id; }
+
+    public String getManagerUsername() { return managerUsername; }
+
+    public void setManagerUsername(String managerUsername) { this.managerUsername = managerUsername; }
 
     public String getManagerEmail() { return managerEmail; }
 
@@ -132,7 +141,21 @@ public class RegisterRequest implements Serializable {
 
     @Override
     public String toString() {
-        return "RegisterRequest{" + "id=" + id + ", managerName=" + managerName + ", managerEmail=" + managerEmail + ", managerPassword=" + managerPassword + ", pShopAddress=" + pShopAddress + ", pShopLatitude=" + pShopLatitude + ", pShopLongitude=" + pShopLongitude + ", pShopNIF=" + pShopNIF + ", pShopName=" + pShopName + '}';
+        return "RegisterRequest{" +
+                "id=" + id +
+                ", managerName='" + managerName + '\'' +
+                ", managerUsername='" + managerUsername + '\'' +
+                ", managerEmail='" + managerEmail + '\'' +
+                ", managerPassword='" + managerPassword + '\'' +
+                ", pShopAddress='" + pShopAddress + '\'' +
+                ", pShopLatitude=" + pShopLatitude +
+                ", pShopLongitude=" + pShopLongitude +
+                ", pShopNIF='" + pShopNIF + '\'' +
+                ", pShopName='" + pShopName + '\'' +
+                ", accepted=" + accepted +
+                ", pShopDateRequest='" + pShopDateRequest + '\'' +
+                ", pShopDateRequestAccepted='" + pShopDateRequestAccepted + '\'' +
+                '}';
     }
 
     /**

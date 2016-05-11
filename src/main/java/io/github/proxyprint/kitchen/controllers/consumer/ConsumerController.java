@@ -105,18 +105,17 @@ public class ConsumerController {
      */
     @Secured("ROLE_USER")
     @RequestMapping(value = "/consumer/budget", method = RequestMethod.POST)
-    public String printRequest(@RequestBody ConsumerPrintRequest request) {
+    public String printRequest(@RequestBody List<Long> pshopIDs) {
         JsonObject response = new JsonObject();
 
         // Uncomment when budget request is done!
         // Map<Long,Float> budgets = calculateBudget(request);
-
+        // List<Long> printshopsIDs = request.getPrintshops();
         Map<Long,Float> budgets = new HashMap<>();
 
-        List<Long> printshopsIDs = request.getPrintshops();
-
         Random rand = new Random();
-        for(long pid : printshopsIDs) {
+        for(long pid : pshopIDs) {
+            System.out.println("Pid: "+pid);
             budgets.put(pid,rand.nextFloat() * (5 - 1) + 1);
         }
 

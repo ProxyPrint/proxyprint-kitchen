@@ -66,7 +66,7 @@ public class RegisterRequestController {
         } else {
 
             // Create Manager instance
-            Manager newManager = new Manager(registerRequest.getManagerName(),
+            Manager newManager = new Manager(registerRequest.getManagerUsername(),
                     registerRequest.getManagerPassword(),
                     registerRequest.getManagerName(),
                     registerRequest.getManagerEmail()

@@ -101,7 +101,7 @@ public class AdminController {
 
         Manager manager = new Manager("joaquim", "1234", "Joaquim Pereira", "joaquim@gmail.com");
         Manager manager2 = new Manager("laura", "1234", "Laura Afonso", "lauraafonso@hotmail.com");
-        RegisterRequest registerRequest = new RegisterRequest("Jorge Caldas", "danielcaldas@sapo,pt", "1234", "Rua das Cruzes n20", 43.221, 41.121, "124555321", "Printer Style", false);
+        RegisterRequest registerRequest = new RegisterRequest("Jorge Caldas", "jcaldas", "danielcaldas@sapo,pt", "1234", "Rua das Cruzes n20", 43.221, 41.121, "124555321", "Printer Style", false);
 
         users.save(master);
 

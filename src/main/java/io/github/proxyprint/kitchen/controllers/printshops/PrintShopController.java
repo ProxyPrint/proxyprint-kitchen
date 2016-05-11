@@ -133,8 +133,8 @@ public class PrintShopController {
     @RequestMapping(value = "/printshops/requests/{id}", method = RequestMethod.POST)
     public String changeStatusPrintShopRequests(@PathVariable(value = "id") long id) {
         JsonObject response = new JsonObject();
-        //PrintShop printshop = printshops.findOne(id);
-        PrintShop printshop = printshops.findAll().iterator().next();
+        PrintShop printshop = printshops.findOne((long)8);
+        // PrintShop printshop = printshops.findAll().iterator().next(); // Now there are many prinshops on db ...
 
         if (printshop == null) {
             response.addProperty("success", false);
@@ -163,8 +163,8 @@ public class PrintShopController {
     public String getPrintShopRequest(@PathVariable(value = "id") long id) {
 
         JsonObject response = new JsonObject();
-        //PrintShop printshop = printshops.findOne(id);
-        PrintShop printshop = printshops.findAll().iterator().next();
+        PrintShop printshop = printshops.findOne((long)8);
+        // PrintShop printshop = printshops.findAll().iterator().next(); // Now there are many prinshops on db ...
 
         if (printshop == null) {
             response.addProperty("success", false);
