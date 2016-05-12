@@ -7,9 +7,13 @@ import io.github.proxyprint.kitchen.controllers.consumer.printrequest.ConsumerPr
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.consumer.PrintingSchema;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.DocumentSpec;
+import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
+import io.github.proxyprint.kitchen.models.notifications.Notification;
+import io.github.proxyprint.kitchen.models.printshops.Employee;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.*;
 import io.github.proxyprint.kitchen.models.repositories.ConsumerDAO;
+import io.github.proxyprint.kitchen.models.repositories.PrintRequestDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintingSchemaDAO;
 import org.apache.commons.io.FilenameUtils;
@@ -20,6 +24,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +43,8 @@ public class ConsumerController {
     private PrintingSchemaDAO printingSchemas;
     @Autowired
     private PrintShopDAO printShops;
+    @Autowired
+    private PrintRequestDAO printrequests;
     @Autowired
     private Gson GSON;
 
@@ -218,4 +226,27 @@ public class ConsumerController {
         return cost;
     }
 
+    @Secured({"ROLE_CONSUMER"})
+    @RequestMapping(value = "/requests/cancel/{id}", method = RequestMethod.POST)
+    public String cancelRequests(@PathVariable(value = "id") long id, Principal principal) {
+
+        JsonObject response = new JsonObject();
+        Consumer consumer = consumers.findByUsername(principal.getName());
+
+        if (consumer == null) {
+            response.addProperty("success", false);
+            return GSON.toJson(response);
+        }
+
+        PrintRequest printRequest = printrequests.findByIdInAndConsumer(id,consumer);
+
+        if(printRequest.getStatus() == PrintRequest.Status.PENDING){
+            printrequests.delete(printRequest);
+            response.addProperty("success", true);
+        } else{
+            response.addProperty("success", false);
+        }
+
+        return GSON.toJson(response);
+    }
 }

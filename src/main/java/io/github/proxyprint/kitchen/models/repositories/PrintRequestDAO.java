@@ -1,5 +1,6 @@
 package io.github.proxyprint.kitchen.models.repositories;
 
+import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest.Status;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
@@ -16,5 +17,6 @@ public interface PrintRequestDAO extends CrudRepository<PrintRequest, Long> {
 
     public List<PrintRequest> findByStatusInAndPrintshop(List<Status> statuses, PrintShop printshop);
     public PrintRequest findByIdInAndPrintshop(long id, PrintShop printshop);
+    public PrintRequest findByIdInAndConsumer(long id, Consumer consumer);
 
 }
