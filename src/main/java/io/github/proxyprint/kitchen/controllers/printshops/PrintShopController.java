@@ -40,10 +40,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.dao.SystemWideSaltSource;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 
 import java.io.IOException;
@@ -258,10 +255,8 @@ public class PrintShopController {
 
     @Secured({"ROLE_MANAGER", "ROLE_EMPLOYEE"})
     @RequestMapping(value = "/printshops/requests/cancel/{id}", method = RequestMethod.POST)
-    public String cancelPrintShopRequests(@PathVariable(value = "id") long id, Principal principal, WebRequest req)
+    public String cancelPrintShopRequests(@PathVariable(value = "id") long id, Principal principal, @RequestBody String motive)
             throws IOException {
-
-        String motive = req.getParameter("motive");
 
         JsonObject response = new JsonObject();
         Employee e = employees.findByUsername(principal.getName());
@@ -274,10 +269,13 @@ public class PrintShopController {
 
         String not;
         PrintRequest printRequest = printrequests.findByIdInAndPrintshop(id,printshop);
-        String user = printRequest.getConsumer().getName();
+        String user = printRequest.getConsumer().getUsername();
 
-        if(printRequest.getStatus() == PrintRequest.Status.PENDING){
-            printrequests.delete(printRequest);
+        if(printRequest.getStatus() == Status.PENDING){
+
+            printrequests.delete(printRequest.getId());
+            System.out.println(printRequest.getId());
+
             not = "O pedido número " + printRequest.getId() + " foi cancelado! " + motive;
             notificationManager.sendNotification(user, new Notification(not));
             response.addProperty("success", true);
