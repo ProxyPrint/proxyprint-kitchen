@@ -129,15 +129,15 @@ public class ConsumerController {
             Map<String,Long> documentsIds = new HashMap<>();
 
             Document d = new Document("Hack For Good Manual PT.pdf",4);
-            documents.save(d);
+            d = documents.save(d);
             documentsIds.put("Hack For Good Manual PT.pdf", d.getId());
 
             d = new Document("fatura_janeiro_2016_gas.pdf", 4);
-            documents.save(d);
+            d = documents.save(d);
             documentsIds.put("fatura_janeiro_2016_gas.pdf", d.getId());
 
             d = new Document("fatura_janeiro_2016_agua.pdf", 2);
-            documents.save(d);
+            d = documents.save(d);
             documentsIds.put("fatura_janeiro_2016_agua.pdf", d.getId());
             /*--------------------------------------------------------*/
             /*--------------------------------------------------------*/
@@ -150,43 +150,48 @@ public class ConsumerController {
 
                 for(Map<String,String> entry : specs) {
                     Object tmpid = entry.get("id");
-                    String name = entry.get("name");
+                    /*String name = entry.get("name");
                     String paperSpecs = entry.get("paperSpecs");
                     String bindingSpecs = entry.get("bindingSpecs");
-                    String coverSpecs = entry.get("coverSpecs");
+                    String coverSpecs = entry.get("coverSpecs");*/
                     Object tmpinfLim = entry.get("infLim");
                     Object tmpsupLim = entry.get("supLim");
 
-                    PrintingSchema tmpschema = new PrintingSchema();
 
                     long id = (long)Double.valueOf((double)tmpid).intValue();
-                    int infLim = Double.valueOf((double)tmpinfLim).intValue();
-                    int supLim = Double.valueOf((double)tmpsupLim).intValue();
 
-                    if(name!=null) {
-                        tmpschema.setName(name);
-                    }
-                    if(paperSpecs!=null) {
-                        tmpschema.setPaperSpecs(paperSpecs);
-                    }
-                    if(bindingSpecs!=null) {
-                        tmpschema.setBindingSpecs(bindingSpecs);
-                    }
-                    if(coverSpecs!=null) {
-                        tmpschema.setCoverSpecs(coverSpecs);
-                    }
-                    tmpschema.toString();
-                    entry.toString();
+                    int infLim=0;
+                    if(tmpinfLim!=null) infLim = Double.valueOf((double)tmpinfLim).intValue();
+
+
+                    int supLim=0;
+                    if(tmpsupLim!=null) Double.valueOf((double)tmpsupLim).intValue();
+
+                    // Get printing schema by its id
+                    PrintingSchema tmpschema = printingSchemas.findOne(id);
+
+                    /*
+                    if(name!=null) { tmpschema.setName(name); }
+                    if(paperSpecs!=null) { tmpschema.setPaperSpecs(paperSpecs); }
+                    if(bindingSpecs!=null) { tmpschema.setBindingSpecs(bindingSpecs); }
+                    if(coverSpecs!=null) { tmpschema.setCoverSpecs(coverSpecs); }
+                    tmpschema = new ...
+                    */
 
                     // Create DocumentSpec and associate it with respective Document
                     DocumentSpec tmpdc = new DocumentSpec(infLim, supLim, tmpschema);
                     documentsSpecs.save(tmpdc);
-                    Document tmpdoc = documents.findOne(documentsIds.get(fileName));
+                    long iid = documentsIds.get(fileName);
+                    Document tmpdoc = documents.findOne(iid);
                     tmpdoc.addSpecification(tmpdc);
                     documents.save(tmpdoc);
                 }
             }
 
+            // !!!! ONLY, EXCLUSIVE FOR TESTING
+            /*for(long docID : documentsIds.values()) {
+                documents.delete(docID);
+            }*/
             return "OK";
         } catch (IOException e) {
             e.printStackTrace();

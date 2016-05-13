@@ -19,7 +19,7 @@ public class Document {
     private String fileName;
     @Column(name = "total_pages", nullable = false)
     private int totalPages;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     @JoinColumn(name = "document_id")
     private List<DocumentSpec> specs;
 

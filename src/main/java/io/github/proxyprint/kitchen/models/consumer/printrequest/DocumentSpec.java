@@ -17,9 +17,9 @@ public class DocumentSpec {
     private int firstPage;
     @Column(name = "last_page", nullable = false)
     private int lastPage;
-    @OneToOne(cascade = CascadeType.REMOVE)
+    @OneToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "printing_schema")
-    private PrintingSchema printingSchema;
+        private PrintingSchema printingSchema;
 
     public DocumentSpec() {}
 
