@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -110,10 +111,12 @@ public class ConsumerController {
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/consumer/budget", method = RequestMethod.POST)
-    public String calcBudgetForPrintRequest(HttpServletRequest request) {
+    public String calcBudgetForPrintRequest(HttpServletRequest request, Principal principal) {
         JsonObject response = new JsonObject();
+        Consumer consumer = consumers.findByUsername(principal.getName());
 
         PrintRequest printRequest = new PrintRequest();
+        printRequest.setConsumer(consumer);
 
         String requestJSON = null;
         try {
@@ -131,14 +134,17 @@ public class ConsumerController {
             Document d = new Document("Hack For Good Manual PT.pdf",4);
             d = documents.save(d);
             documentsIds.put("Hack For Good Manual PT.pdf", d.getId());
+            printRequest.addDocument(d);
 
             d = new Document("fatura_janeiro_2016_gas.pdf", 4);
             d = documents.save(d);
             documentsIds.put("fatura_janeiro_2016_gas.pdf", d.getId());
+            printRequest.addDocument(d);
 
             d = new Document("fatura_janeiro_2016_agua.pdf", 2);
             d = documents.save(d);
             documentsIds.put("fatura_janeiro_2016_agua.pdf", d.getId());
+            printRequest.addDocument(d);
             /*--------------------------------------------------------*/
             /*--------------------------------------------------------*/
 
@@ -154,8 +160,8 @@ public class ConsumerController {
                     String paperSpecs = entry.get("paperSpecs");
                     String bindingSpecs = entry.get("bindingSpecs");
                     String coverSpecs = entry.get("coverSpecs");*/
-                    Object tmpinfLim = entry.get("infLim");
-                    Object tmpsupLim = entry.get("supLim");
+                    Object tmpinfLim = entry.get("from");
+                    Object tmpsupLim = entry.get("to");
 
 
                     long id = (long)Double.valueOf((double)tmpid).intValue();
@@ -165,10 +171,10 @@ public class ConsumerController {
 
 
                     int supLim=0;
-                    if(tmpsupLim!=null) Double.valueOf((double)tmpsupLim).intValue();
+                    if(tmpsupLim!=null) supLim = Double.valueOf((double)tmpsupLim).intValue();
 
                     // Get printing schema by its id
-                    PrintingSchema tmpschema = printingSchemas.findOne(id);
+                        PrintingSchema tmpschema = printingSchemas.findOne(id);
 
                     /*
                     if(name!=null) { tmpschema.setName(name); }
@@ -192,6 +198,8 @@ public class ConsumerController {
             /*for(long docID : documentsIds.values()) {
                 documents.delete(docID);
             }*/
+            printRequests.save(printRequest);
+
             return "OK";
         } catch (IOException e) {
             e.printStackTrace();

@@ -19,7 +19,7 @@ public class DocumentSpec {
     private int lastPage;
     @OneToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "printing_schema")
-        private PrintingSchema printingSchema;
+    private PrintingSchema printingSchema;
 
     public DocumentSpec() {}
 

@@ -24,9 +24,9 @@ public class PrintRequest implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Column(nullable = false, name = "cost")
+    @Column(nullable = true, name = "cost")
     private float cost;
-    @Column(nullable = false, name = "arrival")
+    @Column(nullable = true, name = "arrival")
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     private Date arrivalTimestamp;
     @Column(nullable = true, name = "finished")
@@ -39,7 +39,7 @@ public class PrintRequest implements Serializable {
     private String empAttended;
     @Column(nullable = true, name = "empdelivered")
     private String empDelivered;
-    @Column(nullable = false, name = "status")
+    @Column(nullable = true, name = "status")
     @Enumerated(EnumType.STRING)
     private Status status;
     @ManyToOne
