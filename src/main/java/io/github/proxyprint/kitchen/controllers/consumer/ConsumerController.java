@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -103,33 +104,39 @@ public class ConsumerController {
     @Secured("ROLE_USER")
     @RequestMapping(value = "/consumer/budget", method = RequestMethod.POST)
     public String printRequest(HttpServletRequest request) {
-        String requestJSON = null;
-        try {
-            requestJSON = IOUtils.toString( request.getInputStream());
+        JsonObject response = new JsonObject();
 
-            System.out.print(requestJSON);
+        String requestJSON = null;
+        PrintRequestWrapper preq;
+        try {
+            requestJSON = IOUtils.toString(request.getInputStream());
+            preq = GSON.fromJson(requestJSON, PrintRequestWrapper.class);
+            System.out.print(preq.toString());
+
+            Map prequest = new Gson().fromJson(requestJSON, Map.class);
+
+            // PrintShops
+            List<Long> pshopIDs = (List<Long>) prequest.get("printshops");
 
             return "OK";
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         return "BAD";
     }
 
 
-
-
     /**
-     *
      * @param request
      * @return
      */
-    public Map<Long,Float> calculateBudget(ConsumerPrintRequest request) {
-        Map<Long,Float> budgets = new HashMap<>();
+    public Map<Long, Float> calculateBudget(ConsumerPrintRequest request) {
+        Map<Long, Float> budgets = new HashMap<>();
 
-        for(Long pshopID : request.getPrintshops()) {
+        for (Long pshopID : request.getPrintshops()) {
             PrintShop pshop = printShops.findOne(pshopID);
-            float cost=0;
+            float cost = 0;
             /*for(Map.Entry<String,List<ConsumerPrintRequestDocumentInfo>> printRequest : request.getFiles().entrySet()) {
                 String documentName = printRequest.getKey();
                 List<ConsumerPrintRequestDocumentInfo> docSpecs = printRequest.getValue();
@@ -150,6 +157,7 @@ public class ConsumerController {
 
     /**
      * Calculate the price for a single specification
+     *
      * @param firstPage
      * @param lastPage
      * @param pschema
@@ -160,14 +168,14 @@ public class ConsumerController {
         float cost = 0;
 
         // Paper
-        if(pschema.getPaperItem()!=null) {
+        if (pschema.getPaperItem() != null) {
             int numberOfPages = (lastPage - firstPage) + 1;
             PaperItem pi = pschema.getPaperItem();
-            if(pi!=null) {
-                RangePaperItem rpi = pshop.findRangePaperItem(numberOfPages,pi);
-                if(rpi!=null) {
+            if (pi != null) {
+                RangePaperItem rpi = pshop.findRangePaperItem(numberOfPages, pi);
+                if (rpi != null) {
                     float res = pshop.getPriceByKey(rpi.genKey());
-                    if(res!=-1) {
+                    if (res != -1) {
                         cost += res;
                     } else return -1;
                 } else return -1;
@@ -175,10 +183,10 @@ public class ConsumerController {
         }
 
         // Binding
-        if(pschema.getBindingItem()!=null) {
+        if (pschema.getBindingItem() != null) {
             BindingItem bi = pschema.getBindingItem();
 
-            if(bi.getRingsType().equals(Item.RingType.STAPLING.toString())) {
+            if (bi.getRingsType().equals(Item.RingType.STAPLING.toString())) {
                 bi.setRingThicknessInfLim(0);
                 bi.setRingThicknessSupLim(0);
             } else {
@@ -188,20 +196,20 @@ public class ConsumerController {
             }
             //-------------------------------------------------------
 
-            if(bi!=null) {
+            if (bi != null) {
                 float res = pshop.getPriceByKey(bi.genKey());
-                if(res!=-1) {
+                if (res != -1) {
                     cost += res;
                 } else return -1;
             }
         }
 
         // Cover
-        if(pschema.getCoverItem()!=null) {
+        if (pschema.getCoverItem() != null) {
             CoverItem ci = pschema.getCoverItem();
-            if(ci!=null) {
+            if (ci != null) {
                 float res = pshop.getPriceByKey(ci.genKey());
-                if(res!=-1) {
+                if (res != -1) {
                     cost += res;
                 } else return -1;
             }
