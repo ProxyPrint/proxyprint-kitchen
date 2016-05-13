@@ -107,16 +107,60 @@ public class ConsumerController {
         JsonObject response = new JsonObject();
 
         String requestJSON = null;
-        PrintRequestWrapper preq;
         try {
             requestJSON = IOUtils.toString(request.getInputStream());
-            preq = GSON.fromJson(requestJSON, PrintRequestWrapper.class);
-            System.out.print(preq.toString());
-
             Map prequest = new Gson().fromJson(requestJSON, Map.class);
 
             // PrintShops
             List<Long> pshopIDs = (List<Long>) prequest.get("printshops");
+
+            /*--------------------------------------------------------
+                    Number of pages for each submited file
+            --------------------------------------------------------*/
+            HashMap<String,Integer> filesNumberOfPages = new HashMap<>();
+            filesNumberOfPages.put("Hack For Good Manual PT.pdf", 30);
+            filesNumberOfPages.put("fatura_janeiro_2016_gas.pdf", 4);
+            filesNumberOfPages.put("fatura_janeiro_2016_agua.pdf", 2);
+            /*--------------------------------------------------------*/
+            /*--------------------------------------------------------*/
+
+
+            Map<String,Map> documents = (Map) prequest.get("files");
+            for(Map.Entry<String,Map> documentSpecs : documents.entrySet()) {
+                String fileName = documentSpecs.getKey();
+                List<Map<String,String>> specs = (List)documentSpecs.getValue().get("specs");
+
+                for(Map<String,String> entry : specs) {
+                    Object tmpid = entry.get("id");
+                    String name = entry.get("name");
+                    String paperSpecs = entry.get("paperSpecs");
+                    String bindingSpecs = entry.get("bindingSpecs");
+                    String coverSpecs = entry.get("coverSpecs");
+                    Object tmpinfLim = entry.get("infLim");
+                    Object tmpsupLim = entry.get("supLim");
+
+                    PrintingSchema tmpschema = new PrintingSchema();
+
+                    long id = (long)Double.valueOf((double)tmpid).intValue();
+                    int infLim = Double.valueOf((double)tmpinfLim).intValue();
+                    int supLim = Double.valueOf((double)tmpsupLim).intValue();
+
+                    if(name!=null) {
+                        tmpschema.setName(name);
+                    }
+                    if(paperSpecs!=null) {
+                        tmpschema.setPaperSpecs(paperSpecs);
+                    }
+                    if(bindingSpecs!=null) {
+                        tmpschema.setBindingSpecs(bindingSpecs);
+                    }
+                    if(coverSpecs!=null) {
+                        tmpschema.setCoverSpecs(coverSpecs);
+                    }
+                    tmpschema.toString();
+                    entry.toString();
+                }
+            }
 
             return "OK";
         } catch (IOException e) {

@@ -1,6 +1,8 @@
 package io.github.proxyprint.kitchen.models.consumer.printrequest;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by daniel on 09-05-2016.
@@ -15,11 +17,17 @@ public class Document {
     private long id;
     @Column(name = "file_name", nullable = true)
     private String fileName;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "document_id")
+    private List<DocumentSpec> specs;
 
-    public Document() {}
+    public Document() {
+        specs = new ArrayList<>();
+    }
 
     public Document(String fileName) {
         this.fileName = fileName;
+        specs = new ArrayList<>();
     }
 
     public long getId() { return id; }
@@ -29,6 +37,10 @@ public class Document {
     public String getFileName() { return fileName; }
 
     public void setFileName(String fileName) { this.fileName = fileName; }
+
+    public List<DocumentSpec> getSpecs() { return specs; }
+
+    public void setSpecs(List<DocumentSpec> specs) { this.specs = specs; }
 
     @Override
     public String toString() {

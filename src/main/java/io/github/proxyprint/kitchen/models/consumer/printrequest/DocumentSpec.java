@@ -2,12 +2,23 @@ package io.github.proxyprint.kitchen.models.consumer.printrequest;
 
 import io.github.proxyprint.kitchen.models.consumer.PrintingSchema;
 
+import javax.persistence.*;
+
 /**
  * Created by daniel on 09-05-2016.
  */
+@Entity
+@Table(name = "documents_specs")
 public class DocumentSpec {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+    @Column(name = "first_page", nullable = false)
     private int firstPage;
+    @Column(name = "last_page", nullable = false)
     private int lastPage;
+    @OneToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "printing_schema")
     private PrintingSchema printingSchema;
 
     public DocumentSpec() {}
@@ -17,6 +28,10 @@ public class DocumentSpec {
         this.lastPage = lastPage;
         this.printingSchema = printingSchema;
     }
+
+    public long getId() { return id; }
+
+    public void setId(long id) { this.id = id; }
 
     public int getFirstPage() { return firstPage; }
 
@@ -33,7 +48,8 @@ public class DocumentSpec {
     @Override
     public String toString() {
         return "DocumentSpec{" +
-                "firstPage=" + firstPage +
+                "id=" + id +
+                ", firstPage=" + firstPage +
                 ", lastPage=" + lastPage +
                 ", printingSchema=" + printingSchema.toString() +
                 '}';
@@ -46,6 +62,7 @@ public class DocumentSpec {
 
         DocumentSpec that = (DocumentSpec) o;
 
+        if (getId() != that.getId()) return false;
         if (getFirstPage() != that.getFirstPage()) return false;
         if (getLastPage() != that.getLastPage()) return false;
         return getPrintingSchema() != null ? getPrintingSchema().equals(that.getPrintingSchema()) : that.getPrintingSchema() == null;
@@ -54,7 +71,8 @@ public class DocumentSpec {
 
     @Override
     public int hashCode() {
-        int result = getFirstPage();
+        int result = (int) (getId() ^ (getId() >>> 32));
+        result = 31 * result + getFirstPage();
         result = 31 * result + getLastPage();
         result = 31 * result + (getPrintingSchema() != null ? getPrintingSchema().hashCode() : 0);
         return result;

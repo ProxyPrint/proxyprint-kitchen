@@ -14,7 +14,7 @@ import java.util.List;
  * Created by MGonc on 28/04/16.
  */
 @Entity
-@Table(name = "printrequests")
+@Table(name = "print_requests")
 public class PrintRequest implements Serializable {
 
     public enum Status {
@@ -47,7 +47,7 @@ public class PrintRequest implements Serializable {
     @ManyToOne
     private Consumer consumer;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "document")
+    @JoinColumn(name = "print_request_id")
     private List<Document> documents;
 
     public PrintRequest() {
