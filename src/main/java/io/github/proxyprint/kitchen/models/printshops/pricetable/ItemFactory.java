@@ -34,7 +34,7 @@ public class ItemFactory {
             format = PaperItem.Format.valueOf(parts[2]);
             sides = PaperItem.Sides.valueOf(parts[3]);
 
-            if(parts[4]!=null && parts[5]!=null) {
+            if(parts.length > 4 && parts[4]!=null && parts[5]!=null) {
                 int infLim, supLim;
                 infLim = Integer.parseInt(parts[4]);
                 supLim = Integer.parseInt(parts[5]);

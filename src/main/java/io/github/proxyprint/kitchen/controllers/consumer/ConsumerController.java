@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -119,17 +120,22 @@ public class ConsumerController {
         printRequest.setConsumer(consumer);
 
         String requestJSON = null;
+        List<Long> pshopIDs = null;
         try {
             requestJSON = IOUtils.toString(request.getInputStream());
             Map prequest = new Gson().fromJson(requestJSON, Map.class);
 
             // PrintShops
-            List<Long> pshopIDs = (List<Long>) prequest.get("printshops");
+            List<Double> tmpPshopIDs = (List<Double>) prequest.get("printshops");
+            pshopIDs = new ArrayList<>();
+            for(double doubleID : tmpPshopIDs) {
+                pshopIDs.add((long)Double.valueOf((double)doubleID).intValue());
+            }
 
             /*--------------------------------------------------------
                     Number of pages for each submited file
             --------------------------------------------------------*/
-            Map<String,Long> documentsIds = new HashMap<>();
+            Map<String,Long> documentsIds = new HashMap<>(); // This map stays
 
             Document d = new Document("Hack For Good Manual PT.pdf",4);
             d = documents.save(d);
@@ -156,33 +162,19 @@ public class ConsumerController {
 
                 for(Map<String,String> entry : specs) {
                     Object tmpid = entry.get("id");
-                    /*String name = entry.get("name");
-                    String paperSpecs = entry.get("paperSpecs");
-                    String bindingSpecs = entry.get("bindingSpecs");
-                    String coverSpecs = entry.get("coverSpecs");*/
                     Object tmpinfLim = entry.get("from");
                     Object tmpsupLim = entry.get("to");
-
 
                     long id = (long)Double.valueOf((double)tmpid).intValue();
 
                     int infLim=0;
                     if(tmpinfLim!=null) infLim = Double.valueOf((double)tmpinfLim).intValue();
 
-
                     int supLim=0;
                     if(tmpsupLim!=null) supLim = Double.valueOf((double)tmpsupLim).intValue();
 
                     // Get printing schema by its id
-                        PrintingSchema tmpschema = printingSchemas.findOne(id);
-
-                    /*
-                    if(name!=null) { tmpschema.setName(name); }
-                    if(paperSpecs!=null) { tmpschema.setPaperSpecs(paperSpecs); }
-                    if(bindingSpecs!=null) { tmpschema.setBindingSpecs(bindingSpecs); }
-                    if(coverSpecs!=null) { tmpschema.setCoverSpecs(coverSpecs); }
-                    tmpschema = new ...
-                    */
+                    PrintingSchema tmpschema = printingSchemas.findOne(id);
 
                     // Create DocumentSpec and associate it with respective Document
                     DocumentSpec tmpdc = new DocumentSpec(infLim, supLim, tmpschema);
@@ -194,18 +186,29 @@ public class ConsumerController {
                 }
             }
 
-            // !!!! ONLY, EXCLUSIVE FOR TESTING
-            /*for(long docID : documentsIds.values()) {
-                documents.delete(docID);
-            }*/
-            printRequests.save(printRequest);
+            printRequest = printRequests.save(printRequest);
 
-            return "OK";
+            // Finally calculate the budgets :D
+            Map<Long,Float> budgets = new HashMap<>();
+            List<Document> prDocs = printRequest.getDocuments();
+            for(long pshopID : pshopIDs) {
+                PrintShop printShop = printShops.findOne(pshopID);
+                float cost = 0; // In the future we may specifie the budget by file its easy!
+                for(Document document : prDocs) {
+                    for(DocumentSpec documentSpec : document.getSpecs()) {
+                        cost += calculatePrice(documentSpec.getFirstPage(), documentSpec.getLastPage(), documentSpec.getPrintingSchema(), printShop);
+                    }
+                }
+                budgets.put(pshopID,cost); // add to budgets
+            }
+            response.addProperty("success", true);
+            response.add("budgets",GSON.toJsonTree(budgets));
+            return GSON.toJson(response);
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        return "BAD";
+        response.addProperty("success", false);
+        return GSON.toJson(response);
     }
 
 
