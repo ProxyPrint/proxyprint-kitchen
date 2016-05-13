@@ -5,11 +5,12 @@ import com.google.gson.JsonObject;
 import io.github.proxyprint.kitchen.controllers.consumer.printrequest.ConsumerPrintRequest;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.consumer.PrintingSchema;
+import io.github.proxyprint.kitchen.models.consumer.printrequest.Document;
+import io.github.proxyprint.kitchen.models.consumer.printrequest.DocumentSpec;
+import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.*;
-import io.github.proxyprint.kitchen.models.repositories.ConsumerDAO;
-import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
-import io.github.proxyprint.kitchen.models.repositories.PrintingSchemaDAO;
+import io.github.proxyprint.kitchen.models.repositories.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -38,6 +39,12 @@ public class ConsumerController {
     private ConsumerDAO consumers;
     @Autowired
     private PrintingSchemaDAO printingSchemas;
+    @Autowired
+    private DocumentDAO documents;
+    @Autowired
+    private DocumentSpecDAO documentsSpecs;
+    @Autowired
+    private PrintRequestDAO printRequests;
     @Autowired
     private PrintShopDAO printShops;
     @Autowired
@@ -103,8 +110,10 @@ public class ConsumerController {
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/consumer/budget", method = RequestMethod.POST)
-    public String printRequest(HttpServletRequest request) {
+    public String calcBudgetForPrintRequest(HttpServletRequest request) {
         JsonObject response = new JsonObject();
+
+        PrintRequest printRequest = new PrintRequest();
 
         String requestJSON = null;
         try {
@@ -117,16 +126,25 @@ public class ConsumerController {
             /*--------------------------------------------------------
                     Number of pages for each submited file
             --------------------------------------------------------*/
-            HashMap<String,Integer> filesNumberOfPages = new HashMap<>();
-            filesNumberOfPages.put("Hack For Good Manual PT.pdf", 30);
-            filesNumberOfPages.put("fatura_janeiro_2016_gas.pdf", 4);
-            filesNumberOfPages.put("fatura_janeiro_2016_agua.pdf", 2);
+            Map<String,Long> documentsIds = new HashMap<>();
+
+            Document d = new Document("Hack For Good Manual PT.pdf",4);
+            documents.save(d);
+            documentsIds.put("Hack For Good Manual PT.pdf", d.getId());
+
+            d = new Document("fatura_janeiro_2016_gas.pdf", 4);
+            documents.save(d);
+            documentsIds.put("fatura_janeiro_2016_gas.pdf", d.getId());
+
+            d = new Document("fatura_janeiro_2016_agua.pdf", 2);
+            documents.save(d);
+            documentsIds.put("fatura_janeiro_2016_agua.pdf", d.getId());
             /*--------------------------------------------------------*/
             /*--------------------------------------------------------*/
 
 
-            Map<String,Map> documents = (Map) prequest.get("files");
-            for(Map.Entry<String,Map> documentSpecs : documents.entrySet()) {
+            Map<String,Map> mdocuments = (Map) prequest.get("files");
+            for(Map.Entry<String,Map> documentSpecs : mdocuments.entrySet()) {
                 String fileName = documentSpecs.getKey();
                 List<Map<String,String>> specs = (List)documentSpecs.getValue().get("specs");
 
@@ -159,6 +177,13 @@ public class ConsumerController {
                     }
                     tmpschema.toString();
                     entry.toString();
+
+                    // Create DocumentSpec and associate it with respective Document
+                    DocumentSpec tmpdc = new DocumentSpec(infLim, supLim, tmpschema);
+                    documentsSpecs.save(tmpdc);
+                    Document tmpdoc = documents.findOne(documentsIds.get(fileName));
+                    tmpdoc.addSpecification(tmpdc);
+                    documents.save(tmpdoc);
                 }
             }
 

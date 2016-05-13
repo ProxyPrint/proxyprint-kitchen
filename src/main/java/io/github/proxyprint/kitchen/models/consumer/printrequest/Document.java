@@ -15,8 +15,10 @@ public class Document {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Column(name = "file_name", nullable = true)
+    @Column(name = "file_name", nullable = false)
     private String fileName;
+    @Column(name = "total_pages", nullable = false)
+    private int totalPages;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "document_id")
     private List<DocumentSpec> specs;
@@ -25,8 +27,9 @@ public class Document {
         specs = new ArrayList<>();
     }
 
-    public Document(String fileName) {
+    public Document(String fileName, int totalPages) {
         this.fileName = fileName;
+        this.totalPages = totalPages;
         specs = new ArrayList<>();
     }
 
@@ -38,15 +41,22 @@ public class Document {
 
     public void setFileName(String fileName) { this.fileName = fileName; }
 
+    public int getTotalPages() { return totalPages; }
+
+    public void setTotalPages(int totalPages) { this.totalPages = totalPages; }
+
     public List<DocumentSpec> getSpecs() { return specs; }
 
     public void setSpecs(List<DocumentSpec> specs) { this.specs = specs; }
+
+    public void addSpecification(DocumentSpec ds) { this.specs.add(ds); }
 
     @Override
     public String toString() {
         return "Document{" +
                 "id=" + id +
                 ", fileName='" + fileName + '\'' +
+                ", totalPages=" + totalPages +
                 '}';
     }
 
@@ -58,7 +68,10 @@ public class Document {
         Document document = (Document) o;
 
         if (getId() != document.getId()) return false;
-        return getFileName() != null ? getFileName().equals(document.getFileName()) : document.getFileName() == null;
+        if (getTotalPages() != document.getTotalPages()) return false;
+        if (getFileName() != null ? !getFileName().equals(document.getFileName()) : document.getFileName() != null)
+            return false;
+        return getSpecs() != null ? getSpecs().equals(document.getSpecs()) : document.getSpecs() == null;
 
     }
 

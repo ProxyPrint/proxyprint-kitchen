@@ -198,8 +198,8 @@ public class AdminController {
         printshop.addItemPriceTable(c.genKey(), (float) 1.5);
 
         // PrintingSchemas
-        PrintingSchema printingSchema1 = new PrintingSchema("A4+2LAD+PB+Encadernar",p1,b,c);
-        PrintingSchema printingSchema2 = new PrintingSchema("A4+2LAD+CORES+Agrafar",p2,bs,null);
+        PrintingSchema printingSchema1 = new PrintingSchema("A4+2LAD+PB+Encadernar",p1.genKey(),b.genKey(),c.genKey());
+        PrintingSchema printingSchema2 = new PrintingSchema("A4+2LAD+CORES+Agrafar",p2.genKey(),bs.genKey(),null);
         printingSchemas.save(printingSchema1);
         printingSchemas.save(printingSchema2);
 
