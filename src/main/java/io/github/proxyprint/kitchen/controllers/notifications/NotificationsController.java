@@ -84,6 +84,14 @@ public class NotificationsController {
         notificationManager.removeNotification(notId);
         response.addProperty("success", true);
         return new ResponseEntity<>(GSON.toJson(response), HttpStatus.OK);
-        
+   }
+   
+   @Secured({"ROLE_USER"})
+   @RequestMapping(value="/notifications/{notificationId}", method = RequestMethod.PUT)
+   public ResponseEntity<String> readNotification (@PathVariable (value="notificationId") long notId){
+       JsonObject response = new JsonObject();
+       notificationManager.readNotification(notId);
+       response.addProperty("success", true);
+       return new ResponseEntity<>(GSON.toJson(response), HttpStatus.OK);
    }
 }
