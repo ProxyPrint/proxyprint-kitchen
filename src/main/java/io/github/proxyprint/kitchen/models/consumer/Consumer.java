@@ -140,6 +140,11 @@ public class Consumer extends User {
         this.notifications.clear();
     }
     
+    public void readAllNotifications() {
+       for (Notification n : notifications)
+           n.setReadStatus(true);
+    }
+    
     @Override
     public String toString() {
         return "Consumer{" + super.toString()
@@ -149,4 +154,6 @@ public class Consumer extends User {
                 + ", longitude='" + longitude + '\''
                 + '}';
     }
+
+    
 }

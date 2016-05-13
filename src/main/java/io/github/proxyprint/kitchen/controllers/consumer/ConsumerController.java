@@ -137,6 +137,19 @@ public class ConsumerController {
         response.addProperty("success", true);
         return new ResponseEntity<>(GSON.toJson(response), HttpStatus.OK);
     }
+    
+    @Secured("ROLE_USER")
+    @RequestMapping(value ="/consumer/{username}/notifications", method = RequestMethod.PUT)
+    public ResponseEntity<String> readAllNotifications (@PathVariable(value = "username") String username) {
+        
+        JsonObject response = new JsonObject();
+        Consumer c = consumers.findByUsername(username);
+        c.readAllNotifications();
+        consumers.save(c);
+        
+        response.addProperty("success", true);
+        return new ResponseEntity<>(GSON.toJson(response), HttpStatus.OK);
+    }
 
 
 
