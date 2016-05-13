@@ -64,4 +64,9 @@ public class NotificationManager {
         notifications.delete(notificationId);
     }
     
+    public void readNotification (long notificationId){
+        Notification n = notifications.findById(notificationId);
+        n.setReadStatus(true); 
+        notifications.save(n);
+    }    
 }

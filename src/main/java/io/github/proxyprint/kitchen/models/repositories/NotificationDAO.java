@@ -24,4 +24,6 @@ import org.springframework.data.repository.CrudRepository;
  */
 public interface NotificationDAO extends CrudRepository<Notification, Long> {
     
+    public Notification findById (long id);
+    
 }

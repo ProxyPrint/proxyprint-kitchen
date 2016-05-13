@@ -44,6 +44,9 @@ public class Notification implements Serializable {
     @Column(name = "timestamp", nullable = true)
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     private Date timestamp;
+    
+    @Column(name = "read" , nullable=true)
+    private boolean read;
 
     public Notification() {
     }
@@ -51,6 +54,7 @@ public class Notification implements Serializable {
     public Notification(String message) {
         this.message = message;
         this.timestamp = Date.from(Instant.now());
+        this.read = false;
     }
 
     public long getId() {
@@ -75,6 +79,14 @@ public class Notification implements Serializable {
 
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
+    }
+    
+    public boolean getReadStatus() {
+        return this.read;
+    }
+    
+    public void setReadStatus(boolean status) {
+        this.read = status;
     }
 
 }
