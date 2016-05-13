@@ -2,7 +2,6 @@ package io.github.proxyprint.kitchen.controllers.consumer;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import io.github.proxyprint.kitchen.controllers.consumer.printrequest.ConsumerPrintRequest;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.consumer.PrintingSchema;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.Document;
@@ -154,7 +153,7 @@ public class ConsumerController {
             /*--------------------------------------------------------*/
             /*--------------------------------------------------------*/
 
-
+            // Store Documents and respective Specifications
             Map<String,Map> mdocuments = (Map) prequest.get("files");
             for(Map.Entry<String,Map> documentSpecs : mdocuments.entrySet()) {
                 String fileName = documentSpecs.getKey();
@@ -179,8 +178,8 @@ public class ConsumerController {
                     // Create DocumentSpec and associate it with respective Document
                     DocumentSpec tmpdc = new DocumentSpec(infLim, supLim, tmpschema);
                     documentsSpecs.save(tmpdc);
-                    long iid = documentsIds.get(fileName);
-                    Document tmpdoc = documents.findOne(iid);
+                    long did = documentsIds.get(fileName);
+                    Document tmpdoc = documents.findOne(did);
                     tmpdoc.addSpecification(tmpdc);
                     documents.save(tmpdoc);
                 }
@@ -189,17 +188,22 @@ public class ConsumerController {
             printRequest = printRequests.save(printRequest);
 
             // Finally calculate the budgets :D
-            Map<Long,Float> budgets = new HashMap<>();
+            Map<Long,String> budgets = new HashMap<>();
             List<Document> prDocs = printRequest.getDocuments();
             for(long pshopID : pshopIDs) {
                 PrintShop printShop = printShops.findOne(pshopID);
-                float cost = 0; // In the future we may specifie the budget by file its easy!
+                BudgetCalculator budgetCalculator = new BudgetCalculator(printShop);
+                float totalCost = 0; // In the future we may specifie the budget by file its easy!
                 for(Document document : prDocs) {
                     for(DocumentSpec documentSpec : document.getSpecs()) {
-                        cost += calculatePrice(documentSpec.getFirstPage(), documentSpec.getLastPage(), documentSpec.getPrintingSchema(), printShop);
+                        float specCost = budgetCalculator.calculatePrice(documentSpec.getFirstPage(), documentSpec.getLastPage(), documentSpec.getPrintingSchema());
+                        if(specCost!=-1) totalCost += specCost;
+                        else {
+                            budgets.put(pshopID,"Esta reprografia não pode satisfazer o pedido.");
+                        }
                     }
                 }
-                budgets.put(pshopID,cost); // add to budgets
+                if (totalCost > 0) budgets.put(pshopID,String.valueOf(totalCost)); // add to budgets
             }
             response.addProperty("success", true);
             response.add("budgets",GSON.toJsonTree(budgets));
@@ -209,98 +213,6 @@ public class ConsumerController {
         }
         response.addProperty("success", false);
         return GSON.toJson(response);
-    }
-
-
-    /**
-     * @param request
-     * @return
-     */
-    public Map<Long, Float> calculateBudget(ConsumerPrintRequest request) {
-        Map<Long, Float> budgets = new HashMap<>();
-
-        for (Long pshopID : request.getPrintshops()) {
-            PrintShop pshop = printShops.findOne(pshopID);
-            float cost = 0;
-            /*for(Map.Entry<String,List<ConsumerPrintRequestDocumentInfo>> printRequest : request.getFiles().entrySet()) {
-                String documentName = printRequest.getKey();
-                List<ConsumerPrintRequestDocumentInfo> docSpecs = printRequest.getValue();
-
-                for(ConsumerPrintRequestDocumentInfo docInfo : docSpecs) {
-                    List<DocumentSpec> specs = docInfo.getSpecs();
-                    for(DocumentSpec spec : specs) {
-                        // Calculate cost for each specified schema
-                        cost += calculatePrice(spec.getFirstPage(),spec.getLastPage(),spec.getPrintingSchema(),pshop);
-                    }
-                }
-                budgets.put(pshopID,cost);
-            }*/
-        }
-
-        return budgets;
-    }
-
-    /**
-     * Calculate the price for a single specification
-     *
-     * @param firstPage
-     * @param lastPage
-     * @param pschema
-     * @param pshop
-     * @return -1 if the request cannot be satisfied, a value bigger than or equal to 0 representing the cost of the specification
-     */
-    public float calculatePrice(int firstPage, int lastPage, PrintingSchema pschema, PrintShop pshop) {
-        float cost = 0;
-
-        // Paper
-        if (pschema.getPaperItem() != null) {
-            int numberOfPages = (lastPage - firstPage) + 1;
-            PaperItem pi = pschema.getPaperItem();
-            if (pi != null) {
-                RangePaperItem rpi = pshop.findRangePaperItem(numberOfPages, pi);
-                if (rpi != null) {
-                    float res = pshop.getPriceByKey(rpi.genKey());
-                    if (res != -1) {
-                        cost += res;
-                    } else return -1;
-                } else return -1;
-            }
-        }
-
-        // Binding
-        if (pschema.getBindingItem() != null) {
-            BindingItem bi = pschema.getBindingItem();
-
-            if (bi.getRingsType().equals(Item.RingType.STAPLING.toString())) {
-                bi.setRingThicknessInfLim(0);
-                bi.setRingThicknessSupLim(0);
-            } else {
-                // TO DO: Dinamic check for rings size base on the number pages!!
-                bi.setRingThicknessInfLim(6);
-                bi.setRingThicknessSupLim(10);
-            }
-            //-------------------------------------------------------
-
-            if (bi != null) {
-                float res = pshop.getPriceByKey(bi.genKey());
-                if (res != -1) {
-                    cost += res;
-                } else return -1;
-            }
-        }
-
-        // Cover
-        if (pschema.getCoverItem() != null) {
-            CoverItem ci = pschema.getCoverItem();
-            if (ci != null) {
-                float res = pshop.getPriceByKey(ci.genKey());
-                if (res != -1) {
-                    cost += res;
-                } else return -1;
-            }
-        }
-
-        return cost;
     }
 
 }
