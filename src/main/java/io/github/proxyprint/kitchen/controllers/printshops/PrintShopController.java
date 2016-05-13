@@ -138,6 +138,7 @@ public class PrintShopController {
     /*-------------------------
         PrintRequests
     -------------------------*/
+    @ApiOperation(value = "Returns the new status.", notes = "Returns the new status of the corresponding print request.")
     @Secured({"ROLE_MANAGER", "ROLE_EMPLOYEE"})
     @RequestMapping(value = "/printshops/requests/{id}", method = RequestMethod.POST)
     public String changeStatusPrintShopRequests(@PathVariable(value = "id") long id, Principal principal) throws IOException {
@@ -183,6 +184,7 @@ public class PrintShopController {
         return GSON.toJson(response);
     }
 
+    @ApiOperation(value = "Returns a request.", notes = "Returns the corresponding request from a printshop.")
     @Secured({"ROLE_MANAGER", "ROLE_EMPLOYEE"})
     @RequestMapping(value = "/printshops/requests/{id}", method = RequestMethod.GET)
     public String getPrintShopRequest(@PathVariable(value = "id") long id, Principal principal) {
@@ -204,6 +206,7 @@ public class PrintShopController {
         return GSON.toJson(response);
     }
 
+    @ApiOperation(value = "Returns pending requests.", notes = "Returns the pending and in progress requests from a printshop.")
     @Secured({"ROLE_MANAGER", "ROLE_EMPLOYEE"})
     @RequestMapping(value = "/printshops/requests", method = RequestMethod.GET)
     public String getPrintShopRequests(Principal principal) {
@@ -228,6 +231,7 @@ public class PrintShopController {
         return GSON.toJson(response);
     }
 
+    @ApiOperation(value = "Returns satisfied requests.", notes = "Returns the satisfied requests from a printshop.")
     @Secured({"ROLE_MANAGER", "ROLE_EMPLOYEE"})
     @RequestMapping(value = "/printshops/satisfied", method = RequestMethod.GET)
     public String getPrintShopSatisfiedRequests(Principal principal) {
@@ -273,10 +277,9 @@ public class PrintShopController {
 
         if(printRequest.getStatus() == Status.PENDING){
 
-            printrequests.delete(printRequest.getId());
-            System.out.println(printRequest.getId());
+            printrequests.delete(printRequest);
 
-            not = "O pedido número " + printRequest.getId() + " foi cancelado! " + motive;
+            not = "O pedido número " + printRequest.getId() + " foi cancelado! Motivo: " + motive;
             notificationManager.sendNotification(user, new Notification(not));
             response.addProperty("success", true);
         } else{

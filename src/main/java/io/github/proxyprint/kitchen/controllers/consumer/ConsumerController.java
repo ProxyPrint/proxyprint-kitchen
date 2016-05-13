@@ -2,6 +2,7 @@ package io.github.proxyprint.kitchen.controllers.consumer;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import io.github.proxyprint.kitchen.controllers.consumer.printrequest.ConsumerPrintRequest;
 import io.github.proxyprint.kitchen.controllers.consumer.printrequest.ConsumerPrintRequestDocumentInfo;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
@@ -16,6 +17,7 @@ import io.github.proxyprint.kitchen.models.repositories.ConsumerDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintRequestDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintingSchemaDAO;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +27,9 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.security.Principal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by daniel on 04-04-2016.
@@ -226,8 +226,33 @@ public class ConsumerController {
         return cost;
     }
 
-    @Secured({"ROLE_CONSUMER"})
-    @RequestMapping(value = "/requests/cancel/{id}", method = RequestMethod.POST)
+    @ApiOperation(value = "Returns pending requests.", notes = "Returns the pending requests from the user.")
+    @Secured({"ROLE_USER"})
+    @RequestMapping(value = "/consumer/requests", method = RequestMethod.GET)
+    public String getRequests(Principal principal) {
+
+        JsonObject response = new JsonObject();
+        Consumer consumer = consumers.findByUsername(principal.getName());
+
+        if (consumer == null) {
+            response.addProperty("success", false);
+            return GSON.toJson(response);
+        }
+
+
+        List<PrintRequest.Status> status = new ArrayList<>();
+        status.add(PrintRequest.Status.PENDING);
+
+        List<PrintRequest> printRequestsList = printrequests.findByStatusInAndConsumer(status, consumer);
+        Type listOfPRequests = new TypeToken<List<PrintShop>>(){}.getType();
+
+        response.add("printrequests", GSON.toJsonTree(printRequestsList,listOfPRequests));
+        response.addProperty("success", true);
+        return GSON.toJson(response);
+    }
+
+    @Secured({"ROLE_USER"})
+    @RequestMapping(value = "/consumer/requests/cancel/{id}", method = RequestMethod.POST)
     public String cancelRequests(@PathVariable(value = "id") long id, Principal principal) {
 
         JsonObject response = new JsonObject();
