@@ -3,27 +3,29 @@ package io.github.proxyprint.kitchen.controllers.consumer;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import io.github.proxyprint.kitchen.controllers.consumer.printrequest.ConsumerPrintRequest;
-import io.github.proxyprint.kitchen.controllers.consumer.printrequest.ConsumerPrintRequestDocumentInfo;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.consumer.PrintingSchema;
-import io.github.proxyprint.kitchen.models.consumer.printrequest.DocumentSpec;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.*;
 import io.github.proxyprint.kitchen.models.repositories.ConsumerDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintingSchemaDAO;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 /**
  * Created by daniel on 04-04-2016.
@@ -97,31 +99,21 @@ public class ConsumerController {
         return GSON.toJson(response);
     }
 
-    /**
-     * !WARNING
-     * This is a temporary fix while the budget algorithm isn't implemented.
-     * @param request
-     * @return
-     */
+
     @Secured("ROLE_USER")
     @RequestMapping(value = "/consumer/budget", method = RequestMethod.POST)
-    public String printRequest(@RequestBody List<Long> pshopIDs) {
-        JsonObject response = new JsonObject();
+    public String printRequest(HttpServletRequest request) {
+        String requestJSON = null;
+        try {
+            requestJSON = IOUtils.toString( request.getInputStream());
 
-        // Uncomment when budget request is done!
-        // Map<Long,Float> budgets = calculateBudget(request);
-        // List<Long> printshopsIDs = request.getPrintshops();
-        Map<Long,Float> budgets = new HashMap<>();
+            System.out.print(requestJSON);
 
-        Random rand = new Random();
-        for(long pid : pshopIDs) {
-            System.out.println("Pid: "+pid);
-            budgets.put(pid,rand.nextFloat() * (5 - 1) + 1);
+            return "OK";
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
-        response.add("budgets", GSON.toJsonTree(budgets));
-        response.addProperty("success", true);
-        return GSON.toJson(response);
+        return "BAD";
     }
 
 
