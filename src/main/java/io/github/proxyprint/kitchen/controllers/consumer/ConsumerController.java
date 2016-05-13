@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 /**
  * Created by daniel on 04-04-2016.
@@ -122,6 +124,18 @@ public class ConsumerController {
         response.add("budgets", GSON.toJsonTree(budgets));
         response.addProperty("success", true);
         return GSON.toJson(response);
+    }
+    
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/consumer/{username}/notifications", method = RequestMethod.DELETE)
+    public ResponseEntity<String> deleteAllNotifications (@PathVariable(value = "username") String username) {
+        JsonObject response = new JsonObject();
+        Consumer c = consumers.findByUsername(username);
+        c.removeAllNotifications();
+        consumers.save(c);
+        
+        response.addProperty("success", true);
+        return new ResponseEntity<>(GSON.toJson(response), HttpStatus.OK);
     }
 
 
