@@ -214,6 +214,7 @@ public class ConsumerController {
             }
             response.addProperty("success", true);
             response.add("budgets",GSON.toJsonTree(budgets));
+            response.addProperty("printRequestID", printRequest.getId());
             return GSON.toJson(response);
         } catch (IOException e) {
             e.printStackTrace();
