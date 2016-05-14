@@ -15,20 +15,14 @@ import org.apache.commons.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by daniel on 04-04-2016.
@@ -219,6 +213,39 @@ public class ConsumerController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        response.addProperty("success", false);
+        return GSON.toJson(response);
+    }
+
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/consumer/printrequest/{printRequestID}/submit", method = RequestMethod.POST)
+    public String finishAndSubmitPrintRequest(@PathVariable(value = "printRequestID") long prid, HttpServletRequest request, Principal principal) {
+        JsonObject response = new JsonObject();
+        PrintRequest printRequest = printRequests.findOne(prid);
+        Consumer consumer = consumers.findByUsername(principal.getName());
+
+        if(printRequest!=null && consumer!=null) {
+            long pshopID = Long.parseLong(request.getParameter("prinshopID"));
+            float cost = Float.parseFloat(request.getParameter("budget"));
+
+            PrintShop pshop = printShops.findOne(pshopID);
+
+            if(pshop!=null) {
+                // Final attributes for given print request
+                printRequest.setArrivalTimestamp(new Date());
+                printRequest.setStatus(PrintRequest.Status.PENDING);
+                printRequest.setCost(cost);
+
+                printRequests.save(printRequest);
+
+                pshop.addPrintRequest(printRequest);
+
+                printShops.save(pshop);
+                response.addProperty("success", true);
+                return GSON.toJson(response);
+            }
+        }
+
         response.addProperty("success", false);
         return GSON.toJson(response);
     }
