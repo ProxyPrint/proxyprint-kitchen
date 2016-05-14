@@ -85,6 +85,8 @@ public class DocumentSpec {
         } else {
             sb.append("Páginas "+this.firstPage+"-"+this.getLastPage());
         }
-        sb.append(" "+this.printingSchema.toString());
+        sb.append(" "+this.printingSchema.getPresentationString());
+
+        return sb.toString();
     }
 }

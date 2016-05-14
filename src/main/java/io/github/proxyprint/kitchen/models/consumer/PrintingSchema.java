@@ -144,6 +144,21 @@ public class PrintingSchema {
     }
 
     public String getPresentationString() {
-        
+        StringBuilder sb = new StringBuilder();
+
+        String psecs = this.paperSpecs.replace(",","+");
+        sb.append(psecs);
+
+        if(this.bindingSpecs!=null && !this.bindingSpecs.equals("")) {
+            String bspecs = this.bindingSpecs.replace(",","+");
+            sb.append(bspecs);
+        }
+
+        if(this.coverSpecs!=null && !this.coverSpecs.equals("")) {
+            String cspecs = this.coverSpecs.replace(",","+");
+            sb.append(cspecs);
+        }
+
+        return sb.toString();
     }
 }

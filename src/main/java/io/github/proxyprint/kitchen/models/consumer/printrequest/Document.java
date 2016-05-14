@@ -81,4 +81,14 @@ public class Document {
         result = 31 * result + (getFileName() != null ? getFileName().hashCode() : 0);
         return result;
     }
+
+    public String getPresentationString() {
+        StringBuilder sb = new StringBuilder();
+
+        for(DocumentSpec docSpecs : this.specs) {
+            sb.append(docSpecs.getPresentationString()).append("\n");
+        }
+
+        return sb.toString();
+    }
 }
