@@ -28,10 +28,10 @@ public class BudgetCalculator {
      */
     public float calculatePrice(int firstPage, int lastPage, PrintingSchema pschema) {
         float cost = 0;
+        int numberOfPages = (lastPage - firstPage) + 1;
 
         // Paper
         if (pschema.getPaperItem() != null) {
-            int numberOfPages = (lastPage - firstPage) + 1;
             PaperItem pi = pschema.getPaperItem();
             if (pi != null) {
                 RangePaperItem rpi = findIdealRangePaperItem(numberOfPages, pi);
@@ -52,11 +52,20 @@ public class BudgetCalculator {
                 bi.setRingThicknessInfLim(0);
                 bi.setRingThicknessSupLim(0);
             } else {
-                // TO DO: Dinamic check for rings size base on the number pages!!
-                bi.setRingThicknessInfLim(6);
-                bi.setRingThicknessSupLim(10);
+                // bi.setRingThicknessInfLim(6);
+                // bi.setRingThicknessSupLim(10);
+                Range r = new Range(1,2);
+                if(numberOfPages > 1 && numberOfPages < 20) {
+                    r = new Range(6,10);
+                } else if(numberOfPages > 21 && numberOfPages < 80) {
+                    r = new Range(12,20);
+                } else if(numberOfPages > 81 && numberOfPages < 119) {
+                    r = new Range(22,28);
+                } else if(numberOfPages > 120) {
+                    r = new Range(32,38);
+                }
+                bi = findIdealBindingItem(numberOfPages,bi.getRingsType(),r);
             }
-            //-------------------------------------------------------
 
             if (bi != null) {
                 float res = pshop.getPriceByKey(bi.genKey());
@@ -124,43 +133,53 @@ public class BudgetCalculator {
 
     /**
      * Find a range paper item given the number of pages and
-     * a PaperItem
-     * @param nPages number of pages
-     * @param bi a binding item to match in the pricetable
-     * @return The suitable RangePagerItem for the given parameters
+     * a PaperItem.
+     * @param nPages number of pages.
+     * @param ringType type of ring to find.
+     * @param needThisRange the more suitable rings range for the giver number of pages.
+     * @return The suitable RangePagerItem for the given parameters.
      */
-    private BindingItem findIdealBindingItem(int nPages, BindingItem bi) {
-        RangePaperItem idealRpi = null;
+    private BindingItem findIdealBindingItem(int nPages, Item.RingType ringType, Range needThisRange) {
+        BindingItem idealBi = null;
         int maxSupLim = 0;
+
+        int minDiffTop = 1000;
+        int minDiffBottom = 1000;
 
         for(Map.Entry<String,Float> entry : pshop.getPriceTable().entrySet()) {
             String key = entry.getKey();
             Float price = entry.getValue();
 
             String[] parts = key.split(",");
-            if(parts[0].equals(PaperItem.KEY_BASE)) {
-                // Its a paper item and I want it!
-                RangePaperItem rpi = (RangePaperItem) itemFactory.createItem(key);
-                PaperItem tpi = new PaperItem(rpi.getFormat(),rpi.getSides(), rpi.getColors());
+            if(parts[0].equals(BindingItem.KEY_BASE)) {
+                // Its a binding item and I want it!
+                BindingItem tmpbi = (BindingItem) itemFactory.createItem(key);
 
-                if(tpi.genKey().equals(pi.genKey())) {
-                    // Check for range compatibility
-                    if(nPages >= rpi.getInfLim() && nPages <= rpi.getSupLim()) {
-                        // Perfect match
-                        idealRpi = rpi;
-                        return idealRpi;
+                if(tmpbi.getRingsType().equals(ringType)) {
+                    Range r = new Range(tmpbi.getRingThicknessInfLim(),tmpbi.getRingThicknessSupLim());
+                    if(r.inf==needThisRange.inf && r.sup==needThisRange.sup) {
+                        // Perfect Match
+                        idealBi = tmpbi;
+                        return idealBi;
                     }
-                    if(nPages > rpi.getSupLim()) {
-                        if(rpi.getSupLim() > maxSupLim) {
-                            // Assure that we hold the max sup limit of the interval
-                            // in case of a non perfect match
-                            idealRpi = rpi;
-                            maxSupLim = rpi.getSupLim();
-                        }
+                    else if(r.inf > needThisRange.inf && (r.inf - needThisRange.inf) < minDiffBottom && Math.abs(r.sup - needThisRange.sup) < minDiffTop) {
+                        // Best optimal approach match
+                        idealBi = tmpbi;
+                        minDiffBottom = (r.inf - needThisRange.inf);
+                        minDiffTop = Math.abs(r.sup - needThisRange.sup);
                     }
                 }
             }
         }
-        return idealRpi;
+        return idealBi;
+    }
+
+    public class Range {
+        public int inf, sup;
+
+        public Range(int inf, int sup) {
+            this.inf = inf;
+            this.sup = sup;
+        }
     }
 }

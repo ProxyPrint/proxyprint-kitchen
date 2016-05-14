@@ -196,7 +196,14 @@ public class ConsumerController {
                 float totalCost = 0; // In the future we may specifie the budget by file its easy!
                 for(Document document : prDocs) {
                     for(DocumentSpec documentSpec : document.getSpecs()) {
-                        float specCost = budgetCalculator.calculatePrice(documentSpec.getFirstPage(), documentSpec.getLastPage(), documentSpec.getPrintingSchema());
+                        float specCost=0;
+                        if(documentSpec.getFirstPage()!=0 && documentSpec.getLastPage()!=0) {
+                            // Partial calculation
+                            specCost = budgetCalculator.calculatePrice(documentSpec.getFirstPage(), documentSpec.getLastPage(), documentSpec.getPrintingSchema());
+                        } else {
+                            // Total calculation
+                            specCost = budgetCalculator.calculatePrice(1, document.getTotalPages(), documentSpec.getPrintingSchema());
+                        }
                         if(specCost!=-1) totalCost += specCost;
                         else {
                             budgets.put(pshopID,"Esta reprografia não pode satisfazer o pedido.");
