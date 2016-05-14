@@ -142,4 +142,8 @@ public class PrintingSchema {
                 ", coverSpecs='" + coverSpecs + '\'' +
                 '}';
     }
+
+    public String getPresentationString() {
+        
+    }
 }

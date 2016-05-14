@@ -25,7 +25,7 @@ public class PrintRequest implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @Column(nullable = true, name = "cost")
-    private float cost;
+    private double cost;
     @Column(nullable = true, name = "arrival")
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     private Date arrivalTimestamp;
@@ -66,7 +66,7 @@ public class PrintRequest implements Serializable {
         return id;
     }
 
-    public float getCost() {
+    public double getCost() {
         return cost;
     }
 
@@ -98,7 +98,7 @@ public class PrintRequest implements Serializable {
         return status;
     }
 
-    public void setCost(float cost) {
+    public void setCost(double cost) {
         this.cost = cost;
     }
 

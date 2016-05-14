@@ -8,7 +8,7 @@ import io.github.proxyprint.kitchen.models.consumer.printrequest.Document;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.DocumentSpec;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
-import io.github.proxyprint.kitchen.models.printshops.pricetable.*;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.BudgetCalculator;
 import io.github.proxyprint.kitchen.models.repositories.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -224,10 +224,18 @@ public class ConsumerController {
         PrintRequest printRequest = printRequests.findOne(prid);
         Consumer consumer = consumers.findByUsername(principal.getName());
 
-        if(printRequest!=null && consumer!=null) {
-            long pshopID = Long.parseLong(request.getParameter("prinshopID"));
-            float cost = Float.parseFloat(request.getParameter("budget"));
+        String requestJSON = null;
+        try {
+            requestJSON = IOUtils.toString(request.getInputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Map mrequest = new Gson().fromJson(requestJSON, Map.class);
 
+        long pshopID = (long)Double.valueOf((double)mrequest.get("printshopID")).intValue();
+        double cost = (Double)mrequest.get("budget");
+
+        if(printRequest!=null && consumer!=null) {
             PrintShop pshop = printShops.findOne(pshopID);
 
             if(pshop!=null) {

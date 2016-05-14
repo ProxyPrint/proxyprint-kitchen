@@ -77,4 +77,14 @@ public class DocumentSpec {
         result = 31 * result + (getPrintingSchema() != null ? getPrintingSchema().hashCode() : 0);
         return result;
     }
+
+    public String getPresentationString() {
+        StringBuilder sb = new StringBuilder();
+        if(this.firstPage==0 && this.lastPage==0) {
+            sb.append("Documento completo, ");
+        } else {
+            sb.append("Páginas "+this.firstPage+"-"+this.getLastPage());
+        }
+        sb.append(" "+this.printingSchema.toString());
+    }
 }
