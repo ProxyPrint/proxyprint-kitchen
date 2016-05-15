@@ -51,7 +51,7 @@ public class PrintShop {
     @Transient
     private ItemFactory itemFactory;
 
-    @OneToMany(cascade = CascadeType.DETACH)
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "printshop")
     private Set<PrintRequest> printrequests;
 

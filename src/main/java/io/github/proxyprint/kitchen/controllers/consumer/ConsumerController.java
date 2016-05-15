@@ -264,7 +264,8 @@ public class ConsumerController {
         }
 
         PrintRequest printRequest = printrequests.findByIdInAndConsumer(id,consumer);
-
+        System.out.println(printRequest.getId());
+        
         if(printRequest.getStatus() == PrintRequest.Status.PENDING){
             printrequests.delete(printRequest);
             response.addProperty("success", true);
