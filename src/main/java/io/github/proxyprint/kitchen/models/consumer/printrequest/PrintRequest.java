@@ -14,7 +14,7 @@ import java.util.List;
  * Created by MGonc on 28/04/16.
  */
 @Entity
-@Table(name = "printrequests")
+@Table(name = "print_requests")
 public class PrintRequest implements Serializable {
 
     public enum Status {
@@ -24,9 +24,9 @@ public class PrintRequest implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Column(nullable = false, name = "cost")
-    private float cost;
-    @Column(nullable = false, name = "arrival")
+    @Column(nullable = true, name = "cost")
+    private double cost;
+    @Column(nullable = true, name = "arrival")
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     private Date arrivalTimestamp;
     @Column(nullable = true, name = "finished")
@@ -39,7 +39,7 @@ public class PrintRequest implements Serializable {
     private String empAttended;
     @Column(nullable = true, name = "empdelivered")
     private String empDelivered;
-    @Column(nullable = false, name = "status")
+    @Column(nullable = true, name = "status")
     @Enumerated(EnumType.STRING)
     private Status status;
     @ManyToOne(cascade = CascadeType.DETACH)
@@ -47,7 +47,7 @@ public class PrintRequest implements Serializable {
     @ManyToOne(cascade = CascadeType.DETACH)
     private Consumer consumer;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "document")
+    @JoinColumn(name = "print_request_id")
     private List<Document> documents;
 
     public PrintRequest() {
@@ -66,7 +66,7 @@ public class PrintRequest implements Serializable {
         return id;
     }
 
-    public float getCost() {
+    public double getCost() {
         return cost;
     }
 
@@ -98,7 +98,7 @@ public class PrintRequest implements Serializable {
         return status;
     }
 
-    public void setCost(float cost) {
+    public void setCost(double cost) {
         this.cost = cost;
     }
 

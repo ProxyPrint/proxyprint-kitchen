@@ -34,7 +34,7 @@ public class ItemFactory {
             format = PaperItem.Format.valueOf(parts[2]);
             sides = PaperItem.Sides.valueOf(parts[3]);
 
-            if(parts[4]!=null && parts[5]!=null) {
+            if(parts.length > 4 && parts[4]!=null && parts[5]!=null) {
                 int infLim, supLim;
                 infLim = Integer.parseInt(parts[4]);
                 supLim = Integer.parseInt(parts[5]);
@@ -47,7 +47,7 @@ public class ItemFactory {
             BindingItem.RingType ringsType;
 
             ringsType = BindingItem.RingType.valueOf(parts[1]);
-            if(parts[2]!=null && parts[3]!=null) {
+            if(parts.length > 3 && parts[2]!=null && parts[3]!=null) {
                 int infLim, supLim;
                 infLim = Integer.parseInt(parts[2]);
                 supLim = Integer.parseInt(parts[3]);
@@ -61,7 +61,7 @@ public class ItemFactory {
             CoverItem.CoverType coverType;
 
             coverType = CoverItem.CoverType.valueOf(parts[1]);
-            if(parts[2]!=null) {
+            if(parts.length > 2 && parts[2]!=null) {
                 PaperItem.Format format = PaperItem.Format.valueOf(parts[2]);
                 return new CoverItem(coverType,format);
             } else {

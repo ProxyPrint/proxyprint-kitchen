@@ -54,7 +54,10 @@ public class MailBox {
             msg.setRecipients(Message.RecipientType.TO,
                     InternetAddress.parse(rr.getManagerEmail(), false));
             msg.setSubject("ProxyPrint");
-            msg.setText("Caro, " + rr.getManagerName() + ", está feito o PI.");
+
+            msg.setText("Caro, " + rr.getManagerName() + ", a sua reprografia ("+rr.getpShopName()+") foi aceite na ProxyPrint. Já pode fazer log in na plataforma com as suas credenciais" +
+                    "\nde acesso e entrar na área de administração da sua reprografia.\n\nCom os melhores cumprimentos,\n\nA equipa ProxyPrint");
+
             msg.setSentDate(new Date());
             Transport.send(msg);
             return true;
@@ -82,7 +85,11 @@ public class MailBox {
             msg.setRecipients(Message.RecipientType.TO,
                     InternetAddress.parse(rr.getManagerEmail(), false));
             msg.setSubject("ProxyPrint");
-            msg.setText("Caro, " + rr.getManagerName() + ", o seu pedido foi rejeitado.");
+            msg.setText("Caro, " + rr.getManagerName() + ", infelizmente o pedido de inscrição da sua reprografia ("+rr.getpShopName()+"), foi rejeitado.\n" +
+                    "\n" +
+                    "Com os melhores cumprimentos,\n" +
+                    "\n" +
+                    "A equipa ProxyPrint");
             msg.setSentDate(new Date());
             Transport.send(msg);
             return true;

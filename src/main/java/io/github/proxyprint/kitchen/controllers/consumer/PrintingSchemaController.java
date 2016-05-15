@@ -38,12 +38,16 @@ public class PrintingSchemaController {
      */
     @Secured({"ROLE_USER"})
     @RequestMapping(value = "/consumer/{consumerID}/printingschemas", method = RequestMethod.GET)
-    public ResponseEntity<Set<PrintingSchema>> getConsumerPrintingSchemas(@PathVariable(value = "consumerID") long id) {
+    public String getConsumerPrintingSchemas(@PathVariable(value = "consumerID") long id) {
         Set<PrintingSchema> consumerSchemas = consumers.findOne(id).getPrintingSchemas();
+        JsonObject response = new JsonObject();
         if(consumerSchemas!=null) {
-            return new ResponseEntity<>(consumerSchemas, HttpStatus.OK);
+            response.addProperty("success", true);
+            response.add("pschemas",GSON.toJsonTree(consumerSchemas));
+            return GSON.toJson(response);
         } else {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            response.addProperty("success", false);
+            return GSON.toJson(response);
         }
     }
 
@@ -57,17 +61,17 @@ public class PrintingSchemaController {
      */
     @Secured({"ROLE_USER"})
     @RequestMapping(value = "/consumer/{consumerID}/printingschemas", method = RequestMethod.POST)
-    public ResponseEntity<String> addNewConsumerPrintingSchema(@PathVariable(value = "consumerID") long id, @RequestBody PrintingSchema ps) {
+    public String addNewConsumerPrintingSchema(@PathVariable(value = "consumerID") long id, @RequestBody PrintingSchema ps) {
         JsonObject obj = new JsonObject();
         Consumer c = consumers.findOne(id);
         boolean res = c.addPrintingSchema(ps);
         if(res) {
             consumers.save(c);
             obj.addProperty("success", true);
-            return new ResponseEntity<>(GSON.toJson(obj), HttpStatus.OK);
+            return GSON.toJson(obj);
         } else {
             obj.addProperty("success", false);
-            return new ResponseEntity<>(GSON.toJson(obj), HttpStatus.INTERNAL_SERVER_ERROR);
+            return GSON.toJson(obj);
         }
     }
 
@@ -81,11 +85,11 @@ public class PrintingSchemaController {
      */
     @Secured({"ROLE_USER"})
     @RequestMapping(value = "/consumer/{consumerID}/printingschemas/{printingSchemaID}", method = RequestMethod.DELETE)
-    public ResponseEntity<String> deleteConsumerPrintingSchema(@PathVariable(value = "consumerID") long cid, @PathVariable(value = "printingSchemaID") long psid) {
+    public String deleteConsumerPrintingSchema(@PathVariable(value = "consumerID") long cid, @PathVariable(value = "printingSchemaID") long psid) {
         printingSchemas.delete(psid);
         JsonObject obj = new JsonObject();
         obj.addProperty("success", true);
-        return new ResponseEntity<>(GSON.toJson(obj), HttpStatus.OK);
+        return GSON.toJson(obj);
     }
 
     /**
@@ -98,7 +102,7 @@ public class PrintingSchemaController {
      */
     @Secured({"ROLE_USER"})
     @RequestMapping(value = "/consumer/{consumerID}/printingschemas/{printingSchemaID}", method = RequestMethod.PUT)
-    public ResponseEntity<String> editConsumerPrintingSchema(@PathVariable(value = "consumerID") long cid, @PathVariable(value = "printingSchemaID") long psid, @RequestBody PrintingSchema pschema) {
+    public String editConsumerPrintingSchema(@PathVariable(value = "consumerID") long cid, @PathVariable(value = "printingSchemaID") long psid, @RequestBody PrintingSchema pschema) {
         printingSchemas.delete(psid);
         JsonObject obj = new JsonObject();
         
@@ -107,10 +111,10 @@ public class PrintingSchemaController {
         if(res) {
             consumers.save(c);
             obj.addProperty("success", true);
-            return new ResponseEntity<>(GSON.toJson(obj), HttpStatus.OK);
+            return GSON.toJson(obj);
         } else {
             obj.addProperty("success", false);
-            return new ResponseEntity<>(GSON.toJson(obj), HttpStatus.INTERNAL_SERVER_ERROR);
+            return GSON.toJson(obj);
         }
     }
 

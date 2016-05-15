@@ -51,7 +51,9 @@ public class PrintShop {
     @Transient
     private ItemFactory itemFactory;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @JsonIgnore
+    @Exclude
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "printshop")
     private Set<PrintRequest> printrequests;
 
@@ -166,48 +168,6 @@ public class PrintShop {
 
     public Map<String, Float> getPriceTable() {
         return this.priceTable;
-    }
-
-    /**
-     * Find a range paper item given the number of pages and
-     * a PaperItem
-     * @param nPages number of pages
-     * @param pi a paper item to match in the pricetable
-     * @return The suitable RangePagerItem for the given parameters
-     */
-    public RangePaperItem findRangePaperItem(int nPages, PaperItem pi) {
-        RangePaperItem idealRpi = null;
-        int maxSupLim = 0;
-
-        for(Map.Entry<String,Float> entry : priceTable.entrySet()) {
-            String key = entry.getKey();
-            Float price = entry.getValue();
-
-            String[] parts = key.split(",");
-            if(parts[0].equals(PaperItem.KEY_BASE)) {
-                // Its a paper item and I want it!
-                RangePaperItem rpi = (RangePaperItem) itemFactory.createItem(key);
-                PaperItem tpi = new PaperItem(rpi.getFormat(),rpi.getSides(), rpi.getColors());
-
-                if(tpi.genKey().equals(pi.genKey())) {
-                    // Check for range compatibility
-                    if(nPages >= rpi.getInfLim() && nPages <= rpi.getSupLim()) {
-                        // Perfect match
-                        idealRpi = rpi;
-                        return idealRpi;
-                    }
-                    if(nPages > rpi.getSupLim()) {
-                        if(rpi.getSupLim() > maxSupLim) {
-                            // Assure that we hold the max sup limit of the interval
-                            // in case of a non perfect match
-                            idealRpi = rpi;
-                            maxSupLim = rpi.getSupLim();
-                        }
-                    }
-                }
-            }
-        }
-        return idealRpi;
     }
 
     public void addPrintRequest(PrintRequest printrequest) {

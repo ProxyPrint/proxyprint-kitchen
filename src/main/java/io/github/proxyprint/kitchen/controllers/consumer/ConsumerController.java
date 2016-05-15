@@ -3,33 +3,49 @@ package io.github.proxyprint.kitchen.controllers.consumer;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import io.github.proxyprint.kitchen.controllers.consumer.printrequest.ConsumerPrintRequest;
-import io.github.proxyprint.kitchen.controllers.consumer.printrequest.ConsumerPrintRequestDocumentInfo;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.consumer.PrintingSchema;
+import io.github.proxyprint.kitchen.models.consumer.printrequest.Document;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.DocumentSpec;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
-import io.github.proxyprint.kitchen.models.notifications.Notification;
-import io.github.proxyprint.kitchen.models.printshops.Employee;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
-import io.github.proxyprint.kitchen.models.printshops.pricetable.*;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.BudgetCalculator;
 import io.github.proxyprint.kitchen.models.repositories.ConsumerDAO;
+import io.github.proxyprint.kitchen.models.repositories.DocumentDAO;
+import io.github.proxyprint.kitchen.models.repositories.DocumentSpecDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintRequestDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintingSchemaDAO;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.multipart.MultipartFile;
-
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.security.Principal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+
+
 
 /**
  * Created by daniel on 04-04-2016.
@@ -42,12 +58,19 @@ public class ConsumerController {
     @Autowired
     private PrintingSchemaDAO printingSchemas;
     @Autowired
+    private DocumentDAO documents;
+    @Autowired
+    private DocumentSpecDAO documentsSpecs;
+    @Autowired
+    private PrintRequestDAO printRequests;
+    @Autowired
     private PrintShopDAO printShops;
     @Autowired
     private PrintRequestDAO printrequests;
     @Autowired
     private Gson GSON;
 
+    @ApiOperation(value = "Returns success/insuccess", notes = "This method allows consumer registration.")
     @RequestMapping(value = "/consumer/register", method = RequestMethod.POST)
     public String addUser(WebRequest request) {
         boolean success = false;
@@ -75,14 +98,82 @@ public class ConsumerController {
         return GSON.toJson(response);
     }
 
+    @ApiOperation(value = "Returns a set of budgets", notes = "This method calculates budgets for a given already specified print request. The budgets are calculated for specific printshops also passed along as parameters.")
     @Secured("ROLE_USER")
-    @RequestMapping(value = "/consumer/upload", method = RequestMethod.POST)
-    public String handleFileUpload(@RequestParam("file") MultipartFile file, WebRequest req) {
+    @RequestMapping(value = "/consumer/budget", method = RequestMethod.POST)
+    public String calcBudgetForPrintRequest(HttpServletRequest request, Principal principal, @RequestPart("printRequest") String requestJSON) {
         JsonObject response = new JsonObject();
+        Consumer consumer = consumers.findByUsername(principal.getName());
 
+        PrintRequest printRequest = new PrintRequest();
+        printRequest.setConsumer(consumer);
+        printRequest = printRequests.save(printRequest);
+
+        List<Long> pshopIDs = null;
+
+        Map prequest = new Gson().fromJson(requestJSON, Map.class);
+
+        // PrintShops
+        List<Double> tmpPshopIDs = (List<Double>) prequest.get("printshops");
+        pshopIDs = new ArrayList<>();
+        for (double doubleID : tmpPshopIDs) {
+            pshopIDs.add((long) Double.valueOf((double) doubleID).intValue());
+        }
+
+        // Process files
+        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+        Map<String, Long> documentsIds = new HashMap<String, Long>();
+        for (Collection<MultipartFile> files : multipartRequest.getMultiFileMap().values()) {
+            for (MultipartFile file : files) {
+                singleFileHandle(file, printRequest, documentsIds);
+            }
+        }
+
+        // Store Documents and respective Specifications
+        Map<String, Map> mdocuments = (Map) prequest.get("files");
+        for (Map.Entry<String, Map> documentSpecs : mdocuments.entrySet()) {
+            String fileName = documentSpecs.getKey();
+            List<Map<String, String>> specs = (List) documentSpecs.getValue().get("specs");
+
+            for (Map<String, String> entry : specs) {
+                Object tmpid = entry.get("id");
+                Object tmpinfLim = entry.get("from");
+                Object tmpsupLim = entry.get("to");
+
+                long id = (long) Double.valueOf((double) tmpid).intValue();
+
+                int infLim = 0;
+                if (tmpinfLim != null) infLim = Double.valueOf((double) tmpinfLim).intValue();
+
+                int supLim = 0;
+                if (tmpsupLim != null) supLim = Double.valueOf((double) tmpsupLim).intValue();
+
+                // Get printing schema by its id
+                PrintingSchema tmpschema = printingSchemas.findOne(id);
+
+                // Create DocumentSpec and associate it with respective Document
+                DocumentSpec tmpdc = new DocumentSpec(infLim, supLim, tmpschema);
+                documentsSpecs.save(tmpdc);
+                long did = documentsIds.get(fileName);
+                Document tmpdoc = documents.findOne(did);
+                tmpdoc.addSpecification(tmpdc);
+                documents.save(tmpdoc);
+            }
+        }
+
+        // Finally calculate the budgets :D
+        Map<Long, String> budgets = calcBudgetsForPrintShops(pshopIDs, printRequest);
+
+        response.addProperty("success", true);
+        response.add("budgets", GSON.toJsonTree(budgets));
+        response.addProperty("printRequestID", printRequest.getId());
+        return GSON.toJson(response);
+    }
+
+    private void singleFileHandle(MultipartFile file, PrintRequest printRequest, Map<String, Long> documentsIds) {
         String filetype = FilenameUtils.getExtension(file.getOriginalFilename());
         if (!filetype.equals("pdf")) {
-            throw new RuntimeException("Error! Not a pdf");
+            return;
         }
         String name = FilenameUtils.removeExtension(file.getOriginalFilename());
 
@@ -90,140 +181,95 @@ public class ConsumerController {
             try {
                 PDDocument pdf = PDDocument.load(file.getInputStream());
                 int count = pdf.getNumberOfPages();
+                pdf.close();
 
-                System.out.println("Este pdf tem " + count + " páginas!!");
-                response.addProperty("success", true);
-                response.addProperty("message", "Este pdf tem " + count + " páginas!!");
-            } catch (Exception e) {
-                response.addProperty("success", false);
-                response.addProperty("message", "You failed to upload " + name + " => " + e.getMessage());
+                Document doc = new Document(name, count, printRequest);
+                doc = this.documents.save(doc);
+                printRequest.addDocument(doc);
+                documentsIds.put(doc.getName() + ".pdf", doc.getId());
+
+                FileOutputStream fos = new FileOutputStream(new File(Document.FILES_PATH + doc.getId() + ".pdf"));
+                IOUtils.copy(file.getInputStream(), fos);
+                fos.close();
+            } catch (IOException ex) {
+                Logger.getLogger(ConsumerController.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
-            response.addProperty("success", false);
-            response.addProperty("message", "You failed to upload because the file was empty");
+
         }
-        return GSON.toJson(response);
     }
 
-    /**
-     * !WARNING
-     * This is a temporary fix while the budget algorithm isn't implemented.
-     * @param request
-     * @return
-     */
-    @Secured("ROLE_USER")
-    @RequestMapping(value = "/consumer/budget", method = RequestMethod.POST)
-    public String printRequest(@RequestBody List<Long> pshopIDs) {
-        JsonObject response = new JsonObject();
+    private Map<Long, String> calcBudgetsForPrintShops(List<Long> pshopIDs, PrintRequest printRequest) {
+        Map<Long, String> budgets = new HashMap<>();
 
-        // Uncomment when budget request is done!
-        // Map<Long,Float> budgets = calculateBudget(request);
-        // List<Long> printshopsIDs = request.getPrintshops();
-        Map<Long,Float> budgets = new HashMap<>();
-
-        Random rand = new Random();
-        for(long pid : pshopIDs) {
-            System.out.println("Pid: "+pid);
-            budgets.put(pid,rand.nextFloat() * (5 - 1) + 1);
-        }
-
-        response.add("budgets", GSON.toJsonTree(budgets));
-        response.addProperty("success", true);
-        return GSON.toJson(response);
-    }
-
-
-
-
-    /**
-     *
-     * @param request
-     * @return
-     */
-    public Map<Long,Float> calculateBudget(ConsumerPrintRequest request) {
-        Map<Long,Float> budgets = new HashMap<>();
-
-        for(Long pshopID : request.getPrintshops()) {
-            PrintShop pshop = printShops.findOne(pshopID);
-            float cost=0;
-            /*for(Map.Entry<String,List<ConsumerPrintRequestDocumentInfo>> printRequest : request.getFiles().entrySet()) {
-                String documentName = printRequest.getKey();
-                List<ConsumerPrintRequestDocumentInfo> docSpecs = printRequest.getValue();
-
-                for(ConsumerPrintRequestDocumentInfo docInfo : docSpecs) {
-                    List<DocumentSpec> specs = docInfo.getSpecs();
-                    for(DocumentSpec spec : specs) {
-                        // Calculate cost for each specified schema
-                        cost += calculatePrice(spec.getFirstPage(),spec.getLastPage(),spec.getPrintingSchema(),pshop);
+        List<Document> prDocs = printRequest.getDocuments();
+        for (long pshopID : pshopIDs) {
+            PrintShop printShop = printShops.findOne(pshopID);
+            BudgetCalculator budgetCalculator = new BudgetCalculator(printShop);
+            float totalCost = 0; // In the future we may specifie the budget by file its easy!
+            for (Document document : prDocs) {
+                for (DocumentSpec documentSpec : document.getSpecs()) {
+                    float specCost = 0;
+                    if (documentSpec.getFirstPage() != 0 && documentSpec.getLastPage() != 0) {
+                        // Partial calculation
+                        specCost = budgetCalculator.calculatePrice(documentSpec.getFirstPage(), documentSpec.getLastPage(), documentSpec.getPrintingSchema());
+                    } else {
+                        // Total calculation
+                        specCost = budgetCalculator.calculatePrice(1, document.getTotalPages(), documentSpec.getPrintingSchema());
+                    }
+                    if (specCost != -1) totalCost += specCost;
+                    else {
+                        budgets.put(pshopID, "Esta reprografia não pode satisfazer o pedido.");
                     }
                 }
-                budgets.put(pshopID,cost);
-            }*/
+            }
+            if (totalCost > 0) budgets.put(pshopID, String.valueOf(totalCost)); // add to budgets
         }
 
         return budgets;
     }
 
-    /**
-     * Calculate the price for a single specification
-     * @param firstPage
-     * @param lastPage
-     * @param pschema
-     * @param pshop
-     * @return -1 if the request cannot be satisfied, a value bigger than or equal to 0 representing the cost of the specification
-     */
-    public float calculatePrice(int firstPage, int lastPage, PrintingSchema pschema, PrintShop pshop) {
-        float cost = 0;
 
-        // Paper
-        if(pschema.getPaperItem()!=null) {
-            int numberOfPages = (lastPage - firstPage) + 1;
-            PaperItem pi = pschema.getPaperItem();
-            if(pi!=null) {
-                RangePaperItem rpi = pshop.findRangePaperItem(numberOfPages,pi);
-                if(rpi!=null) {
-                    float res = pshop.getPriceByKey(rpi.genKey());
-                    if(res!=-1) {
-                        cost += res;
-                    } else return -1;
-                } else return -1;
+    @ApiOperation(value = "Returns success/insuccess", notes = "This method allow clients to POST a print request and associate it to a given printshop with a given budget.")
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/consumer/printrequest/{printRequestID}/submit", method = RequestMethod.POST)
+    public String finishAndSubmitPrintRequest(@PathVariable(value = "printRequestID") long prid, HttpServletRequest request, Principal principal) {
+        JsonObject response = new JsonObject();
+        PrintRequest printRequest = printRequests.findOne(prid);
+        Consumer consumer = consumers.findByUsername(principal.getName());
+
+        String requestJSON = null;
+        try {
+            requestJSON = IOUtils.toString(request.getInputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Map mrequest = new Gson().fromJson(requestJSON, Map.class);
+
+        long pshopID = (long) Double.valueOf((double) mrequest.get("printshopID")).intValue();
+        double cost = (Double) mrequest.get("budget");
+
+        if (printRequest != null && consumer != null) {
+            PrintShop pshop = printShops.findOne(pshopID);
+
+            if (pshop != null) {
+                // Final attributes for given print request
+                printRequest.setArrivalTimestamp(new Date());
+                printRequest.setStatus(PrintRequest.Status.PENDING);
+                printRequest.setCost(cost);
+
+                printRequests.save(printRequest);
+
+                pshop.addPrintRequest(printRequest);
+
+                printShops.save(pshop);
+                response.addProperty("success", true);
+                return GSON.toJson(response);
             }
         }
 
-        // Binding
-        if(pschema.getBindingItem()!=null) {
-            BindingItem bi = pschema.getBindingItem();
-
-            if(bi.getRingsType().equals(Item.RingType.STAPLING.toString())) {
-                bi.setRingThicknessInfLim(0);
-                bi.setRingThicknessSupLim(0);
-            } else {
-                // TO DO: Dinamic check for rings size base on the number pages!!
-                bi.setRingThicknessInfLim(6);
-                bi.setRingThicknessSupLim(10);
-            }
-            //-------------------------------------------------------
-
-            if(bi!=null) {
-                float res = pshop.getPriceByKey(bi.genKey());
-                if(res!=-1) {
-                    cost += res;
-                } else return -1;
-            }
-        }
-
-        // Cover
-        if(pschema.getCoverItem()!=null) {
-            CoverItem ci = pschema.getCoverItem();
-            if(ci!=null) {
-                float res = pshop.getPriceByKey(ci.genKey());
-                if(res!=-1) {
-                    cost += res;
-                } else return -1;
-            }
-        }
-
-        return cost;
+        response.addProperty("success", false);
+        return GSON.toJson(response);
     }
 
     @ApiOperation(value = "Returns pending requests.", notes = "Returns the pending requests from the user.")
