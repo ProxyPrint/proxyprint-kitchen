@@ -99,13 +99,16 @@ public class PrintingSchemaController {
     @Secured({"ROLE_USER"})
     @RequestMapping(value = "/consumer/{consumerID}/printingschemas/{printingSchemaID}", method = RequestMethod.PUT)
     public ResponseEntity<String> editConsumerPrintingSchema(@PathVariable(value = "consumerID") long cid, @PathVariable(value = "printingSchemaID") long psid, @RequestBody PrintingSchema pschema) {
-        printingSchemas.delete(psid);
+        PrintingSchema ps = printingSchemas.findOne(psid);
+        ps.setBindingSpecs(pschema.getBindingSpecs());
+        ps.setCoverSpecs(pschema.getCoverSpecs());
+        ps.setName(pschema.getName());
+        ps.setPaperSpecs(pschema.getPaperSpecs());
+        
         JsonObject obj = new JsonObject();
         
-        Consumer c = consumers.findOne(cid);
-        boolean res = c.addPrintingSchema(pschema);
-        if(res) {
-            consumers.save(c);
+        PrintingSchema res = printingSchemas.save(ps);
+        if(res!=null) {
             obj.addProperty("success", true);
             return new ResponseEntity<>(GSON.toJson(obj), HttpStatus.OK);
         } else {
