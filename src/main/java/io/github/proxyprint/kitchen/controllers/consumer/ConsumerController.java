@@ -314,7 +314,9 @@ public class ConsumerController {
         System.out.println(printRequest.getId());
         
         if(printRequest.getStatus() == PrintRequest.Status.PENDING){
-            printrequests.delete(printRequest);
+            //printrequests.delete(printRequest);
+            consumer.getPrintRequests().remove(printRequest);
+            consumers.save(consumer);
             response.addProperty("success", true);
         } else{
             response.addProperty("success", false);

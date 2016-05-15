@@ -42,9 +42,9 @@ public class PrintRequest implements Serializable {
     @Column(nullable = true, name = "status")
     @Enumerated(EnumType.STRING)
     private Status status;
-    @ManyToOne(cascade = CascadeType.DETACH)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Exclude private PrintShop printshop;
-    @ManyToOne(cascade = CascadeType.DETACH)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Consumer consumer;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "print_request_id")

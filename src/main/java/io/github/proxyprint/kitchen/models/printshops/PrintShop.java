@@ -53,7 +53,7 @@ public class PrintShop {
 
     @JsonIgnore
     @Exclude
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "printshop")
     private Set<PrintRequest> printrequests;
 

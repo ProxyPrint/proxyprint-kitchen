@@ -277,8 +277,9 @@ public class PrintShopController {
 
         if(printRequest.getStatus() == Status.PENDING){
 
-            printrequests.delete(printRequest);
-
+            //printrequests.delete(printRequest);
+            printshop.getPrintRequests().remove(printRequest);
+            printshops.save(printshop);
             not = "O pedido número " + printRequest.getId() + " foi cancelado! Motivo: " + motive;
             notificationManager.sendNotification(user, new Notification(not));
             response.addProperty("success", true);
