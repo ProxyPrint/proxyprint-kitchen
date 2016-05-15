@@ -18,6 +18,7 @@ package io.github.proxyprint.kitchen.utils;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.notifications.Notification;
 import io.github.proxyprint.kitchen.models.repositories.ConsumerDAO;
+import io.github.proxyprint.kitchen.models.repositories.NotificationDAO;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,9 @@ public class NotificationManager {
 
     @Autowired
     private ConsumerDAO consumers;
+    @Autowired
+    private NotificationDAO notifications;
+    
     
     private final ConcurrentHashMap<String, SseEmitter> subscriptions;
 
@@ -59,4 +63,14 @@ public class NotificationManager {
             sse.send(notification, MediaType.APPLICATION_JSON);
         }
     }
+    
+    public void removeNotification(long notificationId) {
+        notifications.delete(notificationId);
+    }
+    
+    public void readNotification (long notificationId){
+        Notification n = notifications.findById(notificationId);
+        n.setReadStatus(true); 
+        notifications.save(n);
+    }    
 }

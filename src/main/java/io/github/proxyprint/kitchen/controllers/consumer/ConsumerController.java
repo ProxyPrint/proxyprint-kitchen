@@ -45,6 +45,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 
 
 
@@ -273,6 +275,31 @@ public class ConsumerController {
         return GSON.toJson(response);
     }
 
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/consumer/{username}/notifications", method = RequestMethod.DELETE)
+    public ResponseEntity<String> deleteAllNotifications (@PathVariable(value = "username") String username) {
+        JsonObject response = new JsonObject();
+        Consumer c = consumers.findByUsername(username);
+        c.removeAllNotifications();
+        consumers.save(c);
+
+        response.addProperty("success", true);
+        return new ResponseEntity<>(GSON.toJson(response), HttpStatus.OK);
+    }
+
+    @Secured("ROLE_USER")
+    @RequestMapping(value ="/consumer/{username}/notifications", method = RequestMethod.PUT)
+    public ResponseEntity<String> readAllNotifications (@PathVariable(value = "username") String username) {
+
+        JsonObject response = new JsonObject();
+        Consumer c = consumers.findByUsername(username);
+        c.readAllNotifications();
+        consumers.save(c);
+
+        response.addProperty("success", true);
+        return new ResponseEntity<>(GSON.toJson(response), HttpStatus.OK);
+    }
+
     @ApiOperation(value = "Returns pending requests.", notes = "Returns the pending requests from the user.")
     @Secured({"ROLE_USER"})
     @RequestMapping(value = "/consumer/requests", method = RequestMethod.GET)
@@ -312,7 +339,7 @@ public class ConsumerController {
 
         PrintRequest printRequest = printrequests.findByIdInAndConsumer(id,consumer);
         System.out.println(printRequest.getId());
-        
+
         if(printRequest.getStatus() == PrintRequest.Status.PENDING){
             //printrequests.delete(printRequest);
             consumer.getPrintRequests().remove(printRequest);

@@ -33,7 +33,7 @@ public class Consumer extends User {
     @Exclude
     private Set<PrintRequest> printrequests;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval=true)
     @JoinColumn(name = "consumer")
     @Exclude
     private List<Notification> notifications;
@@ -135,7 +135,16 @@ public class Consumer extends User {
     public List<Notification> getNotifications() {
         return new ArrayList<>(notifications);
     }
-
+    
+    public void removeAllNotifications () {
+        this.notifications.clear();
+    }
+    
+    public void readAllNotifications() {
+       for (Notification n : notifications)
+           n.setReadStatus(true);
+    }
+    
     @Override
     public String toString() {
         return "Consumer{" + super.toString()
@@ -145,4 +154,6 @@ public class Consumer extends User {
                 + ", longitude='" + longitude + '\''
                 + '}';
     }
+
+    
 }

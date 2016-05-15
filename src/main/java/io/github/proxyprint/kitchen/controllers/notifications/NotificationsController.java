@@ -15,6 +15,8 @@
  */
 package io.github.proxyprint.kitchen.controllers.notifications;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.notifications.Notification;
 import io.github.proxyprint.kitchen.models.repositories.ConsumerDAO;
@@ -43,6 +45,8 @@ public class NotificationsController {
     private ConsumerDAO consumers;
     @Autowired
     private NotificationManager notificationManager;
+    @Autowired
+    private Gson GSON;
 
     @RequestMapping(value = "/consumer/{id}/notify", method = RequestMethod.POST)
     public void greeting(@PathVariable(value = "id") long id, WebRequest request, Principal principal) throws Exception {
@@ -72,4 +76,22 @@ public class NotificationsController {
         Consumer consumer = this.consumers.findByUsername(principal.getName());
         return consumer.getNotifications();
     }
+    
+   @Secured({"ROLE_USER"})
+   @RequestMapping(value="/notifications/{notificationId}", method = RequestMethod.DELETE)
+   public ResponseEntity<String> deleteNotification(@PathVariable(value = "notificationId") long notId, WebRequest request){
+        JsonObject response = new JsonObject();
+        notificationManager.removeNotification(notId);
+        response.addProperty("success", true);
+        return new ResponseEntity<>(GSON.toJson(response), HttpStatus.OK);
+   }
+   
+   @Secured({"ROLE_USER"})
+   @RequestMapping(value="/notifications/{notificationId}", method = RequestMethod.PUT)
+   public ResponseEntity<String> readNotification (@PathVariable (value="notificationId") long notId){
+       JsonObject response = new JsonObject();
+       notificationManager.readNotification(notId);
+       response.addProperty("success", true);
+       return new ResponseEntity<>(GSON.toJson(response), HttpStatus.OK);
+   }
 }
