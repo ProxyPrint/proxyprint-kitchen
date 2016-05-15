@@ -47,7 +47,7 @@ public class ItemFactory {
             BindingItem.RingType ringsType;
 
             ringsType = BindingItem.RingType.valueOf(parts[1]);
-            if(parts.length > 2 && parts[2]!=null && parts[3]!=null) {
+            if(parts.length > 3 && parts[2]!=null && parts[3]!=null) {
                 int infLim, supLim;
                 infLim = Integer.parseInt(parts[2]);
                 supLim = Integer.parseInt(parts[3]);
