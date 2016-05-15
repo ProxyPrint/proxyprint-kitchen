@@ -10,6 +10,7 @@ import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.BudgetCalculator;
 import io.github.proxyprint.kitchen.models.repositories.*;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -50,6 +51,7 @@ public class ConsumerController {
     @Autowired
     private Gson GSON;
 
+    @ApiOperation(value = "Returns success/insuccess", notes = "This method allows consumer registration.")
     @RequestMapping(value = "/consumer/register", method = RequestMethod.POST)
     public String addUser(WebRequest request) {
         boolean success = false;
@@ -77,6 +79,7 @@ public class ConsumerController {
         return GSON.toJson(response);
     }
 
+    @ApiOperation(value = "Returns a set of budgets", notes = "This method calculates budgets for a given already specified print request. The budgets are calculated for specific printshops also passed along as parameters.")
     @Secured("ROLE_USER")
     @RequestMapping(value = "/consumer/budget", method = RequestMethod.POST)
     public String calcBudgetForPrintRequest(HttpServletRequest request, Principal principal, @RequestPart("printRequest") String requestJSON) {
@@ -208,6 +211,7 @@ public class ConsumerController {
     }
 
 
+    @ApiOperation(value = "Returns success/insuccess", notes = "This method allow clients to POST a print request and associate it to a given printshop with a given budget.")
     @Secured("ROLE_USER")
     @RequestMapping(value = "/consumer/printrequest/{printRequestID}/submit", method = RequestMethod.POST)
     public String finishAndSubmitPrintRequest(@PathVariable(value = "printRequestID") long prid, HttpServletRequest request, Principal principal) {

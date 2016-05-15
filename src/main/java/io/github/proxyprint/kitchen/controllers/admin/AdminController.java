@@ -13,6 +13,7 @@ import io.github.proxyprint.kitchen.models.printshops.PrintShop;
 import io.github.proxyprint.kitchen.models.printshops.RegisterRequest;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.*;
 import io.github.proxyprint.kitchen.models.repositories.*;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,6 +48,7 @@ public class AdminController {
     @Autowired
     private Gson GSON;
 
+    @ApiOperation(value = "Returns the list of all printshops.", notes = "This method allows the admin entity to access all printshop's information registered in the platform.")
     @Secured({"ROLE_ADMIN"})
     @RequestMapping(value = "/printshops", method = RequestMethod.GET)
     public String getPrinShopsList() {
@@ -66,12 +68,14 @@ public class AdminController {
         return GSON.toJson(response);
     }
 
+    @ApiOperation(value = "Returns success/insuccess.", notes = "This method allows the register of an admin entity.")
     @RequestMapping(value = "/admin/register", method = RequestMethod.POST)
     public ResponseEntity<Admin> newAdmin(@RequestBody Admin admin) {
         this.admins.save(admin);
         return new ResponseEntity<>(admin, HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Returns nothing.", notes = "This method allows developers to fill in the database with fake but consistent data.")
     @RequestMapping(value = "/admin/seed", method = RequestMethod.POST)
     public ResponseEntity<String> seed() {
         JsonObject response = new JsonObject();
