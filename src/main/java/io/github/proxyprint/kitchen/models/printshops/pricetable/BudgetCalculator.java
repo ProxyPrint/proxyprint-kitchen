@@ -38,7 +38,7 @@ public class BudgetCalculator {
                 if (rpi != null) {
                     float res = pshop.getPriceByKey(rpi.genKey());
                     if (res != -1) {
-                        cost += res;
+                        cost += numberOfPages*res; // Paper Items are expressed in €/page
                     } else return -1;
                 } else return -1;
             }
@@ -141,8 +141,6 @@ public class BudgetCalculator {
      */
     private BindingItem findIdealBindingItem(int nPages, Item.RingType ringType, Range needThisRange) {
         BindingItem idealBi = null;
-        int maxSupLim = 0;
-
         int minDiffTop = 1000;
         int minDiffBottom = 1000;
 

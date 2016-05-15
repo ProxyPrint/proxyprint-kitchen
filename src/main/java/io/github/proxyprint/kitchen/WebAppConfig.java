@@ -18,8 +18,10 @@ package io.github.proxyprint.kitchen;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import io.github.proxyprint.kitchen.models.consumer.printrequest.Document;
 import io.github.proxyprint.kitchen.utils.NotificationManager;
 import io.github.proxyprint.kitchen.utils.gson.AnnotationExclusionStrategy;
+import org.apache.commons.io.FileUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
@@ -36,6 +38,9 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+import java.io.File;
+import java.io.IOException;
+
 @Configuration
 @EnableAutoConfiguration
 @ComponentScan
@@ -43,7 +48,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class WebAppConfig {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        FileUtils.forceMkdir(new File(Document.FILES_PATH));
         SpringApplication.run(WebAppConfig.class, args);
     }
 
