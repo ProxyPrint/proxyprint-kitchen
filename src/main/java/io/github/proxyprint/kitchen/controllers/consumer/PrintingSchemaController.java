@@ -114,10 +114,10 @@ public class PrintingSchemaController {
         PrintingSchema res = printingSchemas.save(ps);
         if(res!=null) {
             obj.addProperty("success", true);
-            return GSON.toJson(obj);
+             return new ResponseEntity<>(GSON.toJson(obj), HttpStatus.OK);
         } else {
             obj.addProperty("success", false);
-            return GSON.toJson(obj);
+             return new ResponseEntity<>(GSON.toJson(obj), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
