@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
@@ -202,7 +203,7 @@ public class ConsumerController {
     private Map<Long, String> calcBudgetsForPrintShops(List<Long> pshopIDs, PrintRequest printRequest) {
         Map<Long, String> budgets = new HashMap<>();
 
-        List<Document> prDocs = printRequest.getDocuments();
+        Set<Document> prDocs = printRequest.getDocuments();
         for (long pshopID : pshopIDs) {
             PrintShop printShop = printShops.findOne(pshopID);
             BudgetCalculator budgetCalculator = new BudgetCalculator(printShop);
