@@ -53,6 +53,10 @@ public class NotificationManager {
         Consumer consumer = this.consumers.findByUsername(username);
         consumer.addNotifications(notification);
         consumers.save(consumer);
-        this.subscriptions.get(username).send(notification, MediaType.APPLICATION_JSON);
+
+        SseEmitter sse = this.subscriptions.get(username);
+        if (sse != null){
+            sse.send(notification, MediaType.APPLICATION_JSON);
+        }
     }
 }

@@ -23,6 +23,7 @@ import io.github.proxyprint.kitchen.controllers.printshops.pricetable.PapersTabl
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.RingsTable;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest.Status;
+import io.github.proxyprint.kitchen.models.notifications.Notification;
 import io.github.proxyprint.kitchen.models.printshops.Employee;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.BindingItem;
@@ -34,15 +35,15 @@ import io.github.proxyprint.kitchen.models.repositories.EmployeeDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintRequestDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
 import io.github.proxyprint.kitchen.utils.DistanceCalculator;
+import io.github.proxyprint.kitchen.utils.NotificationManager;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.authentication.dao.SystemWideSaltSource;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -63,6 +64,8 @@ public class PrintShopController {
     private PrintRequestDAO printrequests;
     @Autowired
     private EmployeeDAO employees;
+    @Autowired
+    private NotificationManager notificationManager;
     @Autowired
     private Gson GSON;
 
@@ -135,9 +138,10 @@ public class PrintShopController {
     /*-------------------------
         PrintRequests
     -------------------------*/
+    @ApiOperation(value = "Returns the new status.", notes = "Returns the new status of the corresponding print request.")
     @Secured({"ROLE_MANAGER", "ROLE_EMPLOYEE"})
     @RequestMapping(value = "/printshops/requests/{id}", method = RequestMethod.POST)
-    public String changeStatusPrintShopRequests(@PathVariable(value = "id") long id, Principal principal) {
+    public String changeStatusPrintShopRequests(@PathVariable(value = "id") long id, Principal principal) throws IOException {
         JsonObject response = new JsonObject();
         Employee e = employees.findByUsername(principal.getName());
         PrintShop printshop = e.getPrintShop();
@@ -147,25 +151,40 @@ public class PrintShopController {
             return GSON.toJson(response);
         }
 
+        String not;
         PrintRequest printRequest = printrequests.findByIdInAndPrintshop(id,printshop);
+        String user = printRequest.getConsumer().getUsername();
 
-        if (printRequest.getStatus() == Status.PENDING) {
+        if (printRequest == null) {
+            response.addProperty("success", false);
+            return GSON.toJson(response);
+        } else if (printRequest.getStatus() == Status.PENDING) {
             printRequest.setStatus(Status.IN_PROGRESS);
             printRequest.setEmpAttended(principal.getName());
             response.addProperty("newStatus", Status.IN_PROGRESS.toString());
+            not = "O pedido número " + printRequest.getId() + " está a ser processado!";
+            notificationManager.sendNotification(user, new Notification(not));
         } else if (printRequest.getStatus() == Status.IN_PROGRESS) {
             printRequest.setStatus(Status.FINISHED);
             printRequest.setFinishedTimestamp(new Date());
             response.addProperty("newStatus", Status.FINISHED.toString());
+            not = "O pedido número " + printRequest.getId() +
+                    " está completo! Pode deslocar-se á reprografia para proceder ao levantamento.";
+            notificationManager.sendNotification(user, new Notification(not));
         } else if (printRequest.getStatus() == Status.FINISHED) {
             printRequest.setStatus(Status.LIFTED);
             response.addProperty("newStatus", Status.LIFTED.toString());
+        } else {
+            response.addProperty("success", false);
+            return GSON.toJson(response);
         }
+
         printrequests.save(printRequest);
         response.addProperty("success", true);
         return GSON.toJson(response);
     }
 
+    @ApiOperation(value = "Returns a request.", notes = "Returns the corresponding request from a printshop.")
     @Secured({"ROLE_MANAGER", "ROLE_EMPLOYEE"})
     @RequestMapping(value = "/printshops/requests/{id}", method = RequestMethod.GET)
     public String getPrintShopRequest(@PathVariable(value = "id") long id, Principal principal) {
@@ -187,6 +206,7 @@ public class PrintShopController {
         return GSON.toJson(response);
     }
 
+    @ApiOperation(value = "Returns pending requests.", notes = "Returns the pending and in progress requests from a printshop.")
     @Secured({"ROLE_MANAGER", "ROLE_EMPLOYEE"})
     @RequestMapping(value = "/printshops/requests", method = RequestMethod.GET)
     public String getPrintShopRequests(Principal principal) {
@@ -211,6 +231,7 @@ public class PrintShopController {
         return GSON.toJson(response);
     }
 
+    @ApiOperation(value = "Returns satisfied requests.", notes = "Returns the satisfied requests from a printshop.")
     @Secured({"ROLE_MANAGER", "ROLE_EMPLOYEE"})
     @RequestMapping(value = "/printshops/satisfied", method = RequestMethod.GET)
     public String getPrintShopSatisfiedRequests(Principal principal) {
@@ -233,6 +254,38 @@ public class PrintShopController {
 
         response.add("satisfiedrequests", GSON.toJsonTree(printRequestsList,listOfPRequests));
         response.addProperty("success", true);
+        return GSON.toJson(response);
+    }
+
+    @Secured({"ROLE_MANAGER", "ROLE_EMPLOYEE"})
+    @RequestMapping(value = "/printshops/requests/cancel/{id}", method = RequestMethod.POST)
+    public String cancelPrintShopRequests(@PathVariable(value = "id") long id, Principal principal, @RequestBody String motive)
+            throws IOException {
+
+        JsonObject response = new JsonObject();
+        Employee e = employees.findByUsername(principal.getName());
+        PrintShop printshop = e.getPrintShop();
+
+        if (printshop == null) {
+            response.addProperty("success", false);
+            return GSON.toJson(response);
+        }
+
+        String not;
+        PrintRequest printRequest = printrequests.findByIdInAndPrintshop(id,printshop);
+        String user = printRequest.getConsumer().getUsername();
+
+        if(printRequest.getStatus() == Status.PENDING){
+
+            printrequests.delete(printRequest);
+
+            not = "O pedido número " + printRequest.getId() + " foi cancelado! Motivo: " + motive;
+            notificationManager.sendNotification(user, new Notification(not));
+            response.addProperty("success", true);
+        } else{
+            response.addProperty("success", false);
+        }
+
         return GSON.toJson(response);
     }
 }

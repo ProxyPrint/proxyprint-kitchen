@@ -28,7 +28,7 @@ public class Consumer extends User {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<PrintingSchema> printingSchemas;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "consumer")
     @Exclude
     private Set<PrintRequest> printrequests;
