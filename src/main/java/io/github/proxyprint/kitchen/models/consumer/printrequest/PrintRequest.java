@@ -6,15 +6,15 @@ import io.github.proxyprint.kitchen.utils.gson.Exclude;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by MGonc on 28/04/16.
  */
 @Entity
-@Table(name = "printrequests")
+@Table(name = "print_requests")
 public class PrintRequest implements Serializable {
 
     public enum Status {
@@ -24,9 +24,9 @@ public class PrintRequest implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Column(nullable = false, name = "cost")
-    private float cost;
-    @Column(nullable = false, name = "arrival")
+    @Column(nullable = true, name = "cost")
+    private double cost;
+    @Column(nullable = true, name = "arrival")
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     private Date arrivalTimestamp;
     @Column(nullable = true, name = "finished")
@@ -39,19 +39,19 @@ public class PrintRequest implements Serializable {
     private String empAttended;
     @Column(nullable = true, name = "empdelivered")
     private String empDelivered;
-    @Column(nullable = false, name = "status")
+    @Column(nullable = true, name = "status")
     @Enumerated(EnumType.STRING)
     private Status status;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Exclude private PrintShop printshop;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Consumer consumer;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "document")
-    private List<Document> documents;
+    @JoinColumn(name = "print_request_id")
+    private Set<Document> documents;
 
     public PrintRequest() {
-        this.documents = new ArrayList<>();
+        this.documents = new HashSet<>();
     }
 
     public PrintRequest(float cost, Date arrivalTimestamp, Consumer consumer, Status status) {
@@ -59,14 +59,14 @@ public class PrintRequest implements Serializable {
         this.arrivalTimestamp = arrivalTimestamp;
         this.consumer = consumer;
         this.status = status;
-        this.documents = new ArrayList<>();
+        this.documents = new HashSet<>();
     }
 
     public long getId() {
         return id;
     }
 
-    public float getCost() {
+    public double getCost() {
         return cost;
     }
 
@@ -98,7 +98,7 @@ public class PrintRequest implements Serializable {
         return status;
     }
 
-    public void setCost(float cost) {
+    public void setCost(double cost) {
         this.cost = cost;
     }
 
@@ -134,9 +134,9 @@ public class PrintRequest implements Serializable {
         return printshop;
     }
 
-    public List<Document> getDocuments() { return documents; }
+    public Set<Document> getDocuments() { return documents; }
 
-    public void setDocuments(List<Document> documents) { this.documents = documents; }
+    public void setDocuments(Set<Document> documents) { this.documents = documents; }
 
     public void addDocument(Document doc) { this.documents.add(doc); }
 }

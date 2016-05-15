@@ -24,9 +24,16 @@ public class PrintingSchema {
 
     public PrintingSchema() {}
 
+    public PrintingSchema(String name, String paperSpecs, String bindingSpecs, String coverSpecs) {
+        this.name = name;
+        this.paperSpecs = paperSpecs;
+        this.bindingSpecs = bindingSpecs;
+        this.coverSpecs = coverSpecs;
+    }
+
     public PrintingSchema(String name , PaperItem psi, BindingItem bi, CoverItem ci) {
         this.name = name;
-        this.paperSpecs = psi.toString(); // Always required paperSpecs
+        this.paperSpecs = psi.genKey(); // Always required paperSpecs
         if(bi!=null) {
             this.bindingSpecs = bi.genKey();
             if(ci!=null) {
@@ -41,13 +48,6 @@ public class PrintingSchema {
         } else {
             this.bindingSpecs="";
         }
-    }
-
-    public PrintingSchema(String name, String paperSpecs, String bindingSpecs, String coverSpecs) {
-        this.name = name;
-        this.paperSpecs = paperSpecs;
-        this.bindingSpecs = bindingSpecs;
-        this.coverSpecs = coverSpecs;
     }
 
     public long getId() { return id; }
@@ -141,5 +141,24 @@ public class PrintingSchema {
                 ", bindingSpecs='" + bindingSpecs + '\'' +
                 ", coverSpecs='" + coverSpecs + '\'' +
                 '}';
+    }
+
+    public String getPresentationString() {
+        StringBuilder sb = new StringBuilder();
+
+        String psecs = this.paperSpecs.replace(",","+");
+        sb.append(psecs);
+
+        if(this.bindingSpecs!=null && !this.bindingSpecs.equals("")) {
+            String bspecs = this.bindingSpecs.replace(",","+");
+            sb.append(bspecs);
+        }
+
+        if(this.coverSpecs!=null && !this.coverSpecs.equals("")) {
+            String cspecs = this.coverSpecs.replace(",","+");
+            sb.append(cspecs);
+        }
+
+        return sb.toString();
     }
 }
