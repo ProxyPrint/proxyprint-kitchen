@@ -108,7 +108,10 @@ public class AdminController {
 
         Manager manager = new Manager("joaquim", "1234", "Joaquim Pereira", "joaquim@gmail.com");
         Manager manager2 = new Manager("laura", "1234", "Laura Afonso", "lauraafonso@hotmail.com");
-        RegisterRequest registerRequest = new RegisterRequest("Jorge Caldas", "jcaldas", "danielcaldas@sapo,pt", "1234", "Rua das Cruzes n20", 43.221, 41.121, "124555321", "Printer Style", false);
+        RegisterRequest registerRequest1 = new RegisterRequest("Jorge Caldas", "jcaldas", "danielcaldas@sapo,pt", "1234", "Rua das Cruzes n31", 43.221, 41.121, "124555321", "Printer Style", false);
+        RegisterRequest registerRequest2 = new RegisterRequest("Martim da Silva", "msilva", "danielcaldas@sapo,pt", "1234", "Rua das Cruzes n32", 43.221, 41.121, "124555321", "Print More", false);
+        RegisterRequest registerRequest3 = new RegisterRequest("Carlos Pinto", "cping", "danielcaldas@sapo,pt", "1234", "Rua n33", 43.221, 41.121, "124555321", "Papelaria Pinto", false);
+        RegisterRequest registerRequest4 = new RegisterRequest("Ana Carolina Matos", "acmatos", "danielcaldas@sapo,pt", "1234", "Rua das Cerejas n33", 43.221, 41.121, "124555321", "Impressões Matos", false);
 
         users.save(master);
 
@@ -149,7 +152,10 @@ public class AdminController {
         printshop.addPrintRequest(new PrintRequest(30, Date.from(Instant.now()), rita, PrintRequest.Status.FINISHED));
 
 
-        registerRequests.save(registerRequest);
+        registerRequests.save(registerRequest1);
+        registerRequests.save(registerRequest2);
+        registerRequests.save(registerRequest3);
+        registerRequests.save(registerRequest4);
 
         /*-------------------------------------
             PriceTable
