@@ -40,13 +40,24 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.io.File;
 import java.io.IOException;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
+import org.springframework.boot.context.web.SpringBootServletInitializer;
+import org.springframework.scheduling.annotation.Async;
 
 @Configuration
 @EnableAutoConfiguration
 @ComponentScan
 @EnableCaching
 @EnableSwagger2
-public class WebAppConfig {
+public class WebAppConfig extends SpringBootServletInitializer {
+
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(appClass);
+    }
+
+    private static Class<WebAppConfig> appClass = WebAppConfig.class;
 
     public static void main(String[] args) throws IOException {
         FileUtils.forceMkdir(new File(Document.FILES_PATH));
@@ -55,15 +66,18 @@ public class WebAppConfig {
 
     @Bean
     public EmbeddedServletContainerCustomizer containerCustomizer() {
-        return (container -> {
-            Integer port;
-            try {
-                port = Integer.valueOf(System.getenv("PORT"));
-            } catch (NumberFormatException ex) {
-                port = 8080;
+        return new EmbeddedServletContainerCustomizer() {
+            @Override
+            public void customize(ConfigurableEmbeddedServletContainer container) {
+                Integer port;
+                try {
+                    port = Integer.valueOf(System.getenv("PORT"));
+                } catch (NumberFormatException ex) {
+                    port = 8080;
+                }
+                container.setPort(port);
             }
-            container.setPort(port);
-        });
+        };
     }
 
     @Bean
@@ -95,8 +109,9 @@ public class WebAppConfig {
                 .build();
     }
 
+    @Async
     @Bean
-    public NotificationManager notificationSubscriptions(){
-     return new NotificationManager();
+    public NotificationManager notificationSubscriptions() {
+        return new NotificationManager();
     }
 }

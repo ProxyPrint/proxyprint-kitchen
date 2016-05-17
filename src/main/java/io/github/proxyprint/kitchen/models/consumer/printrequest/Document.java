@@ -13,7 +13,7 @@ import java.util.List;
 @Entity
 @Table(name = "documents")
 public class Document {
-    public static String FILES_PATH = "./documents/";
+    public static String FILES_PATH = "/home/jose/Desktop/documents/";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
