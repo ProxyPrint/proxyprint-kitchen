@@ -57,10 +57,15 @@ public class PrintShop {
     @JoinColumn(name = "printshop")
     private Set<PrintRequest> printrequests;
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "printshop")
+    private Set<Review> reviews;
+
     public PrintShop() {
         this.priceTable = new HashMap<>();
         itemFactory = new ItemFactory();
         this.printrequests = new HashSet<>();
+        this.reviews = new HashSet<>();
     }
 
     public PrintShop(String name, String address, Double latitude, Double longitude, String nif, String logo, float avgRating) {
@@ -74,6 +79,7 @@ public class PrintShop {
         this.priceTable = new HashMap<>();
         this.itemFactory = new ItemFactory();
         this.printrequests = new HashSet<>();
+        this.reviews = new HashSet<>();
     }
 
     public long getId() {
@@ -161,9 +167,11 @@ public class PrintShop {
     }
 
     public float getPriceByKey(String key) {
-        if(this.priceTable.containsKey(key)) {
+        if (this.priceTable.containsKey(key)) {
             return this.priceTable.get(key);
-        } else return -1;
+        } else {
+            return -1;
+        }
     }
 
     public Map<String, Float> getPriceTable() {
@@ -205,6 +213,14 @@ public class PrintShop {
     public List<RangePaperItem> convertPaperTableItemToPaperItems(PaperTableItem pti) {
         List<RangePaperItem> res = itemFactory.fromPaperTableItemToPaperItems(pti);
         return res;
+    }
+    
+    public Set<Review> getReviews(){
+        return new HashSet(this.reviews);
+    }
+    
+    public void addReview(Review review){
+        this.reviews.add(review);
     }
 
     @Override
