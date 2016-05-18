@@ -59,7 +59,7 @@ public class PrintShop {
 
     @JsonIgnore
     @Exclude
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "printshop")
     private Set<Review> reviews;
 
@@ -223,6 +223,10 @@ public class PrintShop {
     
     public void addReview(Review review){
         this.reviews.add(review);
+    }
+    
+    public boolean removeReview(Review review){
+        return this.reviews.remove(review);
     }
 
     @Override

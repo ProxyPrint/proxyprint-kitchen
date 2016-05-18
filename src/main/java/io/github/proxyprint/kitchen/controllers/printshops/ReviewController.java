@@ -50,7 +50,7 @@ public class ReviewController {
     @Autowired
     private Gson GSON;
 
-    @ApiOperation(value = "Returns printshop reviews", notes = "Returns the reviews of a printshop.")
+    @ApiOperation(value = "Returns all printshop reviews", notes = "404 if the printshop doesn't exist.")
     @Secured({"ROLE_MANAGER", "ROLE_EMPLOYEE", "ROLE_USER"})
     @RequestMapping(value = "/printshops/{id}/reviews", method = RequestMethod.GET)
     public ResponseEntity<String> getPrintShopReviews(@PathVariable("id") long id) {
@@ -62,7 +62,7 @@ public class ReviewController {
         }
     }
 
-    @ApiOperation(value = "Add a printshop review", notes = "Add a review to the printshop with the given ID")
+    @ApiOperation(value = "Add a review to a printshop with the given ID", notes = "404 if the printshop doesn't exist.")
     @Secured({"ROLE_USER"})
     @RequestMapping(value = "/printshops/{id}/reviews", method = RequestMethod.POST)
     public ResponseEntity<String> addPrintShopReview(@PathVariable("id") long id, Principal principal, WebRequest request) {
@@ -75,6 +75,56 @@ public class ReviewController {
         int rating = Integer.parseInt(request.getParameter("rating"));
         Review review = reviews.save(new Review(reviewText, rating, consumer));
         pShop.addReview(review);
+        this.printshops.save(pShop);
+        return new ResponseEntity(this.GSON.toJson(review), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Edit an existing printshop review", notes = "404 if the printshop or the review doesn't exist.")
+    @Secured({"ROLE_USER"})
+    @RequestMapping(value = "/printshops/{printShopId}/reviews/{reviewId}", method = RequestMethod.PUT)
+    public ResponseEntity<String> editPrintShopReview(@PathVariable("printShopId") long printShopId, @PathVariable("reviewId") long reviewId, Principal principal, WebRequest request) {
+        PrintShop pShop = this.printshops.findOne(printShopId);
+        if (pShop == null) {
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+
+        Review review = this.reviews.findOne(reviewId);
+        if (review == null) {
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        } else if (!review.getConsumer().getUsername().equals(principal.getName())) {
+            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+        }
+
+        pShop.removeReview(review);
+
+        String reviewText = request.getParameter("review");
+        int rating = Integer.parseInt(request.getParameter("rating"));
+
+        review.setDescription(reviewText);
+        review.setRating(rating);
+
+        pShop.addReview(review);
+        this.printshops.save(pShop);
+        return new ResponseEntity(this.GSON.toJson(review), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Delete an existing printshop review", notes = "404 if the printshop or the review doesn't exist.")
+    @Secured({"ROLE_USER"})
+    @RequestMapping(value = "/printshops/{printShopId}/reviews/{reviewId}", method = RequestMethod.DELETE)
+    public ResponseEntity<String> deletePrintShopReview(@PathVariable("printShopId") long printShopId, @PathVariable("reviewId") long reviewId, Principal principal, WebRequest request) {
+        PrintShop pShop = this.printshops.findOne(printShopId);
+        if (pShop == null) {
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+
+        Review review = this.reviews.findOne(reviewId);
+        if (review == null) {
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        } else if (!review.getConsumer().getUsername().equals(principal.getName())) {
+            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+        }
+
+        pShop.removeReview(review);
         this.printshops.save(pShop);
         return new ResponseEntity(this.GSON.toJson(review), HttpStatus.OK);
     }
