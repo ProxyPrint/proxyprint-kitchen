@@ -57,6 +57,8 @@ public class PrintShop {
     @JoinColumn(name = "printshop")
     private Set<PrintRequest> printrequests;
 
+    @JsonIgnore
+    @Exclude
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "printshop")
     private Set<Review> reviews;

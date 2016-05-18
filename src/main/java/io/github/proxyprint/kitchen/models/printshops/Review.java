@@ -15,7 +15,9 @@
  */
 package io.github.proxyprint.kitchen.models.printshops;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
+import io.github.proxyprint.kitchen.utils.gson.Exclude;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -40,6 +42,11 @@ public class Review implements Serializable {
     @Column(name = "description", nullable = false)
     private String description;
 
+    @Column(name = "rating", nullable = false)
+    private int rating;
+
+    @JsonIgnore
+    @Exclude
     @ManyToOne
     private Consumer consumer;
 
@@ -47,8 +54,9 @@ public class Review implements Serializable {
 
     }
 
-    public Review(String text, Consumer consumer) {
+    public Review(String text, int rating, Consumer consumer) {
         this.description = text;
+        this.rating = rating;
         this.consumer = consumer;
     }
 
@@ -70,6 +78,14 @@ public class Review implements Serializable {
 
     public void setConsumer(Consumer consumer) {
         this.consumer = consumer;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
     }
 
 }
