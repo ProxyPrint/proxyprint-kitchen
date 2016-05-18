@@ -55,9 +55,10 @@ public class NotificationManager {
 
     public void sendNotification(String username, Notification notification) throws IOException {
         Consumer consumer = this.consumers.findByUsername(username);
+        notification = notifications.save(notification);
         consumer.addNotifications(notification);
         consumers.save(consumer);
-
+        
         SseEmitter sse = this.subscriptions.get(username);
         if (sse != null){
             sse.send(notification, MediaType.APPLICATION_JSON);
