@@ -298,31 +298,23 @@ public class PrintShopController {
     }
 
     @ApiOperation(value = "Returns a printshop", notes = "This method returns the printshop info")
-    @Secured({"ROLE_MANAGER", "ROLE_EMPLOYEE"})
     @RequestMapping(value = "/printshops/{id}", method = RequestMethod.GET)
-    public ResponseEntity<String> getPrintShop(@PathVariable("id") long id, Principal principal) {
+    public ResponseEntity<String> getPrintShop(@PathVariable("id") long id) {
         PrintShop pShop = this.printshops.findOne(id);
 
         if (pShop == null) {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
 
-        String username = principal.getName();
-        User user = users.findByUsername(username);
-
-        boolean auth = false;
-        if (user instanceof Employee) {
-            Employee e = (Employee) user;
-            auth = e.getPrintShop().getId() == id;
-        } else if (user instanceof Manager) {
-            Manager m = (Manager) user;
-            auth = m.getPrintShop().getId() == id;
-        }
-
-        if (auth) {
-            return new ResponseEntity(GSON.toJson(pShop), HttpStatus.OK);
-        } else {
-            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
-        }
+        return new ResponseEntity(GSON.toJson(pShop), HttpStatus.OK);
     }
+
+    @ApiOperation(value = "Returns a printshop", notes = "This method returns the printshop info")
+    @RequestMapping(value = "/printshops", method = RequestMethod.GET)
+    public ResponseEntity<String> getPrintShops() {
+        Iterable<PrintShop> printShops = this.printshops.findAll();
+
+        return new ResponseEntity(this.GSON.toJson(printShops), HttpStatus.OK);
+    }
+
 }
