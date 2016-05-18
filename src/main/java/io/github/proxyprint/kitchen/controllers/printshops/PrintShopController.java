@@ -21,6 +21,7 @@ import com.google.gson.reflect.TypeToken;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.CoversTable;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.PapersTable;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.RingsTable;
+import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest.Status;
 import io.github.proxyprint.kitchen.models.notifications.Notification;
@@ -66,6 +67,10 @@ public class PrintShopController {
     private EmployeeDAO employees;
     @Autowired
     private NotificationManager notificationManager;
+
+    @Autowired
+    private ConsumerDAO consumers;
+
     @Autowired
     private Gson GSON;
 
@@ -273,15 +278,21 @@ public class PrintShopController {
 
         String not;
         PrintRequest printRequest = printrequests.findByIdInAndPrintshop(id,printshop);
-        String user = printRequest.getConsumer().getUsername();
+        Consumer user = printRequest.getConsumer();
 
         if(printRequest.getStatus() == Status.PENDING){
 
-            //printrequests.delete(printRequest);
+            long requestid = printRequest.getId();
+
             printshop.getPrintRequests().remove(printRequest);
             printshops.save(printshop);
-            not = "O pedido número " + printRequest.getId() + " foi cancelado! Motivo: " + motive;
-            notificationManager.sendNotification(user, new Notification(not));
+
+            user.getPrintRequests().remove(printRequest);
+            consumers.save(user);
+
+            not = "O pedido número " + requestid + " foi cancelado! Motivo: " + motive;
+            notificationManager.sendNotification(user.getUsername(), new Notification(not));
+
             response.addProperty("success", true);
         } else{
             response.addProperty("success", false);
