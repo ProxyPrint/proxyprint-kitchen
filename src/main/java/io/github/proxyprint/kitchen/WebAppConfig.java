@@ -18,10 +18,8 @@ package io.github.proxyprint.kitchen;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import io.github.proxyprint.kitchen.models.consumer.printrequest.Document;
 import io.github.proxyprint.kitchen.utils.NotificationManager;
 import io.github.proxyprint.kitchen.utils.gson.AnnotationExclusionStrategy;
-import org.apache.commons.io.FileUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
@@ -38,19 +36,18 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-import java.io.File;
 import java.io.IOException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 @Configuration
 @EnableAutoConfiguration
 @ComponentScan
 @EnableCaching
 @EnableSwagger2
+@EnableAsync
 public class WebAppConfig extends SpringBootServletInitializer {
 
     @Override
