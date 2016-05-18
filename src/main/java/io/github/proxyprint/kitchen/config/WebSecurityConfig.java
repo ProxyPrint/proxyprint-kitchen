@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.proxyprint.kitchen;
+package io.github.proxyprint.kitchen.config;
 
 /*
  * To change this license header, choose License Headers in Project Properties.

@@ -40,6 +40,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.io.File;
 import java.io.IOException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
@@ -59,8 +60,7 @@ public class WebAppConfig extends SpringBootServletInitializer {
 
     private static Class<WebAppConfig> appClass = WebAppConfig.class;
 
-    public static void main(String[] args) throws IOException {
-        FileUtils.forceMkdir(new File(Document.FILES_PATH));
+    public static void main(String[] args) throws IOException {        
         SpringApplication.run(WebAppConfig.class, args);
     }
 
@@ -109,7 +109,6 @@ public class WebAppConfig extends SpringBootServletInitializer {
                 .build();
     }
 
-    @Async
     @Bean
     public NotificationManager notificationSubscriptions() {
         return new NotificationManager();

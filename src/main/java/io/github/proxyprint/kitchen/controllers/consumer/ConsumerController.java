@@ -31,10 +31,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.hibernate.service.spi.InjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -56,6 +58,8 @@ import org.springframework.http.HttpStatus;
 @RestController
 public class ConsumerController {
 
+    @Resource(name = "documentsPath")
+    private String documentsPath;
     @Autowired
     private ConsumerDAO consumers;
     @Autowired
@@ -191,7 +195,8 @@ public class ConsumerController {
                 printRequest.addDocument(doc);
                 documentsIds.put(doc.getName() + ".pdf", doc.getId());
 
-                FileOutputStream fos = new FileOutputStream(new File(Document.FILES_PATH + doc.getId() + ".pdf"));
+                System.out.println();
+                FileOutputStream fos = new FileOutputStream(new File(this.documentsPath+doc.getFile().getName()));
                 IOUtils.copy(file.getInputStream(), fos);
                 fos.close();
             } catch (IOException ex) {

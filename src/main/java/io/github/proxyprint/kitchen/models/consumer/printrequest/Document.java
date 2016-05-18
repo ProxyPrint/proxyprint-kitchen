@@ -4,27 +4,31 @@ import io.github.proxyprint.kitchen.utils.gson.Exclude;
 
 import javax.persistence.*;
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * Created by daniel on 09-05-2016.
  */
 @Entity
 @Table(name = "documents")
-public class Document {
-    public static String FILES_PATH = "/home/jose/Desktop/documents/";
-
+public class Document implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    
     @Column(name = "file_name", nullable = false)
     private String name;
+    
     @Column(name = "total_pages", nullable = false)
     private int totalPages;
+    
     @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     @JoinColumn(name = "document_id")
     private List<DocumentSpec> specs;
+    
     @ManyToOne
     @Exclude
     private PrintRequest printRequest;
@@ -78,7 +82,7 @@ public class Document {
     }
 
     public File getFile(){
-        return new File(Document.FILES_PATH+this.id+".pdf");
+        return new File(this.id+".pdf");
     }
 
     @Override
