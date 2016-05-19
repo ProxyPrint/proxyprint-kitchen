@@ -5,7 +5,9 @@ import io.github.proxyprint.kitchen.utils.gson.Exclude;
 import javax.persistence.*;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by daniel on 09-05-2016.
@@ -18,31 +20,35 @@ public class Document {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     @Column(name = "file_name", nullable = false)
     private String name;
+
     @Column(name = "total_pages", nullable = false)
     private int totalPages;
+
     @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     @JoinColumn(name = "document_id")
-    private List<DocumentSpec> specs;
+    private Set<DocumentSpec> specs;
+
     @ManyToOne
     @Exclude
     private PrintRequest printRequest;
 
     public Document() {
-        specs = new ArrayList<>();
+        specs = new HashSet<>();
     }
 
     public Document(String name, int totalPages) {
         this.name = name;
         this.totalPages = totalPages;
-        specs = new ArrayList<>();
+        specs = new HashSet<>();
     }
 
     public Document(String name, int totalPages, PrintRequest printRequest) {
         this.name = name;
         this.totalPages = totalPages;
-        this.specs = new ArrayList<>();
+        this.specs = new HashSet<>();
         this.printRequest = printRequest;
     }
 
@@ -58,9 +64,9 @@ public class Document {
 
     public void setTotalPages(int totalPages) { this.totalPages = totalPages; }
 
-    public List<DocumentSpec> getSpecs() { return specs; }
+    public Set<DocumentSpec> getSpecs() { return specs; }
 
-    public void setSpecs(List<DocumentSpec> specs) { this.specs = specs; }
+    public void setSpecs(Set<DocumentSpec> specs) { this.specs = specs; }
 
     public void addSpecification(DocumentSpec ds) { this.specs.add(ds); }
 

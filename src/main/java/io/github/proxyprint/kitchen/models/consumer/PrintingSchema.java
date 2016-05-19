@@ -13,12 +13,16 @@ public class PrintingSchema {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     @Column(name = "pschema_name", nullable = false)
     private String name;
+
     @Column(name = "paper_specs", nullable = false)
     private String paperSpecs;
+
     @Column(name = "binding_specs", nullable = true)
     private String bindingSpecs;
+
     @Column(name = "cover_specs", nullable = true)
     private String coverSpecs;
 
@@ -143,20 +147,79 @@ public class PrintingSchema {
                 '}';
     }
 
-    public String getPresentationString() {
+    public String getPresentationString(String range) {
         StringBuilder sb = new StringBuilder();
 
-        String psecs = this.paperSpecs.replace(",","+");
-        sb.append(psecs);
+        String[] psecs = this.paperSpecs.split(",");
+        sb.append(range);
+        sb.append(" - Cor: ");
+
+        switch (psecs[1]){
+            case "COLOR" :
+                sb.append("A cores");
+                break;
+            case "GREY_TONES" :
+                sb.append("Tons de Cinza");
+                break;
+            case "BW" :
+                sb.append("Preto e Branco");
+                break;
+        }
+
+        sb.append(" + Formato: " + psecs[2]);
+
+        switch (psecs[3]){
+            case "DUPLEX" :
+                sb.append(", Frente e Verso");
+                break;
+            case "SIMPLEX" :
+                sb.append(", Frente");
+                break;
+        }
 
         if(this.bindingSpecs!=null && !this.bindingSpecs.equals("")) {
-            String bspecs = this.bindingSpecs.replace(",","+");
-            sb.append(bspecs);
+
+            String[] bspecs = this.bindingSpecs.split(",");
+            sb.append(" + Acabamentos: ");
+
+            switch (bspecs[0]){
+                case "STAPLING" :
+                    sb.append("Agrafar");
+                    break;
+                case "BINDING" :
+                    switch (bspecs[1]){
+                        case "SPIRAL" :
+                            sb.append("Argolas em Espiral");
+                            break;
+                        case "PLASTIC" :
+                            sb.append("Argolas de plástico");
+                            break;
+                        case "WIRE" :
+                            sb.append("Argolas de arame");
+                            break;
+                        case "STEELMAt" :
+                            sb.append("Encadernação térmica");
+                            break;
+                    }
+                    break;
+            }
         }
 
         if(this.coverSpecs!=null && !this.coverSpecs.equals("")) {
-            String cspecs = this.coverSpecs.replace(",","+");
-            sb.append(cspecs);
+
+            String[] cspecs = this.coverSpecs.split(",");
+            sb.append(" + Capa: ");
+            switch (cspecs[1]){
+                case "CRISTAL_ACETATE" :
+                    sb.append("Acetato em cristal");
+                    break;
+                case "PVC_TRANSPARENT" :
+                    sb.append("PVC transparente fosco");
+                    break;
+                case "PVC_OPAQUE" :
+                    sb.append("PVC opaco");
+                    break;
+            }
         }
 
         return sb.toString();

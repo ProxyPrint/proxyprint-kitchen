@@ -22,6 +22,8 @@ import io.github.proxyprint.kitchen.controllers.printshops.pricetable.CoversTabl
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.PapersTable;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.RingsTable;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
+import io.github.proxyprint.kitchen.models.consumer.printrequest.Document;
+import io.github.proxyprint.kitchen.models.consumer.printrequest.DocumentSpec;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest.Status;
 import io.github.proxyprint.kitchen.models.notifications.Notification;
@@ -205,6 +207,11 @@ public class PrintShopController {
 
         PrintRequest printRequest = printrequests.findByIdInAndPrintshop(id,printshop);
 
+        for (Document d : printRequest.getDocuments()){
+            for (DocumentSpec s :  d.getSpecs()){
+                s.setSpecsToString();
+            }
+        }
         response.add("printrequest", GSON.toJsonTree(printRequest));
 
         response.addProperty("success", true);
