@@ -180,6 +180,8 @@ public class PrintShopController {
             notificationManager.sendNotification(user, new Notification(not));
         } else if (printRequest.getStatus() == Status.FINISHED) {
             printRequest.setStatus(Status.LIFTED);
+            printRequest.setDeliveredTimestamp(new Date());
+            printRequest.setEmpDelivered(principal.getName());
             response.addProperty("newStatus", Status.LIFTED.toString());
         } else {
             response.addProperty("success", false);
@@ -270,7 +272,7 @@ public class PrintShopController {
     }
 
     @Secured({"ROLE_MANAGER", "ROLE_EMPLOYEE"})
-    @RequestMapping(value = "/printshops/requests/cancel/{id}", method = RequestMethod.POST)
+    @RequestMapping(value = "/printshops/requests/cancel/{id}", method = RequestMethod.DELETE)
     public String cancelPrintShopRequests(@PathVariable(value = "id") long id, Principal principal, @RequestBody String motive)
             throws IOException {
 

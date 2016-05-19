@@ -52,6 +52,7 @@ public class PrintRequest implements Serializable {
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Exclude private PrintShop printshop;
+
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Consumer consumer;
 

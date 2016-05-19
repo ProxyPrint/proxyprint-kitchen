@@ -1,6 +1,7 @@
 package io.github.proxyprint.kitchen.controllers.consumer;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
@@ -326,7 +327,7 @@ public class ConsumerController {
     }
 
     @Secured({"ROLE_USER"})
-    @RequestMapping(value = "/consumer/requests/cancel/{id}", method = RequestMethod.POST)
+    @RequestMapping(value = "/consumer/requests/cancel/{id}", method = RequestMethod.DELETE)
     public String cancelRequests(@PathVariable(value = "id") long id, Principal principal) {
 
         JsonObject response = new JsonObject();
@@ -355,5 +356,38 @@ public class ConsumerController {
 
         return GSON.toJson(response);
     }
+
+    @ApiOperation(value = "Returns satisfied requests.", notes = "Returns the history of satisfied requests from a consumer.")
+    @Secured({"ROLE_USER"})
+    @RequestMapping(value = "/consumer/satisfied", method = RequestMethod.GET)
+    public String getPrintShopSatisfiedRequests(Principal principal) {
+        JsonObject response = new JsonObject();
+
+        Consumer consumer = consumers.findByUsername(principal.getName());
+
+        if (consumer == null) {
+            response.addProperty("success", false);
+            return GSON.toJson(response);
+        }
+
+        List<PrintRequest.Status> status = new ArrayList<>();
+        status.add(PrintRequest.Status.FINISHED);
+        status.add(PrintRequest.Status.LIFTED);
+
+        List<PrintRequest> printRequestsList = printrequests.findByStatusInAndConsumer(status, consumer);
+
+        JsonArray jsonArray = new JsonArray();
+        for (PrintRequest satisfiedRequest : printRequestsList){
+            JsonObject aux = new JsonObject();
+            aux.add("printrequest", GSON.toJsonTree(satisfiedRequest));
+            aux.addProperty("printshop", satisfiedRequest.getPrintshop().getName());
+            jsonArray.add(aux);
+        }
+
+        response.add("satisfiedrequests", jsonArray);
+        response.addProperty("success", true);
+        return GSON.toJson(response);
+    }
+
 }
 
