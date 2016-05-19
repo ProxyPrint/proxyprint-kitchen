@@ -50,7 +50,7 @@ public class AdminController {
 
     @ApiOperation(value = "Returns the list of all printshops.", notes = "This method allows the admin entity to access all printshop's information registered in the platform.")
     @Secured({"ROLE_ADMIN"})
-    @RequestMapping(value = "/printshops", method = RequestMethod.GET)
+    @RequestMapping(value = "/admin/printshops", method = RequestMethod.GET)
     public String getPrinShopsList() {
         JsonObject response = new JsonObject();
 
