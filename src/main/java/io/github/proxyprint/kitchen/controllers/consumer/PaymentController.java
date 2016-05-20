@@ -14,6 +14,7 @@ import io.github.proxyprint.kitchen.models.repositories.ConsumerDAO;
 import io.github.proxyprint.kitchen.models.repositories.EmployeeDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintRequestDAO;
 import io.github.proxyprint.kitchen.models.repositories.UserDAO;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,6 +45,7 @@ public class PaymentController {
     @Autowired
     private Gson GSON;
 
+    @ApiOperation(value = "Returns an authorization token for PayPal REST API", notes = "This method provides a unique call to get a OAuth token for accessing PayPal REST API.")
     @RequestMapping(value = "/paypal/getaccesstoken", method = RequestMethod.GET)
     public String testPayPal() throws PayPalRESTException {
         JsonObject response = new JsonObject();
@@ -60,8 +62,7 @@ public class PaymentController {
         return GSON.toJson(response);
     }
 
-
-    // eCheck - complete
+    @ApiOperation(value = "Returns nothing", notes = "This method implements the payment check mechanism given by PayPal. This method acts as callback, it reacts to the change of status of a transaction to Completed (eCheck - complete).")
     @RequestMapping(value = "/paypal/ipn/{printRequestID}", method = RequestMethod.POST)
     protected void someRequestPaymentConfirmationFromPaylPal(@PathVariable(value = "printRequestID") long prid, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Map<String,String> configurationMap =  Configuration.getConfig();
@@ -70,7 +71,7 @@ public class PaymentController {
         String transactionType = ipnlistener.getTransactionType();
         Map<String,String> map = ipnlistener.getIpnMap();
 
-        // Parse content of interest from the IPN notification JSON Body -- :D Todalooo
+        // Parse content of interest from the IPN notification JSON Body -- :D
         String payerEmail = map.get("payer_email");
         Double quantity = Double.valueOf(map.get("mc_gross"));
         String paymentStatus = map.get("payment_status");
@@ -87,7 +88,7 @@ public class PaymentController {
                 // Divine Condition for secure request background check
                 if(pr!=null && c.getPrintRequests().contains(pr) && c.getEmail().equals(payerEmail)
                         && pr.getCost()==quantity && paymentStatus.equals(PrintRequest.PAYPAL_COMPLETED_PAYMENT)) {
-                    // The print request may now go to the printshop!
+                    // The print request may now go to the printshop
                     pr.setStatus(PrintRequest.Status.PENDING);
                     printRequests.save(pr);
                     return;
