@@ -17,8 +17,10 @@ import java.util.Set;
 @Table(name = "print_requests")
 public class PrintRequest implements Serializable {
 
+    public static String PAYPAL_COMPLETED_PAYMENT = "Completed";
+
     public enum Status {
-        PENDING, IN_PROGRESS, FINISHED, LIFTED
+        NOT_PAYED, PENDING, IN_PROGRESS, FINISHED, LIFTED
     }
 
     @Id
@@ -52,6 +54,7 @@ public class PrintRequest implements Serializable {
 
     public PrintRequest() {
         this.documents = new HashSet<>();
+        this.status = Status.NOT_PAYED;
     }
 
     public PrintRequest(float cost, Date arrivalTimestamp, Consumer consumer, Status status) {
@@ -139,4 +142,6 @@ public class PrintRequest implements Serializable {
     public void setDocuments(Set<Document> documents) { this.documents = documents; }
 
     public void addDocument(Document doc) { this.documents.add(doc); }
+
+    public boolean isPayed() { return !(this.status.equals(Status.NOT_PAYED)); }
 }

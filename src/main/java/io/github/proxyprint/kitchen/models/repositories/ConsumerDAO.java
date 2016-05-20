@@ -13,4 +13,7 @@ public interface ConsumerDAO extends CrudRepository<Consumer,Long> {
 
     @Transactional
     public Consumer findByUsername(String username);
+
+    @Transactional
+    public Consumer findByEmail(String email);
 }
