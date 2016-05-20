@@ -38,7 +38,7 @@ public class PaymentController {
     @Autowired
     private Gson GSON;
 
-    @RequestMapping(value = "/paypal", method = RequestMethod.GET)
+    @RequestMapping(value = "/paypal/getaccesstoken", method = RequestMethod.GET)
     public String testPayPal() throws PayPalRESTException {
         JsonObject response = new JsonObject();
         // Load configurations
@@ -51,19 +51,12 @@ public class PaymentController {
         String accessToken = new OAuthTokenCredential("AXIKcgDWuFinKkX2WdRa5cOPJIbSEJZ-carWw_nYB5bOii8EK1phZQp8rOKN0b9WGMGb639hh_EboCrd", "EL0hjjAsRH0sVtRKNg1HUi6JM-paicXwpPG38neEMJD1GqRblX7rkvbM8IjGx0IYtDCGUkXGaY2gjz-Y", map).getAccessToken();
         response.addProperty("token", accessToken);
 
-        try {
-            Payment p = Payment.get(accessToken, "2TC61425UW042363T");
-            response.add("payment", GSON.toJsonTree(p));
-        } catch (Exception e) {
-            response.addProperty("success", false);
-        }
-
         return GSON.toJson(response);
     }
 
+
     @RequestMapping(value = "/paypal/ipn", method = RequestMethod.POST)
-    protected void doPost(HttpServletRequest request,
-                          HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         // For a full list of configuration parameters refer in wiki page.
         // (https://github.com/paypal/sdk-core-java/wiki/SDK-Configuration-Parameters)

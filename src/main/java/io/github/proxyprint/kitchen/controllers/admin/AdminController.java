@@ -81,7 +81,8 @@ public class AdminController {
         JsonObject response = new JsonObject();
 
         Admin master = new Admin("master", "1234", "proxyprint@gmail.pt");
-        Consumer joao = new Consumer("João dos Santos", "joao", "1234", "joao@gmail.com", "69", "69");
+        // joao represents the consumer PERSONAL entity at the paypal sand box
+        Consumer joao = new Consumer("João dos Santos", "joao", "1234", "proxyprint.pt-consumer@gmail.com", "69", "69");
         Consumer rui = new Consumer("Rui Moreira Campos", "rui", "1234", "rui@gmail.com", "69", "69");
         Consumer ana = new Consumer("Ana Monteiro", "anam", "1234", "anamonteiro@gmail.com", "69", "69");
         Consumer rita = new Consumer("Rita Maria Costinha", "ritinha", "1234", "rita@gmail.com", "69", "69");
@@ -106,8 +107,10 @@ public class AdminController {
 
         printshop = new PrintShop("Video Norte", "Rua Nova de Santa Cruz", 41.5594, -8.3972, "123444378", "logo_8", 0);
 
-        Manager manager = new Manager("joaquim", "1234", "Joaquim Pereira", "joaquim@gmail.com");
-        Manager manager2 = new Manager("laura", "1234", "Laura Afonso", "lauraafonso@hotmail.com");
+        // joaquim represents the printshop BUSINESS entity at the paypal sand box
+        Manager manager = new Manager("joaquim", "1234", "Joaquim Pereira", "proxyprint.pt-printshop@gmail.com");
+        // laura represents the printshop-2 BUSINESS entity at the paypal sand box
+        Manager manager2 = new Manager("laura", "1234", "Laura Afonso", "proxyprint.pt-printshop-2@gmail.com");
         RegisterRequest registerRequest1 = new RegisterRequest("Jorge Caldas", "jcaldas", "danielcaldas@sapo,pt", "1234", "Rua das Cruzes n31", 43.221, 41.121, "124555321", "Printer Style", false);
         RegisterRequest registerRequest2 = new RegisterRequest("Martim da Silva", "msilva", "danielcaldas@sapo,pt", "1234", "Rua das Cruzes n32", 43.221, 41.121, "124555321", "Print More", false);
         RegisterRequest registerRequest3 = new RegisterRequest("Carlos Pinto", "cping", "danielcaldas@sapo,pt", "1234", "Rua n33", 43.221, 41.121, "124555321", "Papelaria Pinto", false);
