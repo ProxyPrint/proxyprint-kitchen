@@ -52,49 +52,7 @@ public class PrintRequestController {
     @Autowired
     private Gson GSON;
 
-    @ApiOperation(value = "Returns success/insuccess", notes = "This method allow clients to POST a print request and associate it to a given printshop with a given budget.")
-    @Secured("ROLE_USER")
-    @RequestMapping(value = "/consumer/printrequest/{printRequestID}/submit", method = RequestMethod.POST)
-    public String finishAndSubmitPrintRequest(@PathVariable(value = "printRequestID") long prid, HttpServletRequest request, Principal principal) {
-        JsonObject response = new JsonObject();
-        PrintRequest printRequest = printRequests.findOne(prid);
-        Consumer consumer = consumers.findByUsername(principal.getName());
-
-        String requestJSON = null;
-        try {
-            requestJSON = IOUtils.toString(request.getInputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Map mrequest = new Gson().fromJson(requestJSON, Map.class);
-
-        long pshopID = (long) Double.valueOf((double) mrequest.get("printshopID")).intValue();
-        double cost = (Double) mrequest.get("budget");
-
-        if (printRequest != null && consumer != null) {
-            PrintShop pshop = printShops.findOne(pshopID);
-
-            if (pshop != null) {
-                // Final attributes for given print request
-                printRequest.setArrivalTimestamp(new Date());
-                printRequest.setStatus(PrintRequest.Status.NOT_PAYED);
-                printRequest.setCost(cost);
-
-                printRequests.save(printRequest);
-
-                pshop.addPrintRequest(printRequest);
-
-                printShops.save(pshop);
-                response.addProperty("success", true);
-                return GSON.toJson(response);
-            }
-        }
-
-        response.addProperty("success", false);
-        return GSON.toJson(response);
-    }
-
-    @ApiOperation(value = "Returns a set of budgets", notes = "This method calculates budgets for a given already specified print request. The budgets are calculated for specific printshops also passed along as parameters.")
+    @ApiOperation(value = "Returns a set of budgets", notes = "This method calculates budgets for a given and already specified print request. The budgets are calculated for specific printshops also passed along as parameters.")
     @Secured("ROLE_USER")
     @RequestMapping(value = "/consumer/budget", method = RequestMethod.POST)
     public String calcBudgetForPrintRequest(HttpServletRequest request, Principal principal, @RequestPart("printRequest") String requestJSON) {
@@ -224,4 +182,47 @@ public class PrintRequestController {
 
         return budgets;
     }
+
+    @ApiOperation(value = "Returns success/insuccess", notes = "This method allow clients to POST a print request and associate it to a given printshop with a given budget.")
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/consumer/printrequest/{printRequestID}/submit", method = RequestMethod.POST)
+    public String finishAndSubmitPrintRequest(@PathVariable(value = "printRequestID") long prid, HttpServletRequest request, Principal principal) {
+        JsonObject response = new JsonObject();
+        PrintRequest printRequest = printRequests.findOne(prid);
+        Consumer consumer = consumers.findByUsername(principal.getName());
+
+        String requestJSON = null;
+        try {
+            requestJSON = IOUtils.toString(request.getInputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Map mrequest = new Gson().fromJson(requestJSON, Map.class);
+
+        long pshopID = (long) Double.valueOf((double) mrequest.get("printshopID")).intValue();
+        double cost = (Double) mrequest.get("budget");
+
+        if (printRequest != null && consumer != null) {
+            PrintShop pshop = printShops.findOne(pshopID);
+
+            if (pshop != null) {
+                // Final attributes for given print request
+                printRequest.setArrivalTimestamp(new Date());
+                printRequest.setStatus(PrintRequest.Status.NOT_PAYED);
+                printRequest.setCost(cost);
+
+                printRequests.save(printRequest);
+
+                pshop.addPrintRequest(printRequest);
+
+                printShops.save(pshop);
+                response.addProperty("success", true);
+                return GSON.toJson(response);
+            }
+        }
+
+        response.addProperty("success", false);
+        return GSON.toJson(response);
+    }
+
 }

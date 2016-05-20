@@ -63,10 +63,7 @@ public class PaymentController {
 
     // eCheck - complete
     @RequestMapping(value = "/paypal/ipn/{printRequestID}", method = RequestMethod.POST)
-    protected void doPost(@PathVariable(value = "printRequestID") long prid, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-        // For a full list of configuration parameters refer in wiki page.
-        // (https://github.com/paypal/sdk-core-java/wiki/SDK-Configuration-Parameters)
+    protected void someRequestPaymentConfirmationFromPaylPal(@PathVariable(value = "printRequestID") long prid, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Map<String,String> configurationMap =  Configuration.getConfig();
         IPNMessage ipnlistener = new IPNMessage(request,configurationMap);
         boolean isIpnVerified = ipnlistener.validate();
@@ -75,7 +72,7 @@ public class PaymentController {
 
         // Parse content of interest from the IPN notification JSON Body -- :D Todalooo
         String payerEmail = map.get("payer_email");
-        Double quantity = Double.valueOf(map.get("quantity"));
+        Double quantity = Double.valueOf(map.get("mc_gross"));
         String paymentStatus = map.get("payment_status");
 
 
@@ -89,7 +86,7 @@ public class PaymentController {
 
                 // Divine Condition for secure request background check
                 if(pr!=null && c.getPrintRequests().contains(pr) && c.getEmail().equals(payerEmail)
-                        /*&& pr.getCost()==quantity*/ && paymentStatus.equals(PrintRequest.PAYPAL_COMPLETED_PAYMENT)) {
+                        && pr.getCost()==quantity && paymentStatus.equals(PrintRequest.PAYPAL_COMPLETED_PAYMENT)) {
                     // The print request may now go to the printshop!
                     pr.setStatus(PrintRequest.Status.PENDING);
                     printRequests.save(pr);
