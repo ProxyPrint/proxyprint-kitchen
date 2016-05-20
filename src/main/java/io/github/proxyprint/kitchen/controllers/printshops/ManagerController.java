@@ -3,9 +3,12 @@ package io.github.proxyprint.kitchen.controllers.printshops;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import io.github.proxyprint.kitchen.models.printshops.Employee;
+import io.github.proxyprint.kitchen.models.printshops.Manager;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
 import io.github.proxyprint.kitchen.models.repositories.EmployeeDAO;
+import io.github.proxyprint.kitchen.models.repositories.ManagerDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.security.Principal;
 import java.util.List;
 
 /**
@@ -28,6 +32,8 @@ public class ManagerController {
     PrintShopDAO printshops;
     @Autowired
     EmployeeDAO employees;
+    @Autowired
+    ManagerDAO managers;
     @Autowired
     private Gson GSON;
 
@@ -140,5 +146,24 @@ public class ManagerController {
             response.addProperty("success", false);
             return GSON.toJson(response);
         }
+    }
+
+    @Secured({"ROLE_MANAGER"})
+    @ApiOperation(value = "Returns a printshop", notes = "This method returns the printshop info")
+    @RequestMapping(value = "/printshop", method = RequestMethod.GET)
+    public String getManagerPrintShop(Principal principal) {
+        Manager m = managers.findByUsername(principal.getName());
+        PrintShop pShop = m.getPrintShop();
+
+        JsonObject response = new JsonObject();
+
+        if (pShop == null) {
+            response.addProperty("success", false);
+            return GSON.toJson(response);
+        }
+
+        response.add("printshop", GSON.toJsonTree(pShop));
+        response.addProperty("success", true);
+        return GSON.toJson(response);
     }
 }
