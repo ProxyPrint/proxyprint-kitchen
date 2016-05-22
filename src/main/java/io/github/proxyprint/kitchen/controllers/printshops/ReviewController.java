@@ -24,11 +24,13 @@ import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
 import io.github.proxyprint.kitchen.models.repositories.ReviewDAO;
 import io.swagger.annotations.ApiOperation;
 import java.security.Principal;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -63,21 +65,21 @@ public class ReviewController {
     }
 
     @ApiOperation(value = "Add a review to a printshop with the given ID", notes = "404 if the printshop doesn't exist.")
-    @Secured({"ROLE_USER"})
-    @RequestMapping(value = "/printshops/{id}/reviews", method = RequestMethod.POST)
-    public ResponseEntity<String> addPrintShopReview(@PathVariable("id") long id, Principal principal, WebRequest request) {
-        PrintShop pShop = this.printshops.findOne(id);
-        if (pShop == null) {
-            return new ResponseEntity(HttpStatus.NOT_FOUND);
-        }
-        Consumer consumer = this.consumers.findByUsername(principal.getName());
-        String reviewText = request.getParameter("review");
-        int rating = Integer.parseInt(request.getParameter("rating"));
-        Review review = reviews.save(new Review(reviewText, rating, consumer));
-        pShop.addReview(review);
-        this.printshops.save(pShop);
-        return new ResponseEntity(this.GSON.toJson(review), HttpStatus.OK);
-    }
+   @Secured({"ROLE_USER"})
+   @RequestMapping(value = "/printshops/{id}/reviews", method = RequestMethod.POST)
+   public ResponseEntity<String> addPrintShopReview(@PathVariable("id") long id, Principal principal, @RequestBody Map<String, String> params) {
+       PrintShop pShop = this.printshops.findOne(id);
+       if (pShop == null) {
+           return new ResponseEntity(HttpStatus.NOT_FOUND);
+       }
+       Consumer consumer = this.consumers.findByUsername(principal.getName());
+       String reviewText = params.get("review");
+       int rating = Integer.parseInt(params.get("rating"));
+       Review review = reviews.save(new Review(reviewText, rating, consumer));
+       pShop.addReview(review);
+       this.printshops.save(pShop);
+       return new ResponseEntity(this.GSON.toJson(review), HttpStatus.OK);
+   }
 
     @ApiOperation(value = "Edit an existing printshop review", notes = "404 if the printshop or the review doesn't exist.")
     @Secured({"ROLE_USER"})
