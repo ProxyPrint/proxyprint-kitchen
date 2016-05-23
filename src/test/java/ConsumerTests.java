@@ -57,6 +57,21 @@ public class ConsumerTests {
         assert (status);
     }
 
+    //testar login
+    @Test
+    public void login() throws Exception {
+        MvcResult mvcResult = this.mockMvc.perform(post("/login")
+                .param("username", "testusername")
+                .param("password", "testpassword")).andReturn();
+
+        String response = mvcResult.getResponse().getContentAsString();
+        JsonObject jsonObject = (new JsonParser()).parse(response).getAsJsonObject();
+
+        boolean status = jsonObject.get("success").getAsBoolean();
+
+        assert (status);
+    }
+
     //testar se o servidor deteta utilizador já registado
     @Test
     public void errorRegisterUser() throws Exception {
@@ -69,7 +84,6 @@ public class ConsumerTests {
                 .param("longitude", "testlong")).andReturn();
 
         String response = mvcResult.getResponse().getContentAsString();
-        System.out.println(response);
         JsonObject jsonObject = (new JsonParser()).parse(response).getAsJsonObject();
 
         boolean status = !jsonObject.get("success").getAsBoolean();
