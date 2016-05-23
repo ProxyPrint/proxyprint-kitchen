@@ -10,6 +10,8 @@ import com.paypal.ipn.IPNMessage;
 import io.github.proxyprint.kitchen.Configuration;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
+import io.github.proxyprint.kitchen.models.printshops.Employee;
+import io.github.proxyprint.kitchen.models.printshops.PrintShop;
 import io.github.proxyprint.kitchen.models.repositories.ConsumerDAO;
 import io.github.proxyprint.kitchen.models.repositories.EmployeeDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintRequestDAO;
@@ -26,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -100,5 +103,26 @@ public class PaymentController {
         } else {
             LoggingManager.info(this.getClass(), "PayPal transaction ERROR: bad IPN JSON body for values payerEmail, quantity, paymentStatus, paymentData");
         }
+    }
+
+    @RequestMapping(value = "/paypal/payprintshop/{printRequestID}", method = RequestMethod.POST)
+    protected void payToPrintShop(@PathVariable(value = "printRequestID") long prid, Principal principal) throws PayPalRESTException {
+        Map<String,String> map = new HashMap<String, String>();
+        map.put("mode", "sandbox");
+        String accessToken = new OAuthTokenCredential("AXIKcgDWuFinKkX2WdRa5cOPJIbSEJZ-carWw_nYB5bOii8EK1phZQp8rOKN0b9WGMGb639hh_EboCrd", "EL0hjjAsRH0sVtRKNg1HUi6JM-paicXwpPG38neEMJD1GqRblX7rkvbM8IjGx0IYtDCGUkXGaY2gjz-Y", map).getAccessToken();
+
+        String employeeUsername = principal.getName();
+        Employee e = employees.findByUsername(employeeUsername);
+
+        if(e!=null) {
+            PrintShop pshop = e.getPrintShop();
+            if(pshop!=null) {
+                PrintRequest preq = printRequests.findOne(prid);
+                if(preq!=null) {
+
+                }
+            }
+        }
+
     }
 }
