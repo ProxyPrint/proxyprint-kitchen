@@ -76,7 +76,6 @@ public class ConsumerController {
     @ApiOperation(value = "Returns success/insuccess", notes = "This method allows consumer registration.")
     @RequestMapping(value = "/consumer/register", method = RequestMethod.POST)
     public String addUser(WebRequest request) {
-        System.out.println(request.getParameterMap().entrySet());
         boolean success = false;
 
         JsonObject response = new JsonObject();

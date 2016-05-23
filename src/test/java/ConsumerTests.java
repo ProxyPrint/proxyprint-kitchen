@@ -1,8 +1,10 @@
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import io.github.proxyprint.kitchen.WebAppConfig;
 import io.github.proxyprint.kitchen.models.User;
 import io.github.proxyprint.kitchen.models.repositories.UserDAO;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +27,8 @@ public class ConsumerTests {
     WebApplicationContext wac;
     @Autowired
     private UserDAO users;
+    @Autowired
+    private Gson GSON;
 
     private MockMvc mockMvc;
 
@@ -33,6 +37,7 @@ public class ConsumerTests {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
     }
 
+    //testar se o servidor regista utilizador
     @Test
     public void registerUser() throws Exception {
         MvcResult mvcResult = this.mockMvc.perform(post("/consumer/register")
@@ -42,12 +47,35 @@ public class ConsumerTests {
                 .param("email", "testemail@mail.pt")
                 .param("latitude", "testlat")
                 .param("longitude", "testlong")).andReturn();
-        
-        System.out.println(mvcResult.getResponse().getContentAsString());
+
+        String response = mvcResult.getResponse().getContentAsString();
+
+        JsonObject jsonObject = (new JsonParser()).parse(response).getAsJsonObject();
+
+        boolean status = jsonObject.get("success").getAsBoolean();
+
+        assert (status);
     }
 
-    @After
-    public void destroy(){
+    //testar se o servidor deteta utilizador já registado
+    @Test
+    public void errorRegisterUser() throws Exception {
+        MvcResult mvcResult = this.mockMvc.perform(post("/consumer/register")
+                .param("username", "testusername")
+                .param("password", "testpassword")
+                .param("name", "testname")
+                .param("email", "testemail@mail.pt")
+                .param("latitude", "testlat")
+                .param("longitude", "testlong")).andReturn();
+
+        String response = mvcResult.getResponse().getContentAsString();
+        System.out.println(response);
+        JsonObject jsonObject = (new JsonParser()).parse(response).getAsJsonObject();
+
+        boolean status = !jsonObject.get("success").getAsBoolean();
+
+        assert (status);
+
         User user = this.users.findByUsername("testusername");
         this.users.delete(user);
     }
