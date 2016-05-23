@@ -16,6 +16,8 @@
 package io.github.proxyprint.kitchen.controllers.printshops;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
 import io.github.proxyprint.kitchen.models.printshops.Review;
@@ -24,7 +26,9 @@ import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
 import io.github.proxyprint.kitchen.models.repositories.ReviewDAO;
 import io.swagger.annotations.ApiOperation;
 import java.security.Principal;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -60,7 +64,18 @@ public class ReviewController {
         if (pShop == null) {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         } else {
-            return new ResponseEntity(this.GSON.toJson(pShop.getReviews()), HttpStatus.OK);
+            Set<Review> reviews = pShop.getReviews();
+            JsonObject review;
+            JsonArray obj = new JsonArray();
+            for (Review r : reviews){
+                review =  new JsonObject();
+                review.addProperty("id", r.getId());
+                review.addProperty("description", r.getDescription());
+                review.addProperty("rating", r.getRating());
+                review.addProperty("username", r.getConsumer().getName());
+                obj.add(review);
+            }                
+            return new ResponseEntity(this.GSON.toJson(obj), HttpStatus.OK);
         }
     }
 
