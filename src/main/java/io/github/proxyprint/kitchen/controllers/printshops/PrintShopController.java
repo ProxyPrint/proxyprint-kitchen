@@ -170,6 +170,11 @@ public class PrintShopController {
             response.addProperty("newStatus", Status.FINISHED.toString());
             not = "O pedido número " + printRequest.getId() +
                     " está completo! Pode deslocar-se á reprografia para proceder ao levantamento.";
+
+            // At this moment the platform needs to pay to the printshop
+
+
+
             notificationManager.sendNotification(user, new Notification(not));
         } else if (printRequest.getStatus() == Status.FINISHED) {
             printRequest.setStatus(Status.LIFTED);

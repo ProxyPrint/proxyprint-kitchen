@@ -22,6 +22,8 @@ import java.util.*;
 @Table(name = "printshops")
 public class PrintShop {
 
+    public static double PRINTSHOPS_PERCENTILS_REVENUE = 0.9;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
