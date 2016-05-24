@@ -34,9 +34,8 @@ public class DocumentsConfig {
     
     @Bean(name = "documentsPath")
     public String getDocumentsPath() throws IOException{
-        String home = System.getProperty("user.home");
-        File file = new File(home+this.filesPath);
+        File file = new File(this.filesPath);
         FileUtils.forceMkdir(file);
-        return home+this.filesPath;
+        return this.filesPath;
     }
 }
