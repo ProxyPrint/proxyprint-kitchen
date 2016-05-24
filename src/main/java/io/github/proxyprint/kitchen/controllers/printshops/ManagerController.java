@@ -153,7 +153,7 @@ public class ManagerController {
     }
 
     @Secured("ROLE_MANAGER")
-    @RequestMapping(value = "/printshops/{printShopID}/stats", method = RequestMethod.GET)
+    @RequestMapping(value = "/printshops/stats", method = RequestMethod.GET)
     public String getPrintShopStatistics(Principal principal) {
         JsonObject response = new JsonObject();
         Manager manager = managers.findByUsername(principal.getName());
