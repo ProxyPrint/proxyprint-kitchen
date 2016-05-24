@@ -122,7 +122,7 @@ public class RegisterRequestController {
 
             // Send email
             MailBox m = new MailBox();
-            m.sedMailRejectedRequest(registerRequest,motive);
+            m.sedMailRejectedRegisterRequest(registerRequest,motive);
 
             response.addProperty("success", true);
             return GSON.toJson(response);

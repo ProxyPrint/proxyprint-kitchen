@@ -21,6 +21,7 @@ import com.google.gson.reflect.TypeToken;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.CoversTable;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.PapersTable;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.RingsTable;
+import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest.Status;
 import io.github.proxyprint.kitchen.models.notifications.Notification;
@@ -35,11 +36,11 @@ import io.github.proxyprint.kitchen.models.repositories.EmployeeDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintRequestDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
 import io.github.proxyprint.kitchen.utils.DistanceCalculator;
+import io.github.proxyprint.kitchen.utils.MailBox;
 import io.github.proxyprint.kitchen.utils.NotificationManager;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.authentication.dao.SystemWideSaltSource;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 
@@ -64,6 +65,8 @@ public class PrintShopController {
     private PrintRequestDAO printrequests;
     @Autowired
     private EmployeeDAO employees;
+    @Autowired
+    private ConsumerDAO consumers;
     @Autowired
     private NotificationManager notificationManager;
     @Autowired
@@ -153,7 +156,8 @@ public class PrintShopController {
 
         String not;
         PrintRequest printRequest = printrequests.findByIdInAndPrintshop(id,printshop);
-        String user = printRequest.getConsumer().getUsername();
+        Consumer consumer = printRequest.getConsumer();
+        String user = consumer.getUsername();
 
         if (printRequest == null) {
             response.addProperty("success", false);
@@ -165,15 +169,20 @@ public class PrintShopController {
             not = "O pedido número " + printRequest.getId() + " está a ser processado!";
             notificationManager.sendNotification(user, new Notification(not));
         } else if (printRequest.getStatus() == Status.IN_PROGRESS) {
+            // At this moment the platform needs to pay to the printshop
+
+            // ---------------------------------------------------------
+
+            // IF PAYMENT OK
             printRequest.setStatus(Status.FINISHED);
             printRequest.setFinishedTimestamp(new Date());
             response.addProperty("newStatus", Status.FINISHED.toString());
             not = "O pedido número " + printRequest.getId() +
                     " está completo! Pode deslocar-se á reprografia para proceder ao levantamento.";
 
-            // At this moment the platform needs to pay to the printshop
-
-
+            // Send email to user
+            MailBox m = new MailBox();
+            m.sendEmailFinishedPrintRequest(consumer,printRequest.getId(),printshop.getName());
 
             notificationManager.sendNotification(user, new Notification(not));
         } else if (printRequest.getStatus() == Status.FINISHED) {

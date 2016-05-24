@@ -4,6 +4,7 @@ package io.github.proxyprint.kitchen.utils;
  * Created by daniel on 17-04-2016.
  */
 
+import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.printshops.RegisterRequest;
 
 import javax.mail.*;
@@ -55,7 +56,7 @@ public class MailBox {
                     InternetAddress.parse(rr.getManagerEmail(), false));
             msg.setSubject("ProxyPrint");
 
-            msg.setText("Caro, " + rr.getManagerName() + ", a sua reprografia ("+rr.getpShopName()+") foi aceite na ProxyPrint. Já pode fazer log in na plataforma com as suas credenciais" +
+            msg.setText("Caro(a), " + rr.getManagerName() + ", a sua reprografia ("+rr.getpShopName()+") foi aceite na ProxyPrint. Já pode fazer log in na plataforma com as suas credenciais" +
                     "\nde acesso e entrar na área de administração da sua reprografia.\n\nCom os melhores cumprimentos,\n\nA equipa ProxyPrint");
 
             msg.setSentDate(new Date());
@@ -67,7 +68,7 @@ public class MailBox {
         }
     }
 
-    public boolean sedMailRejectedRequest(RegisterRequest rr, String motive) {
+    public boolean sedMailRejectedRegisterRequest(RegisterRequest rr, String motive) {
 
         final String username = PROXYPRINT_EMAIL;
         final String password = PROXYPRINT_PASSWORD;
@@ -85,8 +86,8 @@ public class MailBox {
             msg.setRecipients(Message.RecipientType.TO,
                     InternetAddress.parse(rr.getManagerEmail(), false));
             msg.setSubject("ProxyPrint");
-            msg.setText("Caro, " + rr.getManagerName() + ", infelizmente o pedido de inscrição da sua reprografia ("+rr.getpShopName()+"), foi rejeitado.\n" +
-                    "Motivo: " + motive + "\n" +
+            msg.setText("Caro(a), " + rr.getManagerName() + ", infelizmente o pedido de inscrição da sua reprografia ("+rr.getpShopName()+"), foi rejeitado.\n" +
+                    "Motivo: " + motive + "\n\n" +
                     "Com os melhores cumprimentos,\n" +
                     "\n" +
                     "A equipa ProxyPrint");
@@ -96,6 +97,35 @@ public class MailBox {
         } catch (MessagingException e) {
             System.out.println("Erro no envio de email: " + e);
             return false;
+        }
+    }
+
+    public void sendEmailFinishedPrintRequest(Consumer consumer, long printRequestID, String pshopName) {
+        final String username = PROXYPRINT_EMAIL;
+        final String password = PROXYPRINT_PASSWORD;
+        try {
+            Session session = Session.getDefaultInstance(props,
+                    new Authenticator() {
+                        protected PasswordAuthentication getPasswordAuthentication() {
+                            return new PasswordAuthentication(username, password);
+                        }
+                    });
+
+            Message msg = new MimeMessage(session);
+
+            msg.setFrom(new InternetAddress(PROXYPRINT_EMAIL));
+            msg.setRecipients(Message.RecipientType.TO,
+                    InternetAddress.parse(consumer.getEmail(), false));
+            msg.setSubject("ProxyPrint");
+            msg.setText("Olá " + consumer.getName() + ", o seu pedido nº #"+(printRequestID+1)+", está pronto!\n\n" +
+                    "Assim que quiser pode deslocar-se à reprografia "+pshopName+" para levantar o pedido.\n\n" +
+                    "Com os melhores cumprimentos,\n" +
+                    "\n" +
+                    "A equipa ProxyPrint");
+            msg.setSentDate(new Date());
+            Transport.send(msg);
+        } catch (MessagingException e) {
+            System.out.println("Erro no envio de email: " + e);
         }
     }
 }
