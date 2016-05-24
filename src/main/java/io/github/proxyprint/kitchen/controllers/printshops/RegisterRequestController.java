@@ -107,9 +107,9 @@ public class RegisterRequestController {
     }
 
     @Secured({"ROLE_ADMIN"})
-    @RequestMapping(value = "/request/reject/{id}", method = RequestMethod.POST)
-    public String rejectRequest(@PathVariable(value ="id") long id) throws IOException {
-        RegisterRequest  registerRequest = registerRequests.findOne(id);
+    @RequestMapping(value = "/request/reject/{printRequestID}", method = RequestMethod.POST)
+    public String rejectRequest(@PathVariable(value = "printRequestID") long prid, Principal principal, @RequestBody String motive) throws IOException {
+        RegisterRequest  registerRequest = registerRequests.findOne(prid);
         JsonObject response = new JsonObject();
         if (registerRequest == null) {
             response.addProperty("success", false);
@@ -121,7 +121,7 @@ public class RegisterRequestController {
 
             // Send email
             MailBox m = new MailBox();
-            m.sedMailRejectedRequest(registerRequest);
+            m.sedMailRejectedRequest(registerRequest,motive);
 
             response.addProperty("success", true);
             return GSON.toJson(response);

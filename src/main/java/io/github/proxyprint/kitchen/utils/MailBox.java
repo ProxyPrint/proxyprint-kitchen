@@ -67,7 +67,7 @@ public class MailBox {
         }
     }
 
-    public boolean sedMailRejectedRequest(RegisterRequest rr) {
+    public boolean sedMailRejectedRequest(RegisterRequest rr, String motive) {
 
         final String username = PROXYPRINT_EMAIL;
         final String password = PROXYPRINT_PASSWORD;
@@ -86,7 +86,7 @@ public class MailBox {
                     InternetAddress.parse(rr.getManagerEmail(), false));
             msg.setSubject("ProxyPrint");
             msg.setText("Caro, " + rr.getManagerName() + ", infelizmente o pedido de inscrição da sua reprografia ("+rr.getpShopName()+"), foi rejeitado.\n" +
-                    "\n" +
+                    "Motivo: " + motive + "\n" +
                     "Com os melhores cumprimentos,\n" +
                     "\n" +
                     "A equipa ProxyPrint");
