@@ -65,10 +65,17 @@ public class PrintShop {
     @JoinColumn(name = "printshop")
     private Set<PrintRequest> printrequests;
 
+    @JsonIgnore
+    @Exclude
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @JoinColumn(name = "printshop")
+    private Set<Review> reviews;
+
     public PrintShop() {
         this.priceTable = new HashMap<>();
         itemFactory = new ItemFactory();
         this.printrequests = new HashSet<>();
+        this.reviews = new HashSet<>();
     }
 
     public PrintShop(String name, String address, Double latitude, Double longitude, String nif, String logo, float avgRating) {
@@ -82,6 +89,7 @@ public class PrintShop {
         this.priceTable = new HashMap<>();
         this.itemFactory = new ItemFactory();
         this.printrequests = new HashSet<>();
+        this.reviews = new HashSet<>();
     }
 
     public long getId() {
@@ -215,6 +223,18 @@ public class PrintShop {
     public List<RangePaperItem> convertPaperTableItemToPaperItems(PaperTableItem pti) {
         List<RangePaperItem> res = itemFactory.fromPaperTableItemToPaperItems(pti);
         return res;
+    }
+    
+    public Set<Review> getReviews(){
+        return new HashSet(this.reviews);
+    }
+    
+    public void addReview(Review review){
+        this.reviews.add(review);
+    }
+    
+    public boolean removeReview(Review review){
+        return this.reviews.remove(review);
     }
 
     @Override
