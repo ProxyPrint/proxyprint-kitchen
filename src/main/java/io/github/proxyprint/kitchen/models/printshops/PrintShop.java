@@ -209,6 +209,17 @@ public class PrintShop {
         return res;
     }
 
+    public String getPrintShopProfit() {
+        double profit=0;
+
+        for(PrintRequest prquest : printrequests) {
+            if(prquest.getStatus().equals(PrintRequest.Status.FINISHED)) {
+                profit += prquest.getCost();
+            }
+        }
+        return String.format("%.2f", profit);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

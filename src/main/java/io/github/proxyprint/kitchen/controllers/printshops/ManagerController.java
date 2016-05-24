@@ -2,9 +2,13 @@ package io.github.proxyprint.kitchen.controllers.printshops;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
 import io.github.proxyprint.kitchen.models.printshops.Employee;
+import io.github.proxyprint.kitchen.models.printshops.Manager;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
 import io.github.proxyprint.kitchen.models.repositories.EmployeeDAO;
+import io.github.proxyprint.kitchen.models.repositories.ManagerDAO;
+import io.github.proxyprint.kitchen.models.repositories.PrintRequestDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,6 +34,10 @@ public class ManagerController {
     PrintShopDAO printshops;
     @Autowired
     EmployeeDAO employees;
+    @Autowired
+    PrintRequestDAO printRequests;
+    @Autowired
+    ManagerDAO managers;
     @Autowired
     private Gson GSON;
 
@@ -140,5 +150,48 @@ public class ManagerController {
             response.addProperty("success", false);
             return GSON.toJson(response);
         }
+    }
+
+    @Secured("ROLE_MANAGER")
+    @RequestMapping(value = "/printshops/{printShopID}/stats", method = RequestMethod.GET)
+    public String getPrintShopStatistics(Principal principal) {
+        JsonObject response = new JsonObject();
+        Manager manager = managers.findByUsername(principal.getName());
+
+        if(manager!=null) {
+            PrintShop pshop = manager.getPrintShop();
+
+            if (pshop != null) {
+                // Print Request
+                List<PrintRequest> listPrintRequests = printRequests.findByPrintshop(pshop);
+                if (listPrintRequests != null) {
+                    List<PrintRequest.Status> statusesPend = new ArrayList<PrintRequest.Status>() {{
+                        add(PrintRequest.Status.PENDING);
+                    }};
+                    List<PrintRequest.Status> statusesInProgress = new ArrayList<PrintRequest.Status>() {{
+                        add(PrintRequest.Status.IN_PROGRESS);
+                    }};
+                    List<PrintRequest.Status> statusesFinished = new ArrayList<PrintRequest.Status>() {{
+                        add(PrintRequest.Status.FINISHED);
+                    }};
+
+                    response.addProperty("nPendingRequests", printRequests.findByStatusInAndPrintshop(statusesPend, pshop).size());
+                    response.addProperty("nInProgressRequests", printRequests.findByStatusInAndPrintshop(statusesInProgress, pshop).size());
+                    response.addProperty("nFinished", printRequests.findByStatusInAndPrintshop(statusesFinished, pshop).size());
+                }
+
+                // Employees
+                response.addProperty("nEmployees", employees.findByPrintShop(pshop).size());
+
+                // WE MUST ADD THIS TO OUR POJOs (Future Work)
+                // response.addProperty("pshopProfit", pshop.getTotalRequests); ... by day, week, month, year
+                response.addProperty("pshopProfit", pshop.getPrintShopProfit());
+
+                response.addProperty("success", true);
+                return GSON.toJson(response);
+            }
+        }
+        response.addProperty("success", false);
+        return GSON.toJson(response);
     }
 }
