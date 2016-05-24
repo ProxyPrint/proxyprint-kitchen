@@ -31,6 +31,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -117,7 +118,7 @@ public class RegisterRequestController {
         }
         else {
             // Delete request
-            registerRequests.delete(id);
+            registerRequests.delete(prid);
 
             // Send email
             MailBox m = new MailBox();
