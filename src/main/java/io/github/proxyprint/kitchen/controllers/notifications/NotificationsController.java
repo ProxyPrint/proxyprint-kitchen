@@ -26,6 +26,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,7 +55,7 @@ public class NotificationsController {
         String name = consumers.findOne(id).getUsername();
         notificationManager.sendNotification(name, new Notification(message));
     }
-
+    
     @RequestMapping(value = "/consumer/subscribe", produces = "text/event-stream")
     public ResponseEntity<SseEmitter> subscribe(WebRequest request) throws Exception {
         String username = request.getParameter("username");

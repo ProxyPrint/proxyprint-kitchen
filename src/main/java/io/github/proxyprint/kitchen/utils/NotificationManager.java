@@ -44,7 +44,7 @@ public class NotificationManager {
     }
 
     public SseEmitter subscribe(String username) {
-        SseEmitter sseEmitter = new SseEmitter();
+        SseEmitter sseEmitter = new SseEmitter(0l);
         this.subscriptions.put(username, sseEmitter);
         return sseEmitter;
     }
