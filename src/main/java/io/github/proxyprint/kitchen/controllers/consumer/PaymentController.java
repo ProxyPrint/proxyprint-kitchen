@@ -112,7 +112,7 @@ public class PaymentController {
     // ONLY FOR TESTING!!
     @RequestMapping(value = "/paypal/testpaypshop", method = RequestMethod.POST)
     public String testPayShareToPrintShop() throws PayPalRESTException {
-        PrintRequest pr = printRequests.findOne((long)39);
+        PrintRequest pr = printRequests.findOne((long)38);
         PrintShop pshop = printShops.findOne((long)8);
         Manager m = managers.findOne((long)7);
         return payShareToPrintShop(pr,m,pshop);
@@ -139,9 +139,10 @@ public class PaymentController {
 
             // Batch
             Random random = new Random();
-            String batchId = prequest.getArrivalTimestamp() + new Double(random.nextDouble()).toString();
+            String batchId = prequest.getArrivalTimestamp().toString();
             String emailSubject = "ProxyPrint - Pagamento relativo ao pedido ";
-            emailSubject += prequest.getArrivalTimestamp().toString() + "::" + prequest.getFinishedTimestamp() + " .";
+            // UNMARK getFinishedTimestamp() on full integration
+            emailSubject += prequest.getArrivalTimestamp().toString() + "::" /*+ prequest.getFinishedTimestamp()*/ + " .";
             senderBatchHeader.setSenderBatchId(batchId).setEmailSubject(emailSubject);
 
             // Currency (90% of the print request value)
@@ -150,7 +151,7 @@ public class PaymentController {
             amount.setValue(String.format("%.2f", amountValue)).setCurrency("EUR");
 
             // Sender Item
-            String senderItemID = "PEDIDO::"+prequest.getArrivalTimestamp()+"::"+prequest.getFinishedTimestamp();
+            String senderItemID = "PEDIDO::"+prequest.getFinishedTimestamp();
             PayoutItem senderItem = new PayoutItem();
             senderItem.setRecipientType("Email")
                     .setNote("Obrigado por usar o ProxyPrint!")
