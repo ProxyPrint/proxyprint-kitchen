@@ -273,6 +273,33 @@ public class PrintShopController {
         return GSON.toJson(response);
     }
 
+    @ApiOperation(value = "Returns the history of requests.", notes = "Returns the history of requests from a printshop.")
+    @Secured({"ROLE_MANAGER", "ROLE_EMPLOYEE"})
+    @RequestMapping(value = "/printshops/history", method = RequestMethod.GET)
+    public String getPrintShopHistoryRequests(Principal principal) {
+        JsonObject response = new JsonObject();
+
+        Employee e = employees.findByUsername(principal.getName());
+
+        PrintShop printshop = e.getPrintShop();
+
+        if (printshop == null) {
+            response.addProperty("success", false);
+            return GSON.toJson(response);
+        }
+
+        List<Status> status = new ArrayList<>();
+        status.add(Status.LIFTED);
+
+        List<PrintRequest> printRequestsList = printrequests.findByStatusInAndPrintshop(status, printshop);
+        Type listOfPRequests = new TypeToken<List<PrintShop>>() {
+        }.getType();
+
+        response.add("historyrequests", GSON.toJsonTree(printRequestsList, listOfPRequests));
+        response.addProperty("success", true);
+        return GSON.toJson(response);
+    }
+
     @ApiOperation(value = "Returns satisfied requests.", notes = "Returns the satisfied requests from a printshop.")
     @Secured({"ROLE_MANAGER", "ROLE_EMPLOYEE"})
     @RequestMapping(value = "/printshops/satisfied", method = RequestMethod.GET)
