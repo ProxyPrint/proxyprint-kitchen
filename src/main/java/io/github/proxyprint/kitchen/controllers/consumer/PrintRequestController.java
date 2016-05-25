@@ -2,6 +2,7 @@ package io.github.proxyprint.kitchen.controllers.consumer;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import io.github.proxyprint.kitchen.config.DocumentsConfig;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.consumer.PrintingSchema;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.Document;
@@ -144,7 +145,8 @@ public class PrintRequestController {
                 printRequest.addDocument(doc);
                 documentsIds.put(doc.getName() + ".pdf", doc.getId());
 
-                FileOutputStream fos = new FileOutputStream(new File(Document.FILES_PATH + doc.getId() + ".pdf"));
+                DocumentsConfig dc = new DocumentsConfig();
+                FileOutputStream fos = new FileOutputStream(new File(dc.getDocumentsPath() + doc.getId() + ".pdf"));
                 IOUtils.copy(file.getInputStream(), fos);
                 fos.close();
             } catch (IOException ex) {

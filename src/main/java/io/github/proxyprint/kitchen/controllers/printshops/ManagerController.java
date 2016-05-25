@@ -153,7 +153,6 @@ public class ManagerController {
         }
     }
 
-<<<<<<< HEAD
     @Secured("ROLE_MANAGER")
     @RequestMapping(value = "/printshops/stats", method = RequestMethod.GET)
     public String getPrintShopStatistics(Principal principal) {
@@ -196,7 +195,7 @@ public class ManagerController {
         response.addProperty("success", false);
         return GSON.toJson(response);
     }
-=======
+    
     @Secured({"ROLE_MANAGER"})
     @ApiOperation(value = "Returns a printshop", notes = "This method returns the printshop info")
     @RequestMapping(value = "/printshop", method = RequestMethod.GET)
@@ -213,7 +212,6 @@ public class ManagerController {
 
         response.add("printshop", GSON.toJsonTree(pShop));
         response.addProperty("success", true);
->>>>>>> 046015c9dbf9d934d306264cef49b83f72e99b79
         return GSON.toJson(response);
     }
 }
