@@ -239,8 +239,10 @@ public class PrintShop {
         return this.reviews.remove(review);
     }
 
+    // Call me before save printshop!
     public void updatePrintShopRating(int newRating) {
-        
+        int totalReviews = this.reviews.size() + 1;
+        this.avgRating = ( (this.avgRating + (float)newRating) / totalReviews );
     }
 
     public String getPrintShopProfit() {
