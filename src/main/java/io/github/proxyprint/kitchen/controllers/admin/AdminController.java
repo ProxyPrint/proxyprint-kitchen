@@ -7,10 +7,7 @@ import io.github.proxyprint.kitchen.models.Admin;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.consumer.PrintingSchema;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
-import io.github.proxyprint.kitchen.models.printshops.Employee;
-import io.github.proxyprint.kitchen.models.printshops.Manager;
-import io.github.proxyprint.kitchen.models.printshops.PrintShop;
-import io.github.proxyprint.kitchen.models.printshops.RegisterRequest;
+import io.github.proxyprint.kitchen.models.printshops.*;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.*;
 import io.github.proxyprint.kitchen.models.repositories.*;
 import io.swagger.annotations.ApiOperation;
@@ -45,6 +42,8 @@ public class AdminController {
     private PrintingSchemaDAO printingSchemas;
     @Autowired
     private RegisterRequestDAO registerRequests;
+    @Autowired
+    private ReviewDAO reviews;
     @Autowired
     private Gson GSON;
 
@@ -391,6 +390,18 @@ public class AdminController {
         registerRequests.save(registerRequest3);
         registerRequests.save(registerRequest4);
 
+        printShops.save(printshop);
+
+        /*---------------- Reviews -----------------------------*/
+        Review r = new Review("Muito bom", 4, joao);
+        printshop.addReview(r);
+        printshop.updatePrintShopRating();
+        r = new Review("Aguns funcionários poderiam ser mais simpáticos. Mas serviço ok.", 3, rui);
+        printshop.addReview(r);
+        printshop.updatePrintShopRating();
+        r = new Review("Excelente!", 5, ana);
+        printshop.addReview(r);
+        printshop.updatePrintShopRating();
         printShops.save(printshop);
 
         response.addProperty("message", "seeding completed");

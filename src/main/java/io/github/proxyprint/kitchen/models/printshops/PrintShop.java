@@ -239,10 +239,22 @@ public class PrintShop {
         return this.reviews.remove(review);
     }
 
-    // Call me before save printshop!
-    public void updatePrintShopRating(int newRating) {
-        int totalReviews = this.reviews.size() + 1;
-        this.avgRating = ( (this.avgRating + (float)newRating) / totalReviews );
+    // Call me after add new review to printshop
+    public void updatePrintShopRating() {
+        int totalReviews = this.reviews.size();
+        if(totalReviews > 1) {
+            int sumRatins = 0;
+            for (Review rev : this.reviews) {
+                sumRatins += rev.getRating();
+            }
+            this.avgRating = (sumRatins / totalReviews);
+        } else {
+            Review only=null;
+            for (Review rev : this.reviews) {
+                only = rev;
+            }
+            if(only!=null) this.avgRating = (float)only.getRating();
+        }
     }
 
     public String getPrintShopProfit() {

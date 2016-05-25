@@ -92,7 +92,7 @@ public class ReviewController {
        int rating = Integer.parseInt(params.get("rating"));
        Review review = reviews.save(new Review(reviewText, rating, consumer));
        pShop.addReview(review);
-        pShop.updatePrintShopRating(rating);
+        pShop.updatePrintShopRating();
        this.printshops.save(pShop);
        return new ResponseEntity(this.GSON.toJson(review), HttpStatus.OK);
    }
@@ -122,7 +122,7 @@ public class ReviewController {
         review.setRating(rating);
 
         pShop.addReview(review);
-        pShop.updatePrintShopRating(rating);
+        pShop.updatePrintShopRating();
 
         this.printshops.save(pShop);
         return new ResponseEntity(this.GSON.toJson(review), HttpStatus.OK);
