@@ -24,6 +24,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.security.Principal;
 import java.util.*;
 import java.util.logging.Level;
@@ -200,7 +202,7 @@ public class PrintRequestController {
         Map mrequest = new Gson().fromJson(requestJSON, Map.class);
 
         long pshopID = (long) Double.valueOf((double) mrequest.get("printshopID")).intValue();
-        double cost = (Double) mrequest.get("budget");
+        double cost = round((Double) mrequest.get("budget"), 2);
 
         if (printRequest != null && consumer != null) {
             PrintShop pshop = printShops.findOne(pshopID);
@@ -223,6 +225,14 @@ public class PrintRequestController {
 
         response.addProperty("success", false);
         return GSON.toJson(response);
+    }
+
+    protected double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 
 }

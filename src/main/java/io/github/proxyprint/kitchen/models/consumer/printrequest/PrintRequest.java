@@ -17,8 +17,6 @@ import java.util.Set;
 @Table(name = "print_requests")
 public class PrintRequest implements Serializable {
 
-    public static String PAYPAL_COMPLETED_PAYMENT = "Completed";
-
     public enum Status {
         NOT_PAYED, PENDING, IN_PROGRESS, FINISHED, LIFTED
     }

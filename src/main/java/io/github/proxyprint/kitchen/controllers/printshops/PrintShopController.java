@@ -18,6 +18,7 @@ package io.github.proxyprint.kitchen.controllers.printshops;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import com.paypal.base.rest.PayPalRESTException;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.CoversTable;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.PapersTable;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.RingsTable;
@@ -26,18 +27,17 @@ import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest.Status;
 import io.github.proxyprint.kitchen.models.notifications.Notification;
 import io.github.proxyprint.kitchen.models.printshops.Employee;
+import io.github.proxyprint.kitchen.models.printshops.Manager;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.BindingItem;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.CoverItem;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.Item;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.RangePaperItem;
-import io.github.proxyprint.kitchen.models.repositories.ConsumerDAO;
-import io.github.proxyprint.kitchen.models.repositories.EmployeeDAO;
-import io.github.proxyprint.kitchen.models.repositories.PrintRequestDAO;
-import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
+import io.github.proxyprint.kitchen.models.repositories.*;
 import io.github.proxyprint.kitchen.utils.DistanceCalculator;
 import io.github.proxyprint.kitchen.utils.MailBox;
 import io.github.proxyprint.kitchen.utils.NotificationManager;
+import io.github.proxyprint.kitchen.utils.PayPalWrapper;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
@@ -67,6 +67,8 @@ public class PrintShopController {
     private EmployeeDAO employees;
     @Autowired
     private ConsumerDAO consumers;
+    @Autowired
+    private ManagerDAO managers;
     @Autowired
     private NotificationManager notificationManager;
     @Autowired
@@ -144,7 +146,7 @@ public class PrintShopController {
     @ApiOperation(value = "Returns the new status.", notes = "Returns the new status of the corresponding print request.")
     @Secured({"ROLE_MANAGER", "ROLE_EMPLOYEE"})
     @RequestMapping(value = "/printshops/requests/{id}", method = RequestMethod.POST)
-    public String changeStatusPrintShopRequests(@PathVariable(value = "id") long id, Principal principal) throws IOException {
+    public String changeStatusPrintShopRequests(@PathVariable(value = "id") long id, Principal principal) throws IOException, PayPalRESTException {
         JsonObject response = new JsonObject();
         Employee e = employees.findByUsername(principal.getName());
         PrintShop printshop = e.getPrintShop();
@@ -169,22 +171,27 @@ public class PrintShopController {
             not = "O pedido número " + printRequest.getId() + " está a ser processado!";
             notificationManager.sendNotification(user, new Notification(not));
         } else if (printRequest.getStatus() == Status.IN_PROGRESS) {
-            // At this moment the platform needs to pay to the printshop
-
-            // ---------------------------------------------------------
-
-            // IF PAYMENT OK
-            printRequest.setStatus(Status.FINISHED);
             printRequest.setFinishedTimestamp(new Date());
-            response.addProperty("newStatus", Status.FINISHED.toString());
-            not = "O pedido número " + printRequest.getId() +
-                    " está completo! Pode deslocar-se á reprografia para proceder ao levantamento.";
 
-            // Send email to user
-            MailBox m = new MailBox();
-            m.sendEmailFinishedPrintRequest(consumer,printRequest.getId(),printshop.getName());
+            PayPalWrapper pp = new PayPalWrapper();
+            Manager manager = managers.findByPrintShop(printshop);
+            boolean payPalRes = pp.payShareToPrintShop(printRequest, manager, printshop);
 
-            notificationManager.sendNotification(user, new Notification(not));
+            if(payPalRes) {
+                printRequest.setStatus(Status.FINISHED);
+                response.addProperty("newStatus", Status.FINISHED.toString());
+                not = "O pedido número " + printRequest.getId() +
+                        " está completo! Pode deslocar-se á reprografia para proceder ao levantamento.";
+
+                // Send email to user
+                MailBox m = new MailBox();
+                m.sendEmailFinishedPrintRequest(consumer, printRequest.getId(), printshop.getName());
+
+                notificationManager.sendNotification(user, new Notification(not));
+            } else {
+                response.addProperty("success", false);
+                return GSON.toJson(response);
+            }
         } else if (printRequest.getStatus() == Status.FINISHED) {
             printRequest.setStatus(Status.LIFTED);
             response.addProperty("newStatus", Status.LIFTED.toString());
