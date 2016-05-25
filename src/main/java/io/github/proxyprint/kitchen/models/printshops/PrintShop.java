@@ -27,27 +27,35 @@ public class PrintShop {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     @Column(name = "name", nullable = false)
     private String name;
+
     @Column(nullable = false, name = "address")
     private String address;
+
     @Column(nullable = false, name = "latitude")
     private Double latitude;
+
     @Column(nullable = false, name = "longitude")
     private Double longitude;
+
     @Column(nullable = false, name = "nif")
     private String nif;
+
     @Column(nullable = false, name = "logo")
     private String logo;
+
     @Column(nullable = false, name = "avg_rating")
     private float avgRating;
+
     @ElementCollection
     @JoinTable(name = "pricetables", joinColumns = @JoinColumn(name = "printshop_id"))
     @MapKeyColumn(name = "item")
     @Column(name = "price")
-
     @Exclude
     private Map<String, Float> priceTable;
+
     @JsonIgnore
     @Exclude
     @Transient
@@ -163,9 +171,11 @@ public class PrintShop {
     }
 
     public float getPriceByKey(String key) {
-        if(this.priceTable.containsKey(key)) {
+        if (this.priceTable.containsKey(key)) {
             return this.priceTable.get(key);
-        } else return -1;
+        } else {
+            return -1;
+        }
     }
 
     public Map<String, Float> getPriceTable() {

@@ -23,6 +23,7 @@ import io.github.proxyprint.kitchen.controllers.printshops.pricetable.CoversTabl
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.PapersTable;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.RingsTable;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
+import io.github.proxyprint.kitchen.models.User;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest.Status;
 import io.github.proxyprint.kitchen.models.notifications.Notification;
@@ -34,6 +35,10 @@ import io.github.proxyprint.kitchen.models.printshops.pricetable.CoverItem;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.Item;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.RangePaperItem;
 import io.github.proxyprint.kitchen.models.repositories.*;
+import io.github.proxyprint.kitchen.models.repositories.EmployeeDAO;
+import io.github.proxyprint.kitchen.models.repositories.PrintRequestDAO;
+import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
+import io.github.proxyprint.kitchen.models.repositories.UserDAO;
 import io.github.proxyprint.kitchen.utils.DistanceCalculator;
 import io.github.proxyprint.kitchen.utils.MailBox;
 import io.github.proxyprint.kitchen.utils.NotificationManager;
@@ -51,6 +56,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 /**
  *
@@ -72,6 +79,8 @@ public class PrintShopController {
     @Autowired
     private NotificationManager notificationManager;
     @Autowired
+    private UserDAO users;
+    @Autowired
     private Gson GSON;
 
     @RequestMapping(value = "/printshops/nearest", method = RequestMethod.GET)
@@ -81,7 +90,7 @@ public class PrintShopController {
 
         JsonObject response = new JsonObject();
 
-        if(lat!=null && lon!=null) {
+        if (lat != null && lon != null) {
             Double latitude = Double.parseDouble(lat);
             Double longitude = Double.parseDouble(lon);
             System.out.format("Latitude: %s Longitude: %s\n", latitude, longitude);
@@ -101,7 +110,7 @@ public class PrintShopController {
     }
 
     @ApiOperation(value = "Returns a pricetable", notes = "This method returns a pricetable of a specific printshop.")
-    @Secured({"ROLE_MANAGER","ROLE_USER"})
+    @Secured({"ROLE_MANAGER", "ROLE_USER"})
     @RequestMapping(value = "/printshops/{id}/pricetable", method = RequestMethod.GET)
     public String getPrintShopPriceTable(@PathVariable(value = "id") long id) {
         PrintShop pshop = printshops.findOne(id);
@@ -114,18 +123,18 @@ public class PrintShopController {
         if (pshop == null) {
             response.addProperty("success", false);
         } else {
-            for(String key : pshop.getPriceTable().keySet()) {
+            for (String key : pshop.getPriceTable().keySet()) {
                 String type = Item.checkItemType(key);
                 if (type.equals(Item.PAPER)) {
                     RangePaperItem rpi = (RangePaperItem) pshop.loadPriceItem(key);
-                    papersTable.addRangePaperItem(rpi,pshop);
+                    papersTable.addRangePaperItem(rpi, pshop);
                 } else if (type.equals(Item.RingType.BINDING.toString())) {
                     BindingItem bi = (BindingItem) pshop.loadPriceItem(key);
                     ringsTable.addBindingItem(bi, pshop.getPrice(bi));
 
                 } else if (type.equals(Item.COVER)) {
                     CoverItem ci = (CoverItem) pshop.loadPriceItem(key);
-                    coversTable.addCoverItem(ci,pshop.getPrice(ci));
+                    coversTable.addCoverItem(ci, pshop.getPrice(ci));
                 }
             }
 
@@ -219,7 +228,7 @@ public class PrintShopController {
             return GSON.toJson(response);
         }
 
-        PrintRequest printRequest = printrequests.findByIdInAndPrintshop(id,printshop);
+        PrintRequest printRequest = printrequests.findByIdInAndPrintshop(id, printshop);
 
         response.add("printrequest", GSON.toJsonTree(printRequest));
 
@@ -245,9 +254,10 @@ public class PrintShopController {
         status.add(Status.IN_PROGRESS);
 
         List<PrintRequest> printRequestsList = printrequests.findByStatusInAndPrintshop(status, printshop);
-        Type listOfPRequests = new TypeToken<List<PrintShop>>(){}.getType();
+        Type listOfPRequests = new TypeToken<List<PrintShop>>() {
+        }.getType();
 
-        response.add("printrequest", GSON.toJsonTree(printRequestsList,listOfPRequests));
+        response.add("printrequest", GSON.toJsonTree(printRequestsList, listOfPRequests));
         response.addProperty("success", true);
         return GSON.toJson(response);
     }
@@ -271,9 +281,10 @@ public class PrintShopController {
         status.add(Status.FINISHED);
 
         List<PrintRequest> printRequestsList = printrequests.findByStatusInAndPrintshop(status, printshop);
-        Type listOfPRequests = new TypeToken<List<PrintShop>>(){}.getType();
+        Type listOfPRequests = new TypeToken<List<PrintShop>>() {
+        }.getType();
 
-        response.add("satisfiedrequests", GSON.toJsonTree(printRequestsList,listOfPRequests));
+        response.add("satisfiedrequests", GSON.toJsonTree(printRequestsList, listOfPRequests));
         response.addProperty("success", true);
         return GSON.toJson(response);
     }
@@ -293,10 +304,10 @@ public class PrintShopController {
         }
 
         String not;
-        PrintRequest printRequest = printrequests.findByIdInAndPrintshop(id,printshop);
+        PrintRequest printRequest = printrequests.findByIdInAndPrintshop(id, printshop);
         String user = printRequest.getConsumer().getUsername();
 
-        if(printRequest.getStatus() == Status.PENDING){
+        if (printRequest.getStatus() == Status.PENDING) {
 
             //printrequests.delete(printRequest);
             printshop.getPrintRequests().remove(printRequest);
@@ -304,10 +315,31 @@ public class PrintShopController {
             not = "O pedido número " + printRequest.getId() + " foi cancelado! Motivo: " + motive;
             notificationManager.sendNotification(user, new Notification(not));
             response.addProperty("success", true);
-        } else{
+        } else {
             response.addProperty("success", false);
         }
 
         return GSON.toJson(response);
     }
+
+    @ApiOperation(value = "Returns a printshop", notes = "This method returns the printshop info")
+    @RequestMapping(value = "/printshops/{id}", method = RequestMethod.GET)
+    public ResponseEntity<String> getPrintShop(@PathVariable("id") long id) {
+        PrintShop pShop = this.printshops.findOne(id);
+
+        if (pShop == null) {
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity(GSON.toJson(pShop), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Returns a printshop", notes = "This method returns the printshop info")
+    @RequestMapping(value = "/printshops", method = RequestMethod.GET)
+    public ResponseEntity<String> getPrintShops() {
+        Iterable<PrintShop> printShops = this.printshops.findAll();
+
+        return new ResponseEntity(this.GSON.toJson(printShops), HttpStatus.OK);
+    }
+
 }
