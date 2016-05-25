@@ -6,6 +6,7 @@ import io.github.proxyprint.kitchen.models.printshops.Employee;
 import io.github.proxyprint.kitchen.models.repositories.DocumentDAO;
 import io.github.proxyprint.kitchen.models.repositories.EmployeeDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
+import java.io.File;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
+import javax.annotation.Resource;
 
 /**
  * Created by daniel on 14-05-2016.
@@ -26,6 +28,8 @@ import java.security.Principal;
 @RestController
 public class EmployeeController {
 
+    @Resource(name = "documentsPath")
+    private String documentsPath;
     @Autowired
     private EmployeeDAO employees;
     @Autowired
@@ -52,7 +56,7 @@ public class EmployeeController {
             headers.add("Content-Disposition", "inline;filename=" + doc.getName() + ".pdf");
             headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
 
-            return new ResponseEntity(new FileSystemResource(doc.getFile()), headers, HttpStatus.OK);
+            return new ResponseEntity(new FileSystemResource(new File(this.documentsPath+doc.getFile().getName())), headers, HttpStatus.OK);
         }
     }
 }
