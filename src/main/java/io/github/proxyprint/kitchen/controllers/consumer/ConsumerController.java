@@ -106,77 +106,6 @@ public class ConsumerController {
         return GSON.toJson(response);
     }
 
-    @ApiOperation(value = "Returns a set of budgets", notes = "This method calculates budgets for a given already specified print request. The budgets are calculated for specific printshops also passed along as parameters.")
-    @Secured("ROLE_USER")
-    @RequestMapping(value = "/consumer/budget", method = RequestMethod.POST)
-    public String calcBudgetForPrintRequest(HttpServletRequest request, Principal principal, @RequestPart("printRequest") String requestJSON) {
-        JsonObject response = new JsonObject();
-        Consumer consumer = consumers.findByUsername(principal.getName());
-
-        PrintRequest printRequest = new PrintRequest();
-        printRequest.setConsumer(consumer);
-        printRequest = printRequests.save(printRequest);
-
-        List<Long> pshopIDs = null;
-
-        Map prequest = new Gson().fromJson(requestJSON, Map.class);
-
-        // PrintShops
-        List<Double> tmpPshopIDs = (List<Double>) prequest.get("printshops");
-        pshopIDs = new ArrayList<>();
-        for (double doubleID : tmpPshopIDs) {
-            pshopIDs.add((long) Double.valueOf((double) doubleID).intValue());
-        }
-
-        // Process files
-        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-        Map<String, Long> documentsIds = new HashMap<String, Long>();
-        for (Collection<MultipartFile> files : multipartRequest.getMultiFileMap().values()) {
-            for (MultipartFile file : files) {
-                singleFileHandle(file, printRequest, documentsIds);
-            }
-        }
-
-        // Store Documents and respective Specifications
-        Map<String, Map> mdocuments = (Map) prequest.get("files");
-        for (Map.Entry<String, Map> documentSpecs : mdocuments.entrySet()) {
-            String fileName = documentSpecs.getKey();
-            List<Map<String, String>> specs = (List) documentSpecs.getValue().get("specs");
-
-            for (Map<String, String> entry : specs) {
-                Object tmpid = entry.get("id");
-                Object tmpinfLim = entry.get("from");
-                Object tmpsupLim = entry.get("to");
-
-                long id = (long) Double.valueOf((double) tmpid).intValue();
-
-                int infLim = 0;
-                if (tmpinfLim != null) infLim = Double.valueOf((double) tmpinfLim).intValue();
-
-                int supLim = 0;
-                if (tmpsupLim != null) supLim = Double.valueOf((double) tmpsupLim).intValue();
-
-                // Get printing schema by its id
-                PrintingSchema tmpschema = printingSchemas.findOne(id);
-
-                // Create DocumentSpec and associate it with respective Document
-                DocumentSpec tmpdc = new DocumentSpec(infLim, supLim, tmpschema);
-                documentsSpecs.save(tmpdc);
-                long did = documentsIds.get(fileName);
-                Document tmpdoc = documents.findOne(did);
-                tmpdoc.addSpecification(tmpdc);
-                documents.save(tmpdoc);
-            }
-        }
-
-        // Finally calculate the budgets :D
-        Map<Long, String> budgets = calcBudgetsForPrintShops(pshopIDs, printRequest);
-
-        response.addProperty("success", true);
-        response.add("budgets", GSON.toJsonTree(budgets));
-        response.addProperty("printRequestID", printRequest.getId());
-        return GSON.toJson(response);
-    }
 
     private void singleFileHandle(MultipartFile file, PrintRequest printRequest, Map<String, Long> documentsIds) {
         String filetype = FilenameUtils.getExtension(file.getOriginalFilename());
@@ -238,48 +167,6 @@ public class ConsumerController {
         return budgets;
     }
 
-
-    @ApiOperation(value = "Returns success/insuccess", notes = "This method allow clients to POST a print request and associate it to a given printshop with a given budget.")
-    @Secured("ROLE_USER")
-    @RequestMapping(value = "/consumer/printrequest/{printRequestID}/submit", method = RequestMethod.POST)
-    public String finishAndSubmitPrintRequest(@PathVariable(value = "printRequestID") long prid, HttpServletRequest request, Principal principal) {
-        JsonObject response = new JsonObject();
-        PrintRequest printRequest = printRequests.findOne(prid);
-        Consumer consumer = consumers.findByUsername(principal.getName());
-
-        String requestJSON = null;
-        try {
-            requestJSON = IOUtils.toString(request.getInputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Map mrequest = new Gson().fromJson(requestJSON, Map.class);
-
-        long pshopID = (long) Double.valueOf((double) mrequest.get("printshopID")).intValue();
-        double cost = (Double) mrequest.get("budget");
-
-        if (printRequest != null && consumer != null) {
-            PrintShop pshop = printShops.findOne(pshopID);
-
-            if (pshop != null) {
-                // Final attributes for given print request
-                printRequest.setArrivalTimestamp(new Date());
-                printRequest.setStatus(PrintRequest.Status.PENDING);
-                printRequest.setCost(cost);
-
-                printRequests.save(printRequest);
-
-                pshop.addPrintRequest(printRequest);
-
-                printShops.save(pshop);
-                response.addProperty("success", true);
-                return GSON.toJson(response);
-            }
-        }
-
-        response.addProperty("success", false);
-        return GSON.toJson(response);
-    }
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/consumer/{username}/notifications", method = RequestMethod.DELETE)
@@ -395,4 +282,3 @@ public class ConsumerController {
     }
 
 }
-

@@ -80,8 +80,7 @@ public class PrintShopController {
     @Autowired
     private NotificationManager notificationManager;
 
-    @Autowired
-    private ConsumerDAO consumers;
+   
 
     @Autowired
     private UserDAO users;

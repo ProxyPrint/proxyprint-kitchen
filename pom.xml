@@ -121,6 +121,8 @@
             <groupId>com.paypal.sdk</groupId>
             <artifactId>merchantsdk</artifactId>
             <version>2.14.117</version>
+        </dependency>
+        <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
             <scope>test</scope>
