@@ -171,13 +171,16 @@ public class PrintShopController {
 
         String not;
         PrintRequest printRequest = printrequests.findByIdInAndPrintshop(id,printshop);
-        Consumer consumer = printRequest.getConsumer();
-        String user = consumer.getUsername();
 
         if (printRequest == null) {
             response.addProperty("success", false);
             return GSON.toJson(response);
-        } else if (printRequest.getStatus() == Status.PENDING) {
+        }
+
+        Consumer consumer = printRequest.getConsumer();
+        String user = consumer.getUsername();
+
+        if (printRequest.getStatus() == Status.PENDING) {
             printRequest.setStatus(Status.IN_PROGRESS);
             printRequest.setEmpAttended(principal.getName());
             response.addProperty("newStatus", Status.IN_PROGRESS.toString());
@@ -235,6 +238,11 @@ public class PrintShopController {
         }
 
         PrintRequest printRequest = printrequests.findByIdInAndPrintshop(id, printshop);
+
+        if (printRequest == null) {
+            response.addProperty("success", false);
+            return GSON.toJson(response);
+        }
 
         for (Document d : printRequest.getDocuments()){
             for (DocumentSpec s :  d.getSpecs()){
@@ -328,7 +336,7 @@ public class PrintShopController {
     }
 
     @Secured({"ROLE_MANAGER", "ROLE_EMPLOYEE"})
-    @RequestMapping(value = "/printshops/requests/cancel/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/printshops/requests/cancel/{id}", method = RequestMethod.POST)
     public String cancelPrintShopRequests(@PathVariable(value = "id") long id, Principal principal, @RequestBody String motive)
             throws IOException {
 
@@ -343,6 +351,12 @@ public class PrintShopController {
 
         String not;
         PrintRequest printRequest = printrequests.findByIdInAndPrintshop(id,printshop);
+
+        if (printRequest == null) {
+            response.addProperty("success", false);
+            return GSON.toJson(response);
+        }
+
         Consumer user = printRequest.getConsumer();
 
         if (printRequest.getStatus() == Status.PENDING) {

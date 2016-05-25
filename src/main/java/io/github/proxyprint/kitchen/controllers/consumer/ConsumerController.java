@@ -232,6 +232,11 @@ public class ConsumerController {
 
         PrintRequest printRequest = printrequests.findByIdInAndConsumer(id,consumer);
 
+        if (printRequest == null) {
+            response.addProperty("success", false);
+            return GSON.toJson(response);
+        }
+
         if(printRequest.getStatus() == PrintRequest.Status.PENDING){
 
             PrintShop p = printRequest.getPrintshop();
