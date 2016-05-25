@@ -118,48 +118,6 @@ public class AdminController {
 
         users.save(master);
 
-        // joao
-        printshop.addPrintRequest(new PrintRequest(20, Date.from(Instant.now()), joao, PrintRequest.Status.PENDING));
-        printshop.addPrintRequest(new PrintRequest(25, Date.from(Instant.now()), joao, PrintRequest.Status.PENDING));
-        printshop.addPrintRequest(new PrintRequest(30, Date.from(Instant.now()), joao, PrintRequest.Status.PENDING));
-        printshop.addPrintRequest(new PrintRequest(35, Date.from(Instant.now()), joao, PrintRequest.Status.PENDING));
-        printshop.addPrintRequest(new PrintRequest(20, Date.from(Instant.now()), joao, PrintRequest.Status.IN_PROGRESS));
-        printshop.addPrintRequest(new PrintRequest(25, Date.from(Instant.now()), joao, PrintRequest.Status.LIFTED));
-        printshop.addPrintRequest(new PrintRequest(30, Date.from(Instant.now()), joao, PrintRequest.Status.FINISHED));
-
-        // rui
-        printshop.addPrintRequest(new PrintRequest(20, Date.from(Instant.now()), rui, PrintRequest.Status.PENDING));
-        printshop.addPrintRequest(new PrintRequest(25, Date.from(Instant.now()), rui, PrintRequest.Status.PENDING));
-        printshop.addPrintRequest(new PrintRequest(30, Date.from(Instant.now()), rui, PrintRequest.Status.PENDING));
-        printshop.addPrintRequest(new PrintRequest(35, Date.from(Instant.now()), rui, PrintRequest.Status.PENDING));
-        printshop.addPrintRequest(new PrintRequest(20, Date.from(Instant.now()), rui, PrintRequest.Status.IN_PROGRESS));
-        printshop.addPrintRequest(new PrintRequest(25, Date.from(Instant.now()), rui, PrintRequest.Status.LIFTED));
-        printshop.addPrintRequest(new PrintRequest(30, Date.from(Instant.now()), rui, PrintRequest.Status.FINISHED));
-
-        // ana
-        printshop.addPrintRequest(new PrintRequest(20, Date.from(Instant.now()), ana, PrintRequest.Status.PENDING));
-        printshop.addPrintRequest(new PrintRequest(25, Date.from(Instant.now()), ana, PrintRequest.Status.PENDING));
-        printshop.addPrintRequest(new PrintRequest(30, Date.from(Instant.now()), ana, PrintRequest.Status.PENDING));
-        printshop.addPrintRequest(new PrintRequest(35, Date.from(Instant.now()), ana, PrintRequest.Status.PENDING));
-        printshop.addPrintRequest(new PrintRequest(20, Date.from(Instant.now()), ana, PrintRequest.Status.IN_PROGRESS));
-        printshop.addPrintRequest(new PrintRequest(25, Date.from(Instant.now()), ana, PrintRequest.Status.LIFTED));
-        printshop.addPrintRequest(new PrintRequest(30, Date.from(Instant.now()), ana, PrintRequest.Status.FINISHED));
-
-        // rita
-        printshop.addPrintRequest(new PrintRequest(20, Date.from(Instant.now()), rita, PrintRequest.Status.PENDING));
-        printshop.addPrintRequest(new PrintRequest(25, Date.from(Instant.now()), rita, PrintRequest.Status.PENDING));
-        printshop.addPrintRequest(new PrintRequest(30, Date.from(Instant.now()), rita, PrintRequest.Status.PENDING));
-        printshop.addPrintRequest(new PrintRequest(35, Date.from(Instant.now()), rita, PrintRequest.Status.PENDING));
-        printshop.addPrintRequest(new PrintRequest(20, Date.from(Instant.now()), rita, PrintRequest.Status.IN_PROGRESS));
-        printshop.addPrintRequest(new PrintRequest(25, Date.from(Instant.now()), rita, PrintRequest.Status.LIFTED));
-        printshop.addPrintRequest(new PrintRequest(30, Date.from(Instant.now()), rita, PrintRequest.Status.FINISHED));
-
-
-        registerRequests.save(registerRequest1);
-        registerRequests.save(registerRequest2);
-        registerRequests.save(registerRequest3);
-        registerRequests.save(registerRequest4);
-
         /*-------------------------------------
             PriceTable
         ------------------------------------*/
@@ -319,22 +277,27 @@ public class AdminController {
         users.save(manager2);
 
         /*--------------------- Employees ---------------------*/
+        Employee mafalda, miguel, joana, rafaela;
         Employee employee = new Employee("mafalda", "1234", "Mafalda Sofia Pinto", printshop);
+        mafalda = employee;
         employee.setPrintShop(printshop);
         users.save(employee);
         employee = new Employee("miguel", "1234", "Miguel Santos", printshop);
+        miguel = employee;
         employee.setPrintShop(printshop);
         users.save(employee);
         employee = new Employee("ana", "1234", "Ana Ferreira", printshop);
         employee.setPrintShop(printshop);
         users.save(employee);
         employee = new Employee("joana", "1234", "Joana Sofia", printshop);
+        joana = employee;
         employee.setPrintShop(printshop);
         users.save(employee);
         employee = new Employee("rita", "1234", "Rita Semedo", printshop);
         employee.setPrintShop(printshop);
         users.save(employee);
         employee = new Employee("rafaela", "1234", "Rafaela Martins", printshop);
+        rafaela = employee;
         employee.setPrintShop(printshop);
         users.save(employee);
         employee = new Employee("cristiano", "1234", "Cristiano Costa", printshop);
@@ -353,6 +316,82 @@ public class AdminController {
         employee.setPrintShop(printshop2);
         users.save(employee);
         /*--------------------- Employees ---------------------*/
+
+        /*--------------------- Print Requests  ---------------------*/
+        PrintRequest tmpPrintRequest;
+
+        // joao
+        printshop.addPrintRequest(new PrintRequest(2.50, Date.from(Instant.now()), joao, PrintRequest.Status.PENDING));
+        printshop.addPrintRequest(new PrintRequest(1.40, Date.from(Instant.now()), joao, PrintRequest.Status.PENDING));
+        printshop.addPrintRequest(new PrintRequest(1.20, Date.from(Instant.now()), joao, PrintRequest.Status.PENDING));
+
+        tmpPrintRequest = new PrintRequest(2.22, Date.from(Instant.now()), joao, PrintRequest.Status.IN_PROGRESS);
+        tmpPrintRequest.setEmpAttended(miguel.getName());
+        printshop.addPrintRequest(tmpPrintRequest);
+
+        tmpPrintRequest = new PrintRequest(4.32, Date.from(Instant.now()), joao, PrintRequest.Status.FINISHED);
+        tmpPrintRequest.setEmpAttended(rafaela.getName());
+        tmpPrintRequest.setEmpDelivered(rita.getName());
+        tmpPrintRequest.setFinishedTimestamp(Date.from(Instant.now()));
+        printshop.addPrintRequest(tmpPrintRequest);
+
+        tmpPrintRequest = new PrintRequest(3.21, Date.from(Instant.now()), joao, PrintRequest.Status.LIFTED);
+        tmpPrintRequest.setEmpAttended(ana.getName());
+        tmpPrintRequest.setEmpDelivered(miguel.getName());
+        tmpPrintRequest.setFinishedTimestamp(Date.from(Instant.now()));
+        tmpPrintRequest.setDeliveredTimestamp(Date.from(Instant.now()));
+        printshop.addPrintRequest(tmpPrintRequest);
+
+        // rui
+        printshop.addPrintRequest(new PrintRequest(2.50, Date.from(Instant.now()), joao, PrintRequest.Status.PENDING));
+        printshop.addPrintRequest(new PrintRequest(1.40, Date.from(Instant.now()), joao, PrintRequest.Status.PENDING));
+        printshop.addPrintRequest(new PrintRequest(1.20, Date.from(Instant.now()), joao, PrintRequest.Status.PENDING));
+
+        tmpPrintRequest = new PrintRequest(2.22, Date.from(Instant.now()), joao, PrintRequest.Status.IN_PROGRESS);
+        tmpPrintRequest.setEmpAttended(miguel.getName());
+        printshop.addPrintRequest(tmpPrintRequest);
+
+        tmpPrintRequest = new PrintRequest(4.32, Date.from(Instant.now()), joao, PrintRequest.Status.FINISHED);
+        tmpPrintRequest.setEmpAttended(rafaela.getName());
+        tmpPrintRequest.setEmpDelivered(rita.getName());
+        tmpPrintRequest.setFinishedTimestamp(Date.from(Instant.now()));
+        printshop.addPrintRequest(tmpPrintRequest);
+
+        tmpPrintRequest = new PrintRequest(3.21, Date.from(Instant.now()), joao, PrintRequest.Status.LIFTED);
+        tmpPrintRequest.setEmpAttended(ana.getName());
+        tmpPrintRequest.setEmpDelivered(miguel.getName());
+        tmpPrintRequest.setFinishedTimestamp(Date.from(Instant.now()));
+        tmpPrintRequest.setDeliveredTimestamp(Date.from(Instant.now()));
+        printshop.addPrintRequest(tmpPrintRequest);
+
+        // ana
+        printshop.addPrintRequest(new PrintRequest(2.50, Date.from(Instant.now()), ana, PrintRequest.Status.PENDING));
+        printshop.addPrintRequest(new PrintRequest(1.40, Date.from(Instant.now()), ana, PrintRequest.Status.PENDING));
+        printshop.addPrintRequest(new PrintRequest(1.20, Date.from(Instant.now()), ana, PrintRequest.Status.PENDING));
+
+        tmpPrintRequest = new PrintRequest(2.22, Date.from(Instant.now()), ana, PrintRequest.Status.IN_PROGRESS);
+        tmpPrintRequest.setEmpAttended(miguel.getName());
+        printshop.addPrintRequest(tmpPrintRequest);
+
+        tmpPrintRequest = new PrintRequest(4.32, Date.from(Instant.now()), ana, PrintRequest.Status.FINISHED);
+        tmpPrintRequest.setEmpAttended(rafaela.getName());
+        tmpPrintRequest.setEmpDelivered(rita.getName());
+        tmpPrintRequest.setFinishedTimestamp(Date.from(Instant.now()));
+        printshop.addPrintRequest(tmpPrintRequest);
+
+        tmpPrintRequest = new PrintRequest(3.21, Date.from(Instant.now()), ana, PrintRequest.Status.LIFTED);
+        tmpPrintRequest.setEmpAttended(ana.getName());
+        tmpPrintRequest.setEmpDelivered(miguel.getName());
+        tmpPrintRequest.setFinishedTimestamp(Date.from(Instant.now()));
+        tmpPrintRequest.setDeliveredTimestamp(Date.from(Instant.now()));
+        printshop.addPrintRequest(tmpPrintRequest);
+
+        registerRequests.save(registerRequest1);
+        registerRequests.save(registerRequest2);
+        registerRequests.save(registerRequest3);
+        registerRequests.save(registerRequest4);
+
+        printShops.save(printshop);
 
         response.addProperty("message", "seeding completed");
 
