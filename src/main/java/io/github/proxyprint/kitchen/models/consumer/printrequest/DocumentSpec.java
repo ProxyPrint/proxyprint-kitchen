@@ -3,6 +3,7 @@ package io.github.proxyprint.kitchen.models.consumer.printrequest;
 import io.github.proxyprint.kitchen.models.consumer.PrintingSchema;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * Created by daniel on 09-05-2016.
@@ -13,13 +14,18 @@ public class DocumentSpec {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     @Column(name = "first_page", nullable = false)
     private int firstPage;
+
     @Column(name = "last_page", nullable = false)
     private int lastPage;
+
     @OneToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "printing_schema")
     private PrintingSchema printingSchema;
+
+    @Transient private String specsToString;
 
     public DocumentSpec() {}
 
@@ -45,6 +51,16 @@ public class DocumentSpec {
 
     public void setPrintingSchema(PrintingSchema printingSchema) { this.printingSchema = printingSchema; }
 
+    public void setSpecsToString() {
+        String range;
+        if(this.firstPage==0 && this.lastPage==0) {
+            range = "Documento completo";
+        } else {
+            range = "Páginas " + this.firstPage + " - " + this.getLastPage();
+        }
+        this.specsToString = printingSchema.getPresentationString(range);
+    }
+
     @Override
     public String toString() {
         return "DocumentSpec{" +
@@ -66,7 +82,6 @@ public class DocumentSpec {
         if (getFirstPage() != that.getFirstPage()) return false;
         if (getLastPage() != that.getLastPage()) return false;
         return getPrintingSchema() != null ? getPrintingSchema().equals(that.getPrintingSchema()) : that.getPrintingSchema() == null;
-
     }
 
     @Override
@@ -80,12 +95,14 @@ public class DocumentSpec {
 
     public String getPresentationString() {
         StringBuilder sb = new StringBuilder();
+        String range;
         if(this.firstPage==0 && this.lastPage==0) {
-            sb.append("Documento completo, ");
+            range = "Documento completo ";
         } else {
-            sb.append("Páginas "+this.firstPage+"-"+this.getLastPage());
+            range = "Páginas "+this.firstPage+"-"+this.getLastPage();
         }
-        sb.append(" "+this.printingSchema.getPresentationString());
+        sb.append(range);
+        sb.append(" "+this.printingSchema.getPresentationString(range));
 
         return sb.toString();
     }
