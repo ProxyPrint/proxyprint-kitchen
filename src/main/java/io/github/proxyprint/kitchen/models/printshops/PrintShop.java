@@ -239,6 +239,10 @@ public class PrintShop {
         return this.reviews.remove(review);
     }
 
+    public void updatePrintShopRating(int newRating) {
+        
+    }
+
     public String getPrintShopProfit() {
         double profit=0;
 

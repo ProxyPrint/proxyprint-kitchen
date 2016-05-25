@@ -74,7 +74,7 @@ public class ReviewController {
                 review.addProperty("rating", r.getRating());
                 review.addProperty("username", r.getConsumer().getName());
                 obj.add(review);
-            }                
+            }
             return new ResponseEntity(this.GSON.toJson(obj), HttpStatus.OK);
         }
     }
@@ -90,6 +90,7 @@ public class ReviewController {
        Consumer consumer = this.consumers.findByUsername(principal.getName());
        String reviewText = params.get("review");
        int rating = Integer.parseInt(params.get("rating"));
+
        Review review = reviews.save(new Review(reviewText, rating, consumer));
        pShop.addReview(review);
        this.printshops.save(pShop);
