@@ -23,7 +23,8 @@ import io.github.proxyprint.kitchen.controllers.printshops.pricetable.CoversTabl
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.PapersTable;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.RingsTable;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
-import io.github.proxyprint.kitchen.models.User;
+import io.github.proxyprint.kitchen.models.consumer.printrequest.Document;
+import io.github.proxyprint.kitchen.models.consumer.printrequest.DocumentSpec;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest.Status;
 import io.github.proxyprint.kitchen.models.notifications.Notification;
@@ -78,6 +79,10 @@ public class PrintShopController {
     private ManagerDAO managers;
     @Autowired
     private NotificationManager notificationManager;
+
+    @Autowired
+    private ConsumerDAO consumers;
+
     @Autowired
     private UserDAO users;
     @Autowired
@@ -203,6 +208,8 @@ public class PrintShopController {
             }
         } else if (printRequest.getStatus() == Status.FINISHED) {
             printRequest.setStatus(Status.LIFTED);
+            printRequest.setDeliveredTimestamp(new Date());
+            printRequest.setEmpDelivered(principal.getName());
             response.addProperty("newStatus", Status.LIFTED.toString());
         } else {
             response.addProperty("success", false);
@@ -230,6 +237,11 @@ public class PrintShopController {
 
         PrintRequest printRequest = printrequests.findByIdInAndPrintshop(id, printshop);
 
+        for (Document d : printRequest.getDocuments()){
+            for (DocumentSpec s :  d.getSpecs()){
+                s.setSpecsToString();
+            }
+        }
         response.add("printrequest", GSON.toJsonTree(printRequest));
 
         response.addProperty("success", true);
@@ -290,7 +302,7 @@ public class PrintShopController {
     }
 
     @Secured({"ROLE_MANAGER", "ROLE_EMPLOYEE"})
-    @RequestMapping(value = "/printshops/requests/cancel/{id}", method = RequestMethod.POST)
+    @RequestMapping(value = "/printshops/requests/cancel/{id}", method = RequestMethod.DELETE)
     public String cancelPrintShopRequests(@PathVariable(value = "id") long id, Principal principal, @RequestBody String motive)
             throws IOException {
 
@@ -304,16 +316,22 @@ public class PrintShopController {
         }
 
         String not;
-        PrintRequest printRequest = printrequests.findByIdInAndPrintshop(id, printshop);
-        String user = printRequest.getConsumer().getUsername();
+        PrintRequest printRequest = printrequests.findByIdInAndPrintshop(id,printshop);
+        Consumer user = printRequest.getConsumer();
 
         if (printRequest.getStatus() == Status.PENDING) {
 
-            //printrequests.delete(printRequest);
+            long requestid = printRequest.getId();
+
             printshop.getPrintRequests().remove(printRequest);
             printshops.save(printshop);
-            not = "O pedido número " + printRequest.getId() + " foi cancelado! Motivo: " + motive;
-            notificationManager.sendNotification(user, new Notification(not));
+
+            user.getPrintRequests().remove(printRequest);
+            consumers.save(user);
+
+            not = "O pedido número " + requestid + " foi cancelado! Motivo: " + motive;
+            notificationManager.sendNotification(user.getUsername(), new Notification(not));
+
             response.addProperty("success", true);
         } else {
             response.addProperty("success", false);

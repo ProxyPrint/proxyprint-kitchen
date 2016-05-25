@@ -26,21 +26,28 @@ public class PrintRequest implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     @Column(nullable = true, name = "cost")
     private double cost;
+
     @Column(nullable = true, name = "arrival")
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     private Date arrivalTimestamp;
+
     @Column(nullable = true, name = "finished")
     @Temporal(TemporalType.TIMESTAMP)
     private Date finishedTimestamp;
+
     @Column(nullable = true, name = "delivered")
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     private Date deliveredTimestamp;
+
     @Column(nullable = true, name = "empattended")
     private String empAttended;
+
     @Column(nullable = true, name = "empdelivered")
     private String empDelivered;
+
     @Column(nullable = true, name = "status")
     @Enumerated(EnumType.STRING)
     private Status status;
@@ -48,8 +55,10 @@ public class PrintRequest implements Serializable {
     private String payPalSaleID;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Exclude private PrintShop printshop;
+
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Consumer consumer;
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "print_request_id")
     private Set<Document> documents;

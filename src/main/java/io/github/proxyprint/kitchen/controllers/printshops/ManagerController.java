@@ -10,6 +10,7 @@ import io.github.proxyprint.kitchen.models.repositories.EmployeeDAO;
 import io.github.proxyprint.kitchen.models.repositories.ManagerDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintRequestDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
@@ -152,6 +153,7 @@ public class ManagerController {
         }
     }
 
+<<<<<<< HEAD
     @Secured("ROLE_MANAGER")
     @RequestMapping(value = "/printshops/stats", method = RequestMethod.GET)
     public String getPrintShopStatistics(Principal principal) {
@@ -192,6 +194,26 @@ public class ManagerController {
             }
         }
         response.addProperty("success", false);
+        return GSON.toJson(response);
+    }
+=======
+    @Secured({"ROLE_MANAGER"})
+    @ApiOperation(value = "Returns a printshop", notes = "This method returns the printshop info")
+    @RequestMapping(value = "/printshop", method = RequestMethod.GET)
+    public String getManagerPrintShop(Principal principal) {
+        Manager m = managers.findByUsername(principal.getName());
+        PrintShop pShop = m.getPrintShop();
+
+        JsonObject response = new JsonObject();
+
+        if (pShop == null) {
+            response.addProperty("success", false);
+            return GSON.toJson(response);
+        }
+
+        response.add("printshop", GSON.toJsonTree(pShop));
+        response.addProperty("success", true);
+>>>>>>> 046015c9dbf9d934d306264cef49b83f72e99b79
         return GSON.toJson(response);
     }
 }
