@@ -17,6 +17,8 @@ import java.util.Set;
 @Table(name = "print_requests")
 public class PrintRequest implements Serializable {
 
+    public static String PAYPAL_COMPLETED_PAYMENT = "Completed";
+
     public enum Status {
         NOT_PAYED, PENDING, IN_PROGRESS, FINISHED, LIFTED
     }
@@ -42,6 +44,8 @@ public class PrintRequest implements Serializable {
     @Column(nullable = true, name = "status")
     @Enumerated(EnumType.STRING)
     private Status status;
+    @Column(nullable = true, name = "paypal_sale_id")
+    private String payPalSaleID;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Exclude private PrintShop printshop;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -142,4 +146,8 @@ public class PrintRequest implements Serializable {
     public void addDocument(Document doc) { this.documents.add(doc); }
 
     public boolean isPayed() { return !(this.status.equals(Status.NOT_PAYED)); }
+
+    public String getPayPalSaleID() { return payPalSaleID; }
+
+    public void setPayPalSaleID(String payPalSaleID) { this.payPalSaleID = payPalSaleID; }
 }

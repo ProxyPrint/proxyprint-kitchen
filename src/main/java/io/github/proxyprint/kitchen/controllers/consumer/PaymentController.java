@@ -57,6 +57,7 @@ public class PaymentController {
         String payerEmail = map.get("payer_email");
         Double quantity = Double.valueOf(map.get("mc_gross"));
         String paymentStatus = map.get("payment_status");
+        String transactionID = map.get("txn_id");
 
 
         if(payerEmail!=null && quantity!=null && paymentStatus!=null) {
@@ -71,6 +72,7 @@ public class PaymentController {
                 if(pr!=null && c.getPrintRequests().contains(pr) && pr.getCost()==quantity && paymentStatus.equals(PayPalWrapper.PAYPAL_COMPLETED_PAYMENT)) {
                     // The print request may now go to the printshop
                     pr.setStatus(PrintRequest.Status.PENDING);
+                    pr.setPayPalSaleID(transactionID);
                     printRequests.save(pr);
                     return;
                 }
@@ -91,6 +93,15 @@ public class PaymentController {
         Manager m = managers.findOne((long)7);
         PayPalWrapper ppw = new PayPalWrapper();
         return String.valueOf(ppw.payShareToPrintShop(pr,m,pshop));
+    }
+
+    // ONLY FOR TESTING!!
+    @RequestMapping(value = "/paypal/testrefund", method = RequestMethod.POST)
+    public String testRefund() throws PayPalRESTException {
+        Consumer c = consumers.findOne((long)2);
+        PrintRequest pr = printRequests.findOne((long)29);
+        PayPalWrapper ppw = new PayPalWrapper();
+        return String.valueOf(ppw.refundConsumerCancelledPrintRequest(c,pr));
     }
 
 }

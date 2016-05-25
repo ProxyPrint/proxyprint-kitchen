@@ -7,6 +7,7 @@ import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.OAuthTokenCredential;
 import com.paypal.base.rest.PayPalRESTException;
 import com.paypal.core.LoggingManager;
+import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
 import io.github.proxyprint.kitchen.models.printshops.Manager;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
@@ -28,7 +29,8 @@ public class PayPalWrapper {
     private Gson GSON;
 
     // Generate access token in this construct
-    public PayPalWrapper(){}
+    public PayPalWrapper() {
+    }
 
     public String generatePayPalAccessToken() throws PayPalRESTException {
         JsonObject response = new JsonObject();
@@ -49,16 +51,17 @@ public class PayPalWrapper {
 
     /**
      * Pay to a printshop its share of a print request.
+     *
      * @param prequest the print request.
-     * @param manager the manager of the printshop.
-     * @param pshop the prinshop where the prequest was sent.
+     * @param manager  the manager of the printshop.
+     * @param pshop    the prinshop where the prequest was sent.
      * @return true/false pending on paypal operation success/insuccess.
      * @throws PayPalRESTException
      */
     public boolean payShareToPrintShop(PrintRequest prequest, Manager manager, PrintShop pshop) throws PayPalRESTException {
         JsonObject response = new JsonObject();
 
-        if(prequest!=null && manager!=null && pshop!=null) {
+        if (prequest != null && manager != null && pshop != null) {
             Payout payout = new Payout();
             PayoutBatch batch = null;
 
@@ -101,6 +104,36 @@ public class PayPalWrapper {
                 return true;
             }
         }
+        return false;
+    }
+
+    /**
+     * Not working yet.
+     * @param c the consumer which cancelled a print request.
+     * @param pr the printrequest that the above consumer cancelled.
+     * @return true/false uppon success or failure
+     * @throws PayPalRESTException
+     */
+    public boolean refundConsumerCancelledPrintRequest(Consumer c, PrintRequest pr) throws PayPalRESTException {
+        if (c != null & pr != null) {
+            String accessToken = generatePayPalAccessToken();
+            Sale sale = Sale.get(accessToken, /*pr.getPayPalSaleID()*/"1KR725617U497772K");
+
+            Amount amount = new Amount();
+            amount.setTotal("2.21");
+            amount.setCurrency("EUR");
+
+            Refund refund = new Refund();
+            refund.setAmount(amount);
+
+            Refund newRefund = sale.refund(accessToken, refund);
+
+            if(newRefund!=null) {
+                LoggingManager.info(this.getClass(), "Refund successfull "+c.getEmail()+"::"+newRefund.toString());
+                return true;
+            }
+        }
+
         return false;
     }
 }
