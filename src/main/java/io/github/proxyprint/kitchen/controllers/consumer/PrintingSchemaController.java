@@ -64,10 +64,12 @@ public class PrintingSchemaController {
     public String addNewConsumerPrintingSchema(@PathVariable(value = "consumerID") long id, @RequestBody PrintingSchema ps) {
         JsonObject obj = new JsonObject();
         Consumer c = consumers.findOne(id);
-        boolean res = c.addPrintingSchema(ps);
+        PrintingSchema addedPS = printingSchemas.save(ps);
+        boolean res = c.addPrintingSchema(addedPS);
         if(res) {
             consumers.save(c);
             obj.addProperty("success", true);
+            obj.addProperty("id", addedPS.getId());
             return GSON.toJson(obj);
         } else {
             obj.addProperty("success", false);
