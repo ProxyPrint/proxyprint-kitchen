@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -18,6 +19,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+@ActiveProfiles("test")
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(WebAppConfig.class)
 @WebIntegrationTest
@@ -47,6 +49,7 @@ public class ConsumerTests {
                 .param("email", "testemail@mail.pt")
                 .param("latitude", "testlat")
                 .param("longitude", "testlong")).andReturn();
+        
 
         String response = mvcResult.getResponse().getContentAsString();
 
@@ -72,7 +75,7 @@ public class ConsumerTests {
         assert (status);
     }
 
-    //testar se o servidor deteta utilizador já registado
+    //testar se o servidor deteta utilizador jÃ¡ registado
     @Test
     public void errorRegisterUser() throws Exception {
         MvcResult mvcResult = this.mockMvc.perform(post("/consumer/register")
