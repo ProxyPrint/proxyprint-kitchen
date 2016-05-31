@@ -1,5 +1,24 @@
 # proxyprint-kitchen
 
+<h3>Development Environment Set Up</h3>
+<ul>
+<li>Open pom.xml and comment the spring-boot-starter-tomcat scope tag. The dependency should look like this (Only if you want to run the project in the IDE):
+<pre>
+	&lt;dependency&gt;
+    	&lt;groupId&gt;org.springframework.boot	&lt;/groupId&gt;
+    	&lt;artifactId&gt;spring-boot-starter-tomcat	&lt;/artifactId&gt;
+    	&lt;!-- Comment in development environment --&gt;
+    	&lt;!-- 	&lt;scope&gt;provided	&lt;/scope&gt; --&gt;
+	&lt;/dependency&gt;
+</pre>
+</li>
+<li>Open application.properties and add a tmp folder to host the documents you submit on print requests. Add a line like this:
+<pre>
+documents.path=/path/where/u/want/the/files
+</pre>
+</li>
+</ul>
+
 <h3>API Documentation</h3>
 Swagger is integrated in kitchen, to see full API documentation open file <a href="https://github.com/ProxyPrint/proxyprint-kitchen/blob/master/docs/docs.html">docs/docs.html</a>. To generate documentation just run ./swagger under scripts and see the result under docs/ folder.
 
