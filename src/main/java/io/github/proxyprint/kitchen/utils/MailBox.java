@@ -5,6 +5,7 @@ package io.github.proxyprint.kitchen.utils;
  */
 
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
+import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
 import io.github.proxyprint.kitchen.models.printshops.RegisterRequest;
 
 import javax.mail.*;
@@ -126,6 +127,38 @@ public class MailBox {
             Transport.send(msg);
         } catch (MessagingException e) {
             System.out.println("Erro no envio de email: " + e);
+        }
+    }
+
+    public boolean sendEmailCancelledPrintRequest(PrintRequest preq, Consumer c, String motive) {
+
+        final String username = PROXYPRINT_EMAIL;
+        final String password = PROXYPRINT_PASSWORD;
+        try {
+            Session session = Session.getDefaultInstance(props,
+                    new Authenticator() {
+                        protected PasswordAuthentication getPasswordAuthentication() {
+                            return new PasswordAuthentication(username, password);
+                        }
+                    });
+
+            Message msg = new MimeMessage(session);
+
+            msg.setFrom(new InternetAddress(PROXYPRINT_EMAIL));
+            msg.setRecipients(Message.RecipientType.TO,
+                    InternetAddress.parse(c.getEmail(), false));
+            msg.setSubject("ProxyPrint");
+            msg.setText("Caro(a), " + c.getName() + ", infelizmente o seu pedido de impressão #"+ preq.getId() +", foi cancelado pela reprografia "+preq.getPrintshop().getName()+".\n" +
+                    "Motivo: " + motive + "\n\n" +
+                    "Com os melhores cumprimentos,\n" +
+                    "\n" +
+                    "A equipa ProxyPrint");
+            msg.setSentDate(new Date());
+            Transport.send(msg);
+            return true;
+        } catch (MessagingException e) {
+            System.out.println("Erro no envio de email: " + e);
+            return false;
         }
     }
 }

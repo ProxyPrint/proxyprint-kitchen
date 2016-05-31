@@ -68,7 +68,7 @@ public class PrintRequest implements Serializable {
         this.status = Status.NOT_PAYED;
     }
 
-    public PrintRequest(float cost, Date arrivalTimestamp, Consumer consumer, Status status) {
+    public PrintRequest(double cost, Date arrivalTimestamp, Consumer consumer, Status status) {
         this.cost = cost;
         this.arrivalTimestamp = arrivalTimestamp;
         this.consumer = consumer;

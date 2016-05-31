@@ -369,6 +369,11 @@ public class PrintShopController {
             user.getPrintRequests().remove(printRequest);
             consumers.save(user);
 
+            // Send email
+            MailBox mb = new MailBox();
+            mb.sendEmailCancelledPrintRequest(printRequest,user,motive);
+
+            // Notification
             not = "O pedido número " + requestid + " foi cancelado! Motivo: " + motive;
             notificationManager.sendNotification(user.getUsername(), new Notification(not));
 
