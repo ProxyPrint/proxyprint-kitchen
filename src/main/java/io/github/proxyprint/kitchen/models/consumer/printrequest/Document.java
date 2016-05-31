@@ -5,9 +5,7 @@ import io.github.proxyprint.kitchen.utils.gson.Exclude;
 import javax.persistence.*;
 import java.io.File;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -16,6 +14,8 @@ import java.util.Set;
 @Entity
 @Table(name = "documents")
 public class Document implements Serializable {
+    public static String DIRECTORY_PATH;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

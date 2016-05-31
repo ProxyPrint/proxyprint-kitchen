@@ -145,8 +145,7 @@ public class PrintRequestController {
                 printRequest.addDocument(doc);
                 documentsIds.put(doc.getName() + ".pdf", doc.getId());
 
-                DocumentsConfig dc = new DocumentsConfig();
-                FileOutputStream fos = new FileOutputStream(new File(dc.getDocumentsPath() + doc.getId() + ".pdf"));
+                FileOutputStream fos = new FileOutputStream(new File(Document.DIRECTORY_PATH + doc.getId() + ".pdf"));
                 IOUtils.copy(file.getInputStream(), fos);
                 fos.close();
             } catch (IOException ex) {
@@ -235,6 +234,11 @@ public class PrintRequestController {
         BigDecimal bd = new BigDecimal(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
+    }
+
+    @RequestMapping(value = "/files", method = RequestMethod.GET)
+    protected String testFilesConfig() throws java.io.IOException {
+        return Document.DIRECTORY_PATH;
     }
 
 }

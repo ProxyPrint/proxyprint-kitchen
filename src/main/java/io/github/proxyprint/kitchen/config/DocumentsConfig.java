@@ -15,12 +15,14 @@
  */
 package io.github.proxyprint.kitchen.config;
 
-import java.io.File;
-import java.io.IOException;
+import io.github.proxyprint.kitchen.models.consumer.printrequest.Document;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  *
@@ -33,9 +35,10 @@ public class DocumentsConfig {
     private String filesPath;
     
     @Bean(name = "documentsPath")
-    public String getDocumentsPath() throws IOException{
-        File file = new File(this.filesPath);
+    public String configDocumentsPath() throws IOException{
+        if(Document.DIRECTORY_PATH==null) Document.DIRECTORY_PATH = this.filesPath;
+        File file = new File(Document.DIRECTORY_PATH);
         FileUtils.forceMkdir(file);
-        return this.filesPath;
+        return Document.DIRECTORY_PATH;
     }
 }
