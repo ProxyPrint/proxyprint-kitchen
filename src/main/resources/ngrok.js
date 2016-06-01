@@ -16,7 +16,7 @@ ngrok.connect({
 		return;
 	}
 	var tmp = url.split(":");
-	externalURL="http:"+tmp[1]+"/";
+	externalURL="https:"+tmp[1]+"/";
 	var fs = require('fs');
 	fs.writeFile("/tmp/externalURL", externalURL, function(err) {
 		if(err) { return console.log(err); }
