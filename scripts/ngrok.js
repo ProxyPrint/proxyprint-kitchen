@@ -1,9 +1,9 @@
 var ngrok = require('ngrok');
-var sys = require('util');
+
+/*var sys = require('util');
 var exec = require('child_process').exec;
 
-child = exec('sudo killall -9 ngrok', function (error, stdout, stderr) {});
-
+child = exec('sudo killall -9 ngrok', function (error, stdout, stderr) {});*/
 
 var externalURL="";
 var port = 8080;

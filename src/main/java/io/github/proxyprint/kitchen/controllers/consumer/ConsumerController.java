@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
+import javax.jws.WebParam;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -40,11 +41,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.hibernate.service.spi.InjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -102,6 +99,53 @@ public class ConsumerController {
             success = false;
         }
 
+        response.addProperty("success", success);
+        return GSON.toJson(response);
+    }
+
+    @ApiOperation(value = "Returns all the user information", notes = "This method allows consumers to get their personal information.")
+    @RequestMapping(value = "/consumer/info", method = RequestMethod.GET)
+    public String getConsumerInfo(Principal principal) {
+        boolean success = false;
+
+        JsonObject response = new JsonObject();
+
+        if(principal.getName()!=null) {
+            Consumer c = consumers.findByUsername(principal.getName());
+            if(c!=null) {
+                response.add("consumer", GSON.toJsonTree(c));
+                success = true;
+            }
+        }
+        response.addProperty("success", success);
+        return GSON.toJson(response);
+    }
+
+    @ApiOperation(value = "Updates the consumer information", notes = "This method allows consumers to update their personal information.")
+    @RequestMapping(value = "/consumer/info/update", method = RequestMethod.PUT)
+    public String updateConsumerInfo(Principal principal, @RequestBody Consumer updatedC) {
+        boolean success = false;
+
+        JsonObject response = new JsonObject();
+
+        if(principal.getName()!=null) {
+            Consumer c = consumers.findByUsername(principal.getName());
+            if(c!=null) {
+                if(!c.getName().equals(updatedC.getName())) {
+                    c.setName(updatedC.getName());
+                }
+                if(!c.getUsername().equals(updatedC.getUsername())) {
+                    c.setUsername(updatedC.getUsername());
+                }
+                if(!c.getPassword().equals(updatedC.getPassword())) {
+                    c.setPassword(updatedC.getPassword());
+                }
+                if(!c.getEmail().equals(updatedC.getEmail())) {
+                    c.setEmail(updatedC.getEmail());
+                }
+                success = true;
+            }
+        }
         response.addProperty("success", success);
         return GSON.toJson(response);
     }
