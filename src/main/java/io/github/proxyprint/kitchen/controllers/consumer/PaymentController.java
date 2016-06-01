@@ -5,6 +5,7 @@ import com.paypal.base.rest.PayPalRESTException;
 import com.paypal.core.LoggingManager;
 import com.paypal.ipn.IPNMessage;
 import io.github.proxyprint.kitchen.Configuration;
+import io.github.proxyprint.kitchen.config.NgrokConfig;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
 import io.github.proxyprint.kitchen.models.printshops.Manager;

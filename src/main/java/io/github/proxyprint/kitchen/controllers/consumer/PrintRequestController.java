@@ -2,7 +2,7 @@ package io.github.proxyprint.kitchen.controllers.consumer;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import io.github.proxyprint.kitchen.config.DocumentsConfig;
+import io.github.proxyprint.kitchen.config.NgrokConfig;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.consumer.PrintingSchema;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.Document;
@@ -58,7 +58,7 @@ public class PrintRequestController {
     @ApiOperation(value = "Returns a set of budgets", notes = "This method calculates budgets for a given and already specified print request. The budgets are calculated for specific printshops also passed along as parameters.")
     @Secured("ROLE_USER")
     @RequestMapping(value = "/consumer/budget", method = RequestMethod.POST)
-    public String calcBudgetForPrintRequest(HttpServletRequest request, Principal principal, @RequestPart("printRequest") String requestJSON) {
+    public String calcBudgetForPrintRequest(HttpServletRequest request, Principal principal, @RequestPart("printRequest") String requestJSON) throws IOException {
         JsonObject response = new JsonObject();
         Consumer consumer = consumers.findByUsername(principal.getName());
 
@@ -124,6 +124,7 @@ public class PrintRequestController {
         response.addProperty("success", true);
         response.add("budgets", GSON.toJsonTree(budgets));
         response.addProperty("printRequestID", printRequest.getId());
+        response.addProperty("externalURL", NgrokConfig.getExternalUrl());
         return GSON.toJson(response);
     }
 
