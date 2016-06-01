@@ -1,6 +1,8 @@
 package io.github.proxyprint.kitchen.config;
 
 import com.paypal.core.LoggingManager;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,8 +17,12 @@ public class NgrokConfig {
     private static String EXTERNAL_URL = "NOTDEF";
 
     public NgrokConfig() throws IOException {
-        LoggingManager.info(this.getClass(), "Create Ngrok tunnel...");
-        Runtime.getRuntime().exec("node /home/daniel/projects/proxyprint/proxyprint-kitchen/scripts/ngrok.js &");
+        Resource rsrc = new ClassPathResource(".");
+        String path = rsrc.getFile().getAbsolutePath();
+        String[] tmp = path.split("proxyprint-kitchen");
+        String scriptPath = tmp[0]+"proxyprint-kitchen/scripts/ngrok.js";
+        LoggingManager.info(this.getClass(), "Create Ngrok tunnel ["+scriptPath+"]...");
+        Runtime.getRuntime().exec("node "+scriptPath+" &");
     }
 
     public static String getExternalUrl() throws IOException {
