@@ -18,15 +18,20 @@ package io.github.proxyprint.kitchen;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import io.github.proxyprint.kitchen.config.NgrokConfig;
 import io.github.proxyprint.kitchen.utils.NotificationManager;
 import io.github.proxyprint.kitchen.utils.gson.AnnotationExclusionStrategy;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
+import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -37,10 +42,6 @@ import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.io.IOException;
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
-import org.springframework.boot.context.web.SpringBootServletInitializer;
-import org.springframework.scheduling.annotation.EnableAsync;
 
 @Configuration
 @EnableAutoConfiguration
@@ -57,7 +58,7 @@ public class WebAppConfig extends SpringBootServletInitializer {
 
     private static Class<WebAppConfig> appClass = WebAppConfig.class;
 
-    public static void main(String[] args) throws IOException {        
+    public static void main(String[] args) throws IOException {
         SpringApplication.run(WebAppConfig.class, args);
     }
 
@@ -110,4 +111,10 @@ public class WebAppConfig extends SpringBootServletInitializer {
     public NotificationManager notificationSubscriptions() {
         return new NotificationManager();
     }
+
+    @Bean
+    public NgrokConfig executorListener() throws IOException {
+        return new NgrokConfig();
+    }
+
 }

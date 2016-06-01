@@ -1,5 +1,7 @@
 package io.github.proxyprint.kitchen.config;
 
+import com.paypal.core.LoggingManager;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -11,6 +13,11 @@ import java.io.IOException;
 public class NgrokConfig {
     private static String PATH_TO_URL = "/tmp/externalURL";
     private static String EXTERNAL_URL = "NOTDEF";
+
+    public NgrokConfig() throws IOException {
+        LoggingManager.info(this.getClass(), "Create Ngrok tunnel...");
+        Runtime.getRuntime().exec("node /home/daniel/projects/proxyprint/proxyprint-kitchen/scripts/ngrok.js &");
+    }
 
     public static String getExternalUrl() throws IOException {
         if(EXTERNAL_URL.equals("NOTDEF")) {
