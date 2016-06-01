@@ -57,11 +57,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 /**
- *
  * @author josesousa
  */
 @RestController
@@ -80,7 +80,6 @@ public class PrintShopController {
     @Autowired
     private NotificationManager notificationManager;
 
-   
 
     @Autowired
     private UserDAO users;
@@ -170,7 +169,7 @@ public class PrintShopController {
         }
 
         String not;
-        PrintRequest printRequest = printrequests.findByIdInAndPrintshop(id,printshop);
+        PrintRequest printRequest = printrequests.findByIdInAndPrintshop(id, printshop);
 
         if (printRequest == null) {
             response.addProperty("success", false);
@@ -189,30 +188,32 @@ public class PrintShopController {
         } else if (printRequest.getStatus() == Status.IN_PROGRESS) {
             printRequest.setFinishedTimestamp(new Date());
 
+            response.addProperty("newStatus", Status.FINISHED.toString());
+            not = "O pedido número " + printRequest.getId() +
+                    " está completo! Pode deslocar-se á reprografia para proceder ao levantamento.";
+
+            // Send email to user
+            MailBox m = new MailBox();
+            m.sendEmailFinishedPrintRequest(consumer, printRequest.getId(), printshop.getName());
+
+            notificationManager.sendNotification(user, new Notification(not));
+            printRequest.setStatus(Status.FINISHED);
+
+        } else if (printRequest.getStatus() == Status.FINISHED) {
             PayPalWrapper pp = new PayPalWrapper();
             Manager manager = managers.findByPrintShop(printshop);
             boolean payPalRes = pp.payShareToPrintShop(printRequest, manager, printshop);
 
-            if(payPalRes) {
-                printRequest.setStatus(Status.FINISHED);
-                response.addProperty("newStatus", Status.FINISHED.toString());
-                not = "O pedido número " + printRequest.getId() +
-                        " está completo! Pode deslocar-se á reprografia para proceder ao levantamento.";
+            if (payPalRes) {
+                printRequest.setStatus(Status.LIFTED);
+                printRequest.setDeliveredTimestamp(new Date());
+                printRequest.setEmpDelivered(principal.getName());
 
-                // Send email to user
-                MailBox m = new MailBox();
-                m.sendEmailFinishedPrintRequest(consumer, printRequest.getId(), printshop.getName());
-
-                notificationManager.sendNotification(user, new Notification(not));
+                response.addProperty("newStatus", Status.LIFTED.toString());
             } else {
                 response.addProperty("success", false);
                 return GSON.toJson(response);
             }
-        } else if (printRequest.getStatus() == Status.FINISHED) {
-            printRequest.setStatus(Status.LIFTED);
-            printRequest.setDeliveredTimestamp(new Date());
-            printRequest.setEmpDelivered(principal.getName());
-            response.addProperty("newStatus", Status.LIFTED.toString());
         } else {
             response.addProperty("success", false);
             return GSON.toJson(response);
@@ -244,8 +245,8 @@ public class PrintShopController {
             return GSON.toJson(response);
         }
 
-        for (Document d : printRequest.getDocuments()){
-            for (DocumentSpec s :  d.getSpecs()){
+        for (Document d : printRequest.getDocuments()) {
+            for (DocumentSpec s : d.getSpecs()) {
                 s.setSpecsToString();
             }
         }
@@ -350,7 +351,7 @@ public class PrintShopController {
         }
 
         String not;
-        PrintRequest printRequest = printrequests.findByIdInAndPrintshop(id,printshop);
+        PrintRequest printRequest = printrequests.findByIdInAndPrintshop(id, printshop);
 
         if (printRequest == null) {
             response.addProperty("success", false);
@@ -371,7 +372,7 @@ public class PrintShopController {
 
             // Send email
             MailBox mb = new MailBox();
-            mb.sendEmailCancelledPrintRequest(printRequest,user,motive);
+            mb.sendEmailCancelledPrintRequest(printRequest, user, motive);
 
             // Notification
             not = "O pedido número " + requestid + " foi cancelado! Motivo: " + motive;
