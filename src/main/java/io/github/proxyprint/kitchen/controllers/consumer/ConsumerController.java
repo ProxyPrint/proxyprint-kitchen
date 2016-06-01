@@ -5,48 +5,37 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
-import io.github.proxyprint.kitchen.models.consumer.PrintingSchema;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.Document;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.DocumentSpec;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.BudgetCalculator;
-import io.github.proxyprint.kitchen.models.repositories.ConsumerDAO;
-import io.github.proxyprint.kitchen.models.repositories.DocumentDAO;
-import io.github.proxyprint.kitchen.models.repositories.DocumentSpecDAO;
-import io.github.proxyprint.kitchen.models.repositories.PrintRequestDAO;
-import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
-import io.github.proxyprint.kitchen.models.repositories.PrintingSchemaDAO;
+import io.github.proxyprint.kitchen.models.repositories.*;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.Resource;
-import javax.jws.WebParam;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.hibernate.service.spi.InjectService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpStatus;
 
 
 
@@ -123,26 +112,36 @@ public class ConsumerController {
 
     @ApiOperation(value = "Updates the consumer information", notes = "This method allows consumers to update their personal information.")
     @RequestMapping(value = "/consumer/info/update", method = RequestMethod.PUT)
-    public String updateConsumerInfo(Principal principal, @RequestBody Consumer updatedC) {
+    public String updateConsumerInfo(Principal principal, HttpServletRequest request) {
         boolean success = false;
 
         JsonObject response = new JsonObject();
 
+        String requestJSON = null;
+        Consumer editedConsumer= null;
+        try {
+            requestJSON = IOUtils.toString(request.getInputStream());
+            editedConsumer = GSON.fromJson(requestJSON, Consumer.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         if(principal.getName()!=null) {
             Consumer c = consumers.findByUsername(principal.getName());
             if(c!=null) {
-                if(!c.getName().equals(updatedC.getName())) {
-                    c.setName(updatedC.getName());
+                if(!c.getName().equals(editedConsumer.getName())) {
+                    c.setName(editedConsumer.getName());
                 }
-                if(!c.getUsername().equals(updatedC.getUsername())) {
-                    c.setUsername(updatedC.getUsername());
+                if(!c.getUsername().equals(editedConsumer.getUsername())) {
+                    c.setUsername(editedConsumer.getUsername());
                 }
-                if(!c.getPassword().equals(updatedC.getPassword())) {
-                    c.setPassword(updatedC.getPassword());
+                if(!c.getPassword().equals(editedConsumer.getPassword())) {
+                    c.setPassword(editedConsumer.getPassword());
                 }
-                if(!c.getEmail().equals(updatedC.getEmail())) {
-                    c.setEmail(updatedC.getEmail());
+                if(!c.getEmail().equals(editedConsumer.getEmail())) {
+                    c.setEmail(editedConsumer.getEmail());
                 }
+                consumers.save(c);
                 success = true;
             }
         }
