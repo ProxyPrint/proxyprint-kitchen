@@ -3,6 +3,7 @@ package io.github.proxyprint.kitchen.utils;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.paypal.api.payments.*;
+import com.paypal.api.payments.Currency;
 import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.OAuthTokenCredential;
 import com.paypal.base.rest.PayPalRESTException;
@@ -13,10 +14,7 @@ import io.github.proxyprint.kitchen.models.printshops.Manager;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by daniel on 24-05-2016.
@@ -35,16 +33,17 @@ public class PayPalWrapper {
     public String generatePayPalAccessToken() throws PayPalRESTException {
         JsonObject response = new JsonObject();
         // Load configurations
-        OAuthTokenCredential tokenCredential = Payment.initConfig(new File("src/main/resources/paypal.properties"));
+
+        /*OAuthTokenCredential tokenCredential = Payment.initConfig(new File("src/main/resources/paypal.properties"));
         // Create access token
-        String accessToken = tokenCredential.getAccessToken();
+        String accessToken = tokenCredential.getAccessToken();*/
 
         // Alternative to generate access token
-        /*
+
         Map<String, String> map = new HashMap<String, String>();
         map.put("mode", "sandbox");
         String accessToken = new OAuthTokenCredential("AXIKcgDWuFinKkX2WdRa5cOPJIbSEJZ-carWw_nYB5bOii8EK1phZQp8rOKN0b9WGMGb639hh_EboCrd", "EL0hjjAsRH0sVtRKNg1HUi6JM-paicXwpPG38neEMJD1GqRblX7rkvbM8IjGx0IYtDCGUkXGaY2gjz-Y", map).getAccessToken();
-        response.addProperty("token", accessToken);*/
+        response.addProperty("token", accessToken);
 
         return accessToken;
     }
