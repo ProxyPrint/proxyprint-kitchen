@@ -112,9 +112,4 @@ public class WebAppConfig extends SpringBootServletInitializer {
         return new NotificationManager();
     }
 
-    @Bean
-    public NgrokConfig createTunnel() throws IOException {
-        return new NgrokConfig();
-    }
-
 }

@@ -15,12 +15,6 @@ public class NgrokConfig {
     private static String PATH_TO_URL = "/tmp/externalURL";
     private static String EXTERNAL_URL = "NOTDEF";
 
-    public NgrokConfig() throws IOException {
-        URL url = this.getClass().getClassLoader().getResource("ngrok.js");
-        LoggingManager.info(this.getClass(), "Create Ngrok tunnel ["+url.getPath()+"]...");
-        Runtime.getRuntime().exec("node "+url.getPath()+" &");
-    }
-
     public static String getExternalUrl() throws IOException {
         if(EXTERNAL_URL.equals("NOTDEF")) {
             BufferedReader reader = null;
