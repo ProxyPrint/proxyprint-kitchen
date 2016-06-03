@@ -231,6 +231,8 @@ public class PrintRequestController {
                         consumers.save(consumer);
                         admin.save(master);
                     }
+                } else {
+                    printRequest.setPaymentType(PrintRequest.PAYPAL_PAYMENT);
                 }
 
                 printRequests.save(printRequest);
