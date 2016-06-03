@@ -22,6 +22,7 @@ import com.paypal.base.rest.PayPalRESTException;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.CoversTable;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.PapersTable;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.RingsTable;
+import io.github.proxyprint.kitchen.models.Admin;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.Document;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.DocumentSpec;
@@ -36,16 +37,14 @@ import io.github.proxyprint.kitchen.models.printshops.pricetable.CoverItem;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.Item;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.RangePaperItem;
 import io.github.proxyprint.kitchen.models.repositories.*;
-import io.github.proxyprint.kitchen.models.repositories.EmployeeDAO;
-import io.github.proxyprint.kitchen.models.repositories.PrintRequestDAO;
-import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
-import io.github.proxyprint.kitchen.models.repositories.UserDAO;
 import io.github.proxyprint.kitchen.utils.DistanceCalculator;
 import io.github.proxyprint.kitchen.utils.MailBox;
 import io.github.proxyprint.kitchen.utils.NotificationManager;
 import io.github.proxyprint.kitchen.utils.PayPalWrapper;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
@@ -57,9 +56,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 /**
  * @author josesousa
@@ -77,6 +73,8 @@ public class PrintShopController {
     private ConsumerDAO consumers;
     @Autowired
     private ManagerDAO managers;
+    @Autowired
+    private AdminDAO admin;
     @Autowired
     private NotificationManager notificationManager;
 
@@ -200,19 +198,37 @@ public class PrintShopController {
             printRequest.setStatus(Status.FINISHED);
 
         } else if (printRequest.getStatus() == Status.FINISHED) {
-            PayPalWrapper pp = new PayPalWrapper();
-            Manager manager = managers.findByPrintShop(printshop);
-            boolean payPalRes = pp.payShareToPrintShop(printRequest, manager, printshop);
 
-            if (payPalRes) {
+            if(printRequest.getPaymentType().equals(PrintRequest.PAYPAL_COMPLETED_PAYMENT)) {
+                PayPalWrapper pp = new PayPalWrapper();
+                Manager manager = managers.findByPrintShop(printshop);
+                boolean payPalRes = pp.payShareToPrintShop(printRequest, manager, printshop);
+
+                if (payPalRes) {
+                    printRequest.setStatus(Status.LIFTED);
+                    printRequest.setDeliveredTimestamp(new Date());
+                    printRequest.setEmpDelivered(principal.getName());
+
+                    response.addProperty("newStatus", Status.LIFTED.toString());
+                } else {
+                    response.addProperty("success", false);
+                    return GSON.toJson(response);
+                }
+            } else {
+                Admin master = admin.findAll().iterator().next();
+                double pshopShare = (printRequest.getCost() * 0.9);
+                master.getBalance().subtractDoubleQuantity(pshopShare);
+                printshop.getBalance().addDoubleQuantity(pshopShare);
+
+                // Save
+                admin.save(master);
+                printshops.save(printshop);
+
                 printRequest.setStatus(Status.LIFTED);
                 printRequest.setDeliveredTimestamp(new Date());
                 printRequest.setEmpDelivered(principal.getName());
 
                 response.addProperty("newStatus", Status.LIFTED.toString());
-            } else {
-                response.addProperty("success", false);
-                return GSON.toJson(response);
             }
         } else {
             response.addProperty("success", false);

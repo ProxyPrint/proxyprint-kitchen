@@ -43,7 +43,7 @@ public class MoneyTest extends TestCase {
 
     public void testSubtractInt() {
         Money m = new Money(16,21);
-        m.addQuantity(ip,fp);
+        m.subtractQuantity(ip,fp);
         assertTrue(m.getIntegerPart()==9 && m.getFractionalPart()==77);
     }
 

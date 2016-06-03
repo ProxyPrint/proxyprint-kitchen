@@ -230,6 +230,7 @@ public class PrintRequestController {
                         master.getBalance().addDoubleQuantity(cost);
                         consumers.save(consumer);
                         admin.save(master);
+                        printRequest.setStatus(PrintRequest.Status.PENDING);
                     }
                 } else {
                     printRequest.setPaymentType(PrintRequest.PAYPAL_PAYMENT);
