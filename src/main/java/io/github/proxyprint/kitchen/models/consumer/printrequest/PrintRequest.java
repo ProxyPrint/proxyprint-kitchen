@@ -18,6 +18,8 @@ import java.util.Set;
 public class PrintRequest implements Serializable {
 
     public static String PAYPAL_COMPLETED_PAYMENT = "Completed";
+    public static String PROXY_PAYMENT = "PROXYPRINT_PAYMENT";
+    public static String PAYPAL_PAYMENT = "PAYPAL_PAYMENT";
 
     public enum Status {
         NOT_PAYED, PENDING, IN_PROGRESS, FINISHED, LIFTED
@@ -63,9 +65,13 @@ public class PrintRequest implements Serializable {
     @JoinColumn(name = "print_request_id")
     private Set<Document> documents;
 
+    @Column(nullable = true, name = "payment_type")
+    private String paymentType;
+
     public PrintRequest() {
         this.documents = new HashSet<>();
         this.status = Status.NOT_PAYED;
+        this.paymentType = PROXY_PAYMENT;
     }
 
     public PrintRequest(double cost, Date arrivalTimestamp, Consumer consumer, Status status) {
@@ -74,6 +80,7 @@ public class PrintRequest implements Serializable {
         this.consumer = consumer;
         this.status = status;
         this.documents = new HashSet<>();
+        this.paymentType = PROXY_PAYMENT;
     }
 
     public long getId() {
@@ -159,4 +166,8 @@ public class PrintRequest implements Serializable {
     public String getPayPalSaleID() { return payPalSaleID; }
 
     public void setPayPalSaleID(String payPalSaleID) { this.payPalSaleID = payPalSaleID; }
+
+    public String getPaymentType() { return paymentType; }
+
+    public void setPaymentType(String paymentType) { this.paymentType = paymentType; }
 }
