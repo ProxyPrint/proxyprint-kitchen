@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import io.github.proxyprint.kitchen.models.Admin;
+import io.github.proxyprint.kitchen.models.Money;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.consumer.PrintingSchema;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
@@ -79,7 +80,9 @@ public class AdminController {
     public ResponseEntity<String> seed() {
         JsonObject response = new JsonObject();
 
+        Money m = new Money(500,33);
         Admin master = new Admin("master", "1234", "proxyprint@gmail.pt");
+        master.setBalance(m);
         // joao represents the consumer PERSONAL entity at the paypal sand box
         Consumer joao = new Consumer("João dos Santos", "joao", "1234", "proxyprint.pt-consumer@gmail.com", "69", "69");
         Consumer rui = new Consumer("Rui Moreira Campos", "rui", "1234", "rui@gmail.com", "69", "69");
@@ -259,6 +262,14 @@ public class AdminController {
         // Add printing schemas to joao
         joao.addPrintingSchema(printingSchema1);
         joao.addPrintingSchema(printingSchema2);
+
+        // Add ProxyMoney to Consumers
+        Money money = new Money(1342,22);
+        joao.setBalance(money);
+        rui.setBalance(money);
+        ana.setBalance(money);
+        rita.setBalance(money);
+
         users.save(joao);
         users.save(rui);
         users.save(ana);
