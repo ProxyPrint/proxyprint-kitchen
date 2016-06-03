@@ -29,7 +29,7 @@ import java.util.Map;
  * Created by daniel on 20-05-2016.
  */
 @RestController
-public class PaymentController {
+public class PayPalController {
     @Autowired
     private UserDAO users;
     @Autowired

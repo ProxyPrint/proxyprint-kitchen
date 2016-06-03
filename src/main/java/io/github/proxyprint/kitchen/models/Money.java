@@ -63,14 +63,39 @@ public class Money {
         }
     }
 
+    public void subtractMoney(Money m) {
+        this.integerPart -= m.getIntegerPart();
+        int tmp = this.fractionalPart - m.getFractionalPart();
+
+        if(tmp <= 0) {
+            while(tmp <= 0) {
+                this.integerPart--;
+                this.fractionalPart = tmp + MONEY_CEIL;
+                tmp += MONEY_CEIL;
+            }
+        } else {
+            this.fractionalPart = tmp;
+        }
+    }
+
     public void addQuantity(int ip, int fp) {
         this.addMoney(new Money(ip,fp));
+    }
+
+    public void subtractQuantity(int ip, int fp) {
+        this.subtractMoney(new Money(ip,fp));
     }
 
     public void addDoubleQuantity(double value) {
         value = round(value,2);
         String tmp[] = String.valueOf(value).split("\\.");
         this.addMoney(new Money(Integer.parseInt(tmp[0]), Integer.parseInt(tmp[1])));
+    }
+
+    public void subtractDoubleQuantity(double value) {
+        value = round(value,2);
+        String tmp[] = String.valueOf(value).split("\\.");
+        this.subtractMoney(new Money(Integer.parseInt(tmp[0]), Integer.parseInt(tmp[1])));
     }
 
     private double round(double value, int places) {

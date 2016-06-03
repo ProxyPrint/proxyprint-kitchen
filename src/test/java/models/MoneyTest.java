@@ -29,8 +29,20 @@ public class MoneyTest extends TestCase {
         assertTrue(m.getIntegerPart()==8 && m.getFractionalPart()==72);
     }
 
+    public void testSubtractDouble2(){
+        Money m = new Money(4,99);
+        m.subtractDoubleQuantity(double2);
+        assertTrue(m.getIntegerPart()==1 && m.getFractionalPart()==26);
+    }
+
     public void testAddInt() {
         Money m = new Money(3,33);
+        m.addQuantity(ip,fp);
+        assertTrue(m.getIntegerPart()==9 && m.getFractionalPart()==77);
+    }
+
+    public void testSubtractInt() {
+        Money m = new Money(16,21);
         m.addQuantity(ip,fp);
         assertTrue(m.getIntegerPart()==9 && m.getFractionalPart()==77);
     }

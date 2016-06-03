@@ -53,6 +53,8 @@ public class PrintRequestController {
     @Autowired
     private PrintRequestDAO printrequests;
     @Autowired
+    private AdminDAO admin;
+    @Autowired
     private Gson GSON;
 
     @ApiOperation(value = "Returns a set of budgets", notes = "This method calculates budgets for a given and already specified print request. The budgets are calculated for specific printshops also passed along as parameters.")
@@ -187,7 +189,7 @@ public class PrintRequestController {
         return budgets;
     }
 
-    @ApiOperation(value = "Returns success/insuccess", notes = "This method allow clients to POST a print request and associate it to a given printshop with a given budget.")
+    @ApiOperation(value = "Returns success/insuccess", notes = "This method allow clients to POST a print request and associate it to a given printshop with a given budget, the payment may or not occur according to the payment method.")
     @Secured("ROLE_USER")
     @RequestMapping(value = "/consumer/printrequest/{printRequestID}/submit", method = RequestMethod.POST)
     public String finishAndSubmitPrintRequest(@PathVariable(value = "printRequestID") long prid, HttpServletRequest request, Principal principal) {
@@ -205,6 +207,7 @@ public class PrintRequestController {
 
         long pshopID = (long) Double.valueOf((double) mrequest.get("printshopID")).intValue();
         double cost = round((Double) mrequest.get("budget"), 2);
+        String paymentMethod = (String) mrequest.get("paymentMethod");
 
         if (printRequest != null && consumer != null) {
             PrintShop pshop = printShops.findOne(pshopID);
@@ -215,8 +218,18 @@ public class PrintRequestController {
                 printRequest.setStatus(PrintRequest.Status.NOT_PAYED);
                 printRequest.setCost(cost);
 
-                printRequests.save(printRequest);
+                if(paymentMethod.equals(PrintRequest.PROXY_PAYMENT)) {
+                    if(consumer.getBalance().getMoneyAsDouble() < cost) {
+                        response.addProperty("success", false);
+                        response.addProperty("message", "Não possuí saldo suficiente para efetuar o pedido.");
+                        return GSON.toJson(response);
+                    } else {
 
+                    }
+                }
+
+                // Save data
+                printRequests.save(printRequest);
                 pshop.addPrintRequest(printRequest);
 
                 printShops.save(pshop);
@@ -235,11 +248,6 @@ public class PrintRequestController {
         BigDecimal bd = new BigDecimal(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
-    }
-
-    @RequestMapping(value = "/files", method = RequestMethod.GET)
-    protected String testFilesConfig() throws java.io.IOException {
-        return Document.DIRECTORY_PATH;
     }
 
 }
