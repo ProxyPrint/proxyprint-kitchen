@@ -180,25 +180,24 @@ public class PrintingSchema {
         if(this.bindingSpecs!=null && !this.bindingSpecs.equals("")) {
 
             String[] bspecs = this.bindingSpecs.split(",");
-            sb.append(" + Acabamentos: ");
 
             switch (bspecs[0]){
                 case "STAPLING" :
-                    sb.append("Agrafar");
+                    sb.append(" + Acabamentos: Agrafar");
                     break;
                 case "BINDING" :
                     switch (bspecs[1]){
                         case "SPIRAL" :
-                            sb.append("Argolas em Espiral");
+                            sb.append(" + Acabamentos: Argolas em Espiral");
                             break;
                         case "PLASTIC" :
-                            sb.append("Argolas de plástico");
+                            sb.append(" + Acabamentos: Argolas de plástico");
                             break;
                         case "WIRE" :
-                            sb.append("Argolas de arame");
+                            sb.append(" + Acabamentos: Argolas de arame");
                             break;
-                        case "STEELMAt" :
-                            sb.append("Encadernação térmica");
+                        case "STEELMAT" :
+                            sb.append(" + Acabamentos: Encadernação térmica");
                             break;
                     }
                     break;
@@ -208,16 +207,16 @@ public class PrintingSchema {
         if(this.coverSpecs!=null && !this.coverSpecs.equals("")) {
 
             String[] cspecs = this.coverSpecs.split(",");
-            sb.append(" + Capa: ");
+
             switch (cspecs[1]){
                 case "CRISTAL_ACETATE" :
-                    sb.append("Acetato em cristal");
+                    sb.append(" + Capa: Acetato em cristal");
                     break;
                 case "PVC_TRANSPARENT" :
-                    sb.append("PVC transparente fosco");
+                    sb.append(" + Capa: PVC transparente fosco");
                     break;
                 case "PVC_OPAQUE" :
-                    sb.append("PVC opaco");
+                    sb.append(" + Capa: PVC opaco");
                     break;
             }
         }
