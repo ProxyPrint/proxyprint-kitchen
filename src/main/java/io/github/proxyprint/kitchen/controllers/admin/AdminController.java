@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import io.github.proxyprint.kitchen.models.Admin;
+import io.github.proxyprint.kitchen.models.Money;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.consumer.PrintingSchema;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
@@ -79,12 +80,14 @@ public class AdminController {
     public ResponseEntity<String> seed() {
         JsonObject response = new JsonObject();
 
+        Money m = new Money(500,33);
         Admin master = new Admin("master", "1234", "proxyprint@gmail.pt");
+        master.setBalance(m);
         // joao represents the consumer PERSONAL entity at the paypal sand box
-        Consumer joao = new Consumer("João dos Santos", "joao", "1234", "proxyprint.pt-consumer@gmail.com", "69", "69");
-        Consumer rui = new Consumer("Rui Moreira Campos", "rui", "1234", "rui@gmail.com", "69", "69");
-        Consumer ana = new Consumer("Ana Monteiro", "anam", "1234", "anamonteiro@gmail.com", "69", "69");
-        Consumer rita = new Consumer("Rita Maria Costinha", "ritinha", "1234", "rita@gmail.com", "69", "69");
+        Consumer joao = new Consumer("João dos Santos", "joao", "1234", "proxyprint.pt.consumer@gmail.com", "69", "69");
+        Consumer rui = new Consumer("Rui Moreira Campos", "rui", "1234", "proxyprint.pt.consumer@gmail.com", "69", "69");
+        Consumer ana = new Consumer("Ana Monteiro", "anam", "1234", "proxyprint.pt.consumer@gmail.com", "69", "69");
+        Consumer rita = new Consumer("Rita Maria Costinha", "ritinha", "1234", "proxyprint.pt.consumer@gmail.com", "69", "69");
 
         // Printshops
         PrintShop printshop = new PrintShop("Copy Scan", "Rua Quinta dos Órfãos 16 S. Vitor (Junto à Universidade do Minho), Braga", 41.557973, -8.398398, "123555378", "logo_1", 0);
@@ -107,13 +110,13 @@ public class AdminController {
         printshop = new PrintShop("Video Norte", "Rua Nova de Santa Cruz", 41.5594, -8.3972, "123444378", "logo_8", 0);
 
         // joaquim represents the printshop BUSINESS entity at the paypal sand box
-        Manager manager = new Manager("joaquim", "1234", "Joaquim Pereira", "proxyprint.pt-printshop@gmail.com");
+        Manager manager = new Manager("joaquim", "1234", "Joaquim Pereira", "proxyprint.pt.printshop@gmail.com");
         // laura represents the printshop-2 BUSINESS entity at the paypal sand box
-        Manager manager2 = new Manager("laura", "1234", "Laura Afonso", "proxyprint.pt-printshop-2@gmail.com");
-        RegisterRequest registerRequest1 = new RegisterRequest("Jorge Caldas", "jcaldas", "danielcaldas@sapo.pt", "1234", "Rua das Cruzes n31", 43.221, 41.121, "124555321", "Printer Style", false);
-        RegisterRequest registerRequest2 = new RegisterRequest("Martim da Silva", "msilva", "danielcaldas@sapo.pt", "1234", "Rua das Cruzes n32", 43.221, 41.121, "124555321", "Print More", false);
-        RegisterRequest registerRequest3 = new RegisterRequest("Carlos Pinto", "cping", "danielcaldas@sapo.pt", "1234", "Rua n33", 43.221, 41.121, "124555321", "Papelaria Pinto", false);
-        RegisterRequest registerRequest4 = new RegisterRequest("Ana Carolina Matos", "acmatos", "danielcaldas@sapo,pt", "1234", "Rua das Cerejas n33", 43.221, 41.121, "124555321", "Impressões Matos", false);
+        Manager manager2 = new Manager("laura", "1234", "Laura Afonso", "proxyprint.pt.printshop@gmail.com");
+        RegisterRequest registerRequest1 = new RegisterRequest("Jorge Caldas", "jcaldas", "proxyprint.pt.printshop@gmail.com", "1234", "Rua das Cruzes n31", 43.221, 41.121, "124555321", "Printer Style", false);
+        RegisterRequest registerRequest2 = new RegisterRequest("Martim da Silva", "msilva", "proxyprint.pt.printshop@gmail.com", "1234", "Rua das Cruzes n32", 43.221, 41.121, "124555321", "Print More", false);
+        RegisterRequest registerRequest3 = new RegisterRequest("Carlos Pinto", "cpin", "proxyprint.pt.printshop@gmail.com", "1234", "Rua n33", 43.221, 41.121, "124555321", "Papelaria Pinto", false);
+        RegisterRequest registerRequest4 = new RegisterRequest("Ana Carolina Matos", "acmatos", "proxyprint.pt.printshop@gmail.com", "1234", "Rua das Cerejas n33", 43.221, 41.121, "124555321", "Impressões Matos", false);
 
         users.save(master);
 
@@ -259,6 +262,14 @@ public class AdminController {
         // Add printing schemas to joao
         joao.addPrintingSchema(printingSchema1);
         joao.addPrintingSchema(printingSchema2);
+
+        // Add ProxyMoney to Consumers
+        Money money = new Money(1342,22);
+        joao.setBalance(money);
+        rui.setBalance(money);
+        ana.setBalance(money);
+        rita.setBalance(money);
+
         users.save(joao);
         users.save(rui);
         users.save(ana);

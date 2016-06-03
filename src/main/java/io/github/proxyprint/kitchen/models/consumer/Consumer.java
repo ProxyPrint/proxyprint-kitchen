@@ -1,5 +1,6 @@
 package io.github.proxyprint.kitchen.models.consumer;
 
+import io.github.proxyprint.kitchen.models.Money;
 import io.github.proxyprint.kitchen.models.User;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
 import io.github.proxyprint.kitchen.models.notifications.Notification;
@@ -12,6 +13,7 @@ import java.util.*;
  * Created by daniel on 04-04-2016.
  */
 @Entity
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
 @Table(name = "consumers")
 public class Consumer extends User {
 
@@ -38,10 +40,14 @@ public class Consumer extends User {
     @Exclude
     private List<Notification> notifications;
 
+    @Column(unique = true)
+    private Money balance;
+
     public Consumer() {
         this.printingSchemas = new HashSet<>();
         this.notifications = new ArrayList<>();
         super.addRole(User.Roles.ROLE_USER.name());
+        this.balance = new Money();
     }
 
     public Consumer(String name, String username, String password, String email, String latitude, String longitude) {
@@ -53,6 +59,7 @@ public class Consumer extends User {
         this.longitude = longitude;
         this.printingSchemas = new HashSet<>();
         this.notifications = new ArrayList<>();
+        this.balance = new Money();
     }
 
     public Consumer(String username, String password, String name, String email, String latitude, String longitude, Set<PrintingSchema> printingSchemas) {
@@ -62,6 +69,7 @@ public class Consumer extends User {
         this.latitude = latitude;
         this.longitude = longitude;
         this.printingSchemas = printingSchemas;
+        this.balance = new Money();
     }
 
     public String getName() {
@@ -144,7 +152,11 @@ public class Consumer extends User {
        for (Notification n : notifications)
            n.setReadStatus(true);
     }
-    
+
+    public Money getBalance() { return balance; }
+
+    public void setBalance(Money balance) { this.balance = balance; }
+
     @Override
     public String toString() {
         return "Consumer{" + super.toString()
