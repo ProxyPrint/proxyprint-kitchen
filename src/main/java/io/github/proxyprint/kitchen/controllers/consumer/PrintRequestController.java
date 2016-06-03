@@ -3,6 +3,7 @@ package io.github.proxyprint.kitchen.controllers.consumer;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import io.github.proxyprint.kitchen.config.NgrokConfig;
+import io.github.proxyprint.kitchen.models.Admin;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.consumer.PrintingSchema;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.Document;
@@ -224,11 +225,14 @@ public class PrintRequestController {
                         response.addProperty("message", "Não possuí saldo suficiente para efetuar o pedido.");
                         return GSON.toJson(response);
                     } else {
-
+                        consumer.getBalance().subtractDoubleQuantity(cost);
+                        Admin master = admin.findAll().iterator().next();
+                        master.getBalance().addDoubleQuantity(cost);
+                        consumers.save(consumer);
+                        admin.save(master);
                     }
                 }
 
-                // Save data
                 printRequests.save(printRequest);
                 pshop.addPrintRequest(printRequest);
 
