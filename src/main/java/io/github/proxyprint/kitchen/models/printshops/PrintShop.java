@@ -2,6 +2,7 @@ package io.github.proxyprint.kitchen.models.printshops;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.PaperTableItem;
+import io.github.proxyprint.kitchen.models.Money;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.Item;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.ItemFactory;
@@ -73,11 +74,15 @@ public class PrintShop {
     @JoinColumn(name = "printshop")
     private Set<Review> reviews;
 
+    @Column(unique = true)
+    private Money balance;
+
     public PrintShop() {
         this.priceTable = new HashMap<>();
         itemFactory = new ItemFactory();
         this.printrequests = new HashSet<>();
         this.reviews = new HashSet<>();
+        this.balance = new Money();
     }
 
     public PrintShop(String name, String address, Double latitude, Double longitude, String nif, String logo, float avgRating) {
@@ -92,6 +97,7 @@ public class PrintShop {
         this.itemFactory = new ItemFactory();
         this.printrequests = new HashSet<>();
         this.reviews = new HashSet<>();
+        this.balance = new Money();
     }
 
     public long getId() {
@@ -185,6 +191,10 @@ public class PrintShop {
             return -1;
         }
     }
+
+    public Money getBalance() { return balance; }
+
+    public void setBalance(Money balance) { this.balance = balance; }
 
     public Map<String, Float> getPriceTable() {
         return this.priceTable;

@@ -1,20 +1,21 @@
 package io.github.proxyprint.kitchen.models;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
+import javax.persistence.*;
 
 /**
  * Created by daniel on 03-06-2016.
  */
-@Entity
+@Embeddable
 public class Money {
     private static int MONEY_CEIL = 100;
 
-    @Column(name = "currency", nullable = false)
+    @Column(name = "balance_currency", nullable = false)
     private String currency;
-    @Column(name = "integer_part", nullable = false)
+
+    @Column(name = "balance_integer_part", nullable = false)
     private int integerPart;
-    @Column(name = "fractional_part", nullable = false)
+
+    @Column(name = "balance_fractional_part", nullable = false)
     private int fractionalPart;
 
     public Money() {
