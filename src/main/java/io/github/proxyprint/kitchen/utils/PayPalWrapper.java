@@ -34,17 +34,14 @@ public class PayPalWrapper {
 
     public String generatePayPalAccessToken() throws PayPalRESTException {
         JsonObject response = new JsonObject();
+
         // Load configurations
-        OAuthTokenCredential tokenCredential = Payment.initConfig(new File("src/main/resources/paypal.properties"));
+        String[] tmp = this.getClass().getResource("/paypal.properties").toString().split(":");
+	LoggingManager.info(this.getClass(), (String)tmp[1]);
+        OAuthTokenCredential tokenCredential = Payment.initConfig(new File(tmp[1]));
+
         // Create access token
         String accessToken = tokenCredential.getAccessToken();
-
-        // Alternative to generate access token
-        /*
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("mode", "sandbox");
-        String accessToken = new OAuthTokenCredential("AXIKcgDWuFinKkX2WdRa5cOPJIbSEJZ-carWw_nYB5bOii8EK1phZQp8rOKN0b9WGMGb639hh_EboCrd", "EL0hjjAsRH0sVtRKNg1HUi6JM-paicXwpPG38neEMJD1GqRblX7rkvbM8IjGx0IYtDCGUkXGaY2gjz-Y", map).getAccessToken();
-        response.addProperty("token", accessToken);*/
 
         return accessToken;
     }

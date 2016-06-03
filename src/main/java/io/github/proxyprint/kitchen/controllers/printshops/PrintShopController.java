@@ -22,6 +22,7 @@ import com.paypal.base.rest.PayPalRESTException;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.CoversTable;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.PapersTable;
 import io.github.proxyprint.kitchen.controllers.printshops.pricetable.RingsTable;
+import io.github.proxyprint.kitchen.models.Admin;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.Document;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.DocumentSpec;
@@ -36,16 +37,14 @@ import io.github.proxyprint.kitchen.models.printshops.pricetable.CoverItem;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.Item;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.RangePaperItem;
 import io.github.proxyprint.kitchen.models.repositories.*;
-import io.github.proxyprint.kitchen.models.repositories.EmployeeDAO;
-import io.github.proxyprint.kitchen.models.repositories.PrintRequestDAO;
-import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
-import io.github.proxyprint.kitchen.models.repositories.UserDAO;
 import io.github.proxyprint.kitchen.utils.DistanceCalculator;
 import io.github.proxyprint.kitchen.utils.MailBox;
 import io.github.proxyprint.kitchen.utils.NotificationManager;
 import io.github.proxyprint.kitchen.utils.PayPalWrapper;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
@@ -57,11 +56,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 /**
- *
  * @author josesousa
  */
 @RestController
@@ -78,9 +74,10 @@ public class PrintShopController {
     @Autowired
     private ManagerDAO managers;
     @Autowired
+    private AdminDAO admin;
+    @Autowired
     private NotificationManager notificationManager;
 
-   
 
     @Autowired
     private UserDAO users;
@@ -170,7 +167,7 @@ public class PrintShopController {
         }
 
         String not;
-        PrintRequest printRequest = printrequests.findByIdInAndPrintshop(id,printshop);
+        PrintRequest printRequest = printrequests.findByIdInAndPrintshop(id, printshop);
 
         if (printRequest == null) {
             response.addProperty("success", false);
@@ -189,30 +186,50 @@ public class PrintShopController {
         } else if (printRequest.getStatus() == Status.IN_PROGRESS) {
             printRequest.setFinishedTimestamp(new Date());
 
-            PayPalWrapper pp = new PayPalWrapper();
-            Manager manager = managers.findByPrintShop(printshop);
-            boolean payPalRes = pp.payShareToPrintShop(printRequest, manager, printshop);
+            response.addProperty("newStatus", Status.FINISHED.toString());
+            not = "O pedido número " + printRequest.getId() +
+                    " está completo! Pode deslocar-se á reprografia para proceder ao levantamento.";
 
-            if(payPalRes) {
-                printRequest.setStatus(Status.FINISHED);
-                response.addProperty("newStatus", Status.FINISHED.toString());
-                not = "O pedido número " + printRequest.getId() +
-                        " está completo! Pode deslocar-se á reprografia para proceder ao levantamento.";
+            // Send email to user
+            MailBox m = new MailBox();
+            m.sendEmailFinishedPrintRequest(consumer, printRequest.getId(), printshop.getName());
 
-                // Send email to user
-                MailBox m = new MailBox();
-                m.sendEmailFinishedPrintRequest(consumer, printRequest.getId(), printshop.getName());
+            notificationManager.sendNotification(user, new Notification(not));
+            printRequest.setStatus(Status.FINISHED);
 
-                notificationManager.sendNotification(user, new Notification(not));
-            } else {
-                response.addProperty("success", false);
-                return GSON.toJson(response);
-            }
         } else if (printRequest.getStatus() == Status.FINISHED) {
-            printRequest.setStatus(Status.LIFTED);
-            printRequest.setDeliveredTimestamp(new Date());
-            printRequest.setEmpDelivered(principal.getName());
-            response.addProperty("newStatus", Status.LIFTED.toString());
+
+            if(printRequest.getPaymentType().equals(PrintRequest.PAYPAL_COMPLETED_PAYMENT)) {
+                PayPalWrapper pp = new PayPalWrapper();
+                Manager manager = managers.findByPrintShop(printshop);
+                boolean payPalRes = pp.payShareToPrintShop(printRequest, manager, printshop);
+
+                if (payPalRes) {
+                    printRequest.setStatus(Status.LIFTED);
+                    printRequest.setDeliveredTimestamp(new Date());
+                    printRequest.setEmpDelivered(principal.getName());
+
+                    response.addProperty("newStatus", Status.LIFTED.toString());
+                } else {
+                    response.addProperty("success", false);
+                    return GSON.toJson(response);
+                }
+            } else {
+                Admin master = admin.findAll().iterator().next();
+                double pshopShare = (printRequest.getCost() * 0.9);
+                master.getBalance().subtractDoubleQuantity(pshopShare);
+                printshop.getBalance().addDoubleQuantity(pshopShare);
+
+                // Save
+                admin.save(master);
+                printshops.save(printshop);
+
+                printRequest.setStatus(Status.LIFTED);
+                printRequest.setDeliveredTimestamp(new Date());
+                printRequest.setEmpDelivered(principal.getName());
+
+                response.addProperty("newStatus", Status.LIFTED.toString());
+            }
         } else {
             response.addProperty("success", false);
             return GSON.toJson(response);
@@ -244,8 +261,8 @@ public class PrintShopController {
             return GSON.toJson(response);
         }
 
-        for (Document d : printRequest.getDocuments()){
-            for (DocumentSpec s :  d.getSpecs()){
+        for (Document d : printRequest.getDocuments()) {
+            for (DocumentSpec s : d.getSpecs()) {
                 s.setSpecsToString();
             }
         }
@@ -350,7 +367,7 @@ public class PrintShopController {
         }
 
         String not;
-        PrintRequest printRequest = printrequests.findByIdInAndPrintshop(id,printshop);
+        PrintRequest printRequest = printrequests.findByIdInAndPrintshop(id, printshop);
 
         if (printRequest == null) {
             response.addProperty("success", false);
@@ -371,7 +388,7 @@ public class PrintShopController {
 
             // Send email
             MailBox mb = new MailBox();
-            mb.sendEmailCancelledPrintRequest(printRequest,user,motive);
+            mb.sendEmailCancelledPrintRequest(printRequest, user, motive);
 
             // Notification
             not = "O pedido número " + requestid + " foi cancelado! Motivo: " + motive;
