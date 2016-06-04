@@ -122,13 +122,22 @@ public class PrintRequestController {
         }
 
         // Finally calculate the budgets :D
-        Map<Long, String> budgets = calcBudgetsForPrintShops(pshopIDs, printRequest);
+        List<PrintShop> pshops = getListOfPrintShops(pshopIDs);
+        Map<Long, String> budgets = printRequest.calcBudgetsForPrintShops(pshops);
 
         response.addProperty("success", true);
         response.add("budgets", GSON.toJsonTree(budgets));
         response.addProperty("printRequestID", printRequest.getId());
         response.addProperty("externalURL", NgrokConfig.getExternalUrl());
         return GSON.toJson(response);
+    }
+
+    public List<PrintShop> getListOfPrintShops(List<Long> pshopsIDs) {
+        List<PrintShop> pshops = new ArrayList<>();
+        for(long pid : pshopsIDs) {
+            pshops.add(printShops.findOne(pid));
+        }
+        return pshops;
     }
 
     private void singleFileHandle(MultipartFile file, PrintRequest printRequest, Map<String, Long> documentsIds) {
@@ -158,36 +167,6 @@ public class PrintRequestController {
         } else {
 
         }
-    }
-
-    private Map<Long, String> calcBudgetsForPrintShops(List<Long> pshopIDs, PrintRequest printRequest) {
-        Map<Long, String> budgets = new HashMap<>();
-
-        Set<Document> prDocs = printRequest.getDocuments();
-        for (long pshopID : pshopIDs) {
-            PrintShop printShop = printShops.findOne(pshopID);
-            BudgetCalculator budgetCalculator = new BudgetCalculator(printShop);
-            float totalCost = 0; // In the future we may specifie the budget by file its easy!
-            for (Document document : prDocs) {
-                for (DocumentSpec documentSpec : document.getSpecs()) {
-                    float specCost = 0;
-                    if (documentSpec.getFirstPage() != 0 && documentSpec.getLastPage() != 0) {
-                        // Partial calculation
-                        specCost = budgetCalculator.calculatePrice(documentSpec.getFirstPage(), documentSpec.getLastPage(), documentSpec.getPrintingSchema());
-                    } else {
-                        // Total calculation
-                        specCost = budgetCalculator.calculatePrice(1, document.getTotalPages(), documentSpec.getPrintingSchema());
-                    }
-                    if (specCost != -1) totalCost += specCost;
-                    else {
-                        budgets.put(pshopID, "Esta reprografia não pode satisfazer o pedido.");
-                    }
-                }
-            }
-            if (totalCost > 0) budgets.put(pshopID, String.valueOf(totalCost)); // add to budgets
-        }
-
-        return budgets;
     }
 
     @ApiOperation(value = "Returns success/insuccess", notes = "This method allow clients to POST a print request and associate it to a given printshop with a given budget, the payment may or not occur according to the payment method.")

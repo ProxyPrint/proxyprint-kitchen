@@ -2,13 +2,12 @@ package io.github.proxyprint.kitchen.models.consumer.printrequest;
 
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.BudgetCalculator;
 import io.github.proxyprint.kitchen.utils.gson.Exclude;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by MGonc on 28/04/16.
@@ -170,4 +169,38 @@ public class PrintRequest implements Serializable {
     public String getPaymentType() { return paymentType; }
 
     public void setPaymentType(String paymentType) { this.paymentType = paymentType; }
+
+    /**
+     * Calculate budgets for a given list of printshops.
+     * @param pshops printshops to calculate the budget.
+     * @return A map containing the printshopID associated with the calculated budget
+     */
+    public Map<Long, String> calcBudgetsForPrintShops(List<PrintShop> pshops) {
+        Map<Long, String> budgets = new HashMap<>();
+
+        Set<Document> prDocs = this.getDocuments();
+        for (PrintShop printShop: pshops) {
+            BudgetCalculator budgetCalculator = new BudgetCalculator(printShop);
+            float totalCost = 0; // In the future we may specifie the budget by file its easy!
+            for (Document document : prDocs) {
+                for (DocumentSpec documentSpec : document.getSpecs()) {
+                    float specCost = 0;
+                    if (documentSpec.getFirstPage() != 0 && documentSpec.getLastPage() != 0) {
+                        // Partial calculation
+                        specCost = budgetCalculator.calculatePrice(documentSpec.getFirstPage(), documentSpec.getLastPage(), documentSpec.getPrintingSchema());
+                    } else {
+                        // Total calculation
+                        specCost = budgetCalculator.calculatePrice(1, document.getTotalPages(), documentSpec.getPrintingSchema());
+                    }
+                    if (specCost != -1) totalCost += specCost;
+                    else {
+                        budgets.put(printShop.getId(), "Esta reprografia não pode satisfazer o pedido.");
+                    }
+                }
+            }
+            if (totalCost > 0) budgets.put(printShop.getId(), String.valueOf(totalCost)); // add to budgets
+        }
+
+        return budgets;
+    }
 }
