@@ -58,6 +58,9 @@ public class PrintRequestController {
     @Autowired
     private Gson GSON;
 
+    /*------------------------------------
+        Budget
+    * -----------------------------------*/
     @ApiOperation(value = "Returns a set of budgets", notes = "This method calculates budgets for a given and already specified print request. The budgets are calculated for specific printshops also passed along as parameters.")
     @Secured("ROLE_USER")
     @RequestMapping(value = "/consumer/budget", method = RequestMethod.POST)
@@ -70,7 +73,6 @@ public class PrintRequestController {
         printRequest = printRequests.save(printRequest);
 
         List<Long> pshopIDs = null;
-
         Map prequest = new Gson().fromJson(requestJSON, Map.class);
 
         // PrintShops
@@ -79,8 +81,22 @@ public class PrintRequestController {
         for (double doubleID : tmpPshopIDs) {
             pshopIDs.add((long) Double.valueOf((double) doubleID).intValue());
         }
-
         // Process files
+        Map<String, Long> documentsIds = processSumitedFiles(printRequest, request);
+        // Parse and store documents and specifications
+        storeDocumentsAndSpecs(prequest,documentsIds);
+        // Finally calculate the budgets :D
+        List<PrintShop> pshops = getListOfPrintShops(pshopIDs);
+        Map<Long, String> budgets = printRequest.calcBudgetsForPrintShops(pshops);
+
+        response.addProperty("success", true);
+        response.add("budgets", GSON.toJsonTree(budgets));
+        response.addProperty("printRequestID", printRequest.getId());
+        response.addProperty("externalURL", NgrokConfig.getExternalUrl());
+        return GSON.toJson(response);
+    }
+
+    public Map<String,Long> processSumitedFiles(PrintRequest printRequest, HttpServletRequest request) {
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
         Map<String, Long> documentsIds = new HashMap<String, Long>();
         for (Collection<MultipartFile> files : multipartRequest.getMultiFileMap().values()) {
@@ -88,8 +104,10 @@ public class PrintRequestController {
                 singleFileHandle(file, printRequest, documentsIds);
             }
         }
+        return documentsIds;
+    }
 
-        // Store Documents and respective Specifications
+    public void storeDocumentsAndSpecs(Map prequest, Map<String, Long> documentsIds) {
         Map<String, Map> mdocuments = (Map) prequest.get("files");
         for (Map.Entry<String, Map> documentSpecs : mdocuments.entrySet()) {
             String fileName = documentSpecs.getKey();
@@ -120,16 +138,6 @@ public class PrintRequestController {
                 documents.save(tmpdoc);
             }
         }
-
-        // Finally calculate the budgets :D
-        List<PrintShop> pshops = getListOfPrintShops(pshopIDs);
-        Map<Long, String> budgets = printRequest.calcBudgetsForPrintShops(pshops);
-
-        response.addProperty("success", true);
-        response.add("budgets", GSON.toJsonTree(budgets));
-        response.addProperty("printRequestID", printRequest.getId());
-        response.addProperty("externalURL", NgrokConfig.getExternalUrl());
-        return GSON.toJson(response);
     }
 
     public List<PrintShop> getListOfPrintShops(List<Long> pshopsIDs) {
@@ -168,6 +176,7 @@ public class PrintRequestController {
 
         }
     }
+    /*----------------------------------------------------------------------------------------------------------------*/
 
     @ApiOperation(value = "Returns success/insuccess", notes = "This method allow clients to POST a print request and associate it to a given printshop with a given budget, the payment may or not occur according to the payment method.")
     @Secured("ROLE_USER")
