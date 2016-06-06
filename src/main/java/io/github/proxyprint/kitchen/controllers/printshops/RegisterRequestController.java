@@ -32,7 +32,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -110,19 +109,18 @@ public class RegisterRequestController {
     @Secured({"ROLE_ADMIN"})
     @RequestMapping(value = "/request/reject/{printRequestID}", method = RequestMethod.POST)
     public String rejectRequest(@PathVariable(value = "printRequestID") long prid, Principal principal, @RequestBody String motive) throws IOException {
-        RegisterRequest  registerRequest = registerRequests.findOne(prid);
+        RegisterRequest registerRequest = registerRequests.findOne(prid);
         JsonObject response = new JsonObject();
         if (registerRequest == null) {
             response.addProperty("success", false);
             return GSON.toJson(response);
-        }
-        else {
+        } else {
             // Delete request
             registerRequests.delete(prid);
 
             // Send email
             MailBox m = new MailBox();
-            m.sedMailRejectedRegisterRequest(registerRequest,motive);
+            m.sedMailRejectedRegisterRequest(registerRequest, motive);
 
             response.addProperty("success", true);
             return GSON.toJson(response);
@@ -132,13 +130,8 @@ public class RegisterRequestController {
     @Secured({"ROLE_ADMIN"})
     @RequestMapping(value = "/requests/pending", method = RequestMethod.GET)
     public ResponseEntity<List<RegisterRequest>> acceptRequest() {
-        List<RegisterRequest> pendingRequests = new ArrayList<>();
-        for (RegisterRequest rq : registerRequests.findAll()) {
-            if (!rq.isAccepted()) {
-                pendingRequests.add(rq);
-            }
-        }
-        return new ResponseEntity<List<RegisterRequest>>(pendingRequests, HttpStatus.OK);
+        List<RegisterRequest> pendingRequests = this.registerRequests.findByAccepted(false);
+        return new ResponseEntity<>(pendingRequests, HttpStatus.OK);
     }
 
 }

@@ -17,6 +17,7 @@
 package io.github.proxyprint.kitchen.models.repositories;
 
 import io.github.proxyprint.kitchen.models.printshops.RegisterRequest;
+import java.util.List;
 import org.springframework.data.repository.CrudRepository;
 
 import javax.transaction.Transactional;
@@ -27,5 +28,5 @@ import javax.transaction.Transactional;
  */
 @Transactional
 public interface RegisterRequestDAO extends CrudRepository<RegisterRequest, Long> {
-
+    public List<RegisterRequest> findByAccepted(boolean accepted);
 }

@@ -1,5 +1,6 @@
 package controllers;
 
+import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -10,6 +11,10 @@ import io.github.proxyprint.kitchen.models.printshops.RegisterRequest;
 import io.github.proxyprint.kitchen.models.repositories.AdminDAO;
 import io.github.proxyprint.kitchen.models.repositories.ManagerDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
+import io.github.proxyprint.kitchen.models.repositories.RegisterRequestDAO;
+import java.lang.reflect.Type;
+import java.util.List;
+import org.apache.commons.collections.CollectionUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,9 +51,9 @@ public class RegisterRequestTests {
     @Autowired
     private PrintShopDAO printshops;
     @Autowired
+    private RegisterRequestDAO registerRequests;
+    @Autowired
     private Gson GSON;
-
-    private RegisterRequest exampleRR = new RegisterRequest("manager", "manager", "manager@email", "1234", "address", 45d, 32d, "NIF", "name", false);
 
     @Before
     public void setup() {
@@ -56,10 +61,15 @@ public class RegisterRequestTests {
                 .webAppContextSetup(this.wac)
                 .addFilters(springSecurityFilterChain)
                 .build();
+        this.admins.deleteAll();
+        this.managers.deleteAll();
+        this.printshops.deleteAll();
+        this.registerRequests.deleteAll();
     }
 
-    private RegisterRequest addRegisterRequest() throws Exception {
-        String body = GSON.toJson(exampleRR);
+    private RegisterRequest addRegisterRequest(RegisterRequest rr) throws Exception {
+
+        String body = GSON.toJson(rr);
 
         MvcResult mvcResult = this.mockMvc.perform(post("/request/register")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -72,9 +82,9 @@ public class RegisterRequestTests {
         RegisterRequest response = GSON.fromJson(responseText, RegisterRequest.class);
 
         //set ids to be equal
-        exampleRR.setId(response.getId());
+        rr.setId(response.getId());
 
-        assert (exampleRR.equals(response));
+        assert (rr.equals(response));
 
         return response;
     }
@@ -82,7 +92,8 @@ public class RegisterRequestTests {
     //testar se o servidor regista pedido reprografia
     @Test
     public void registerRequestTest() throws Exception {
-        addRegisterRequest();
+        RegisterRequest exampleRR = new RegisterRequest("manager", "manager", "proxyprint.pt.printshop@gmail.com", "1234", "address", 45d, 32d, "NIF", "name", false);
+        addRegisterRequest(exampleRR);
     }
 
     @Test
@@ -93,7 +104,8 @@ public class RegisterRequestTests {
         //nr of pshops before
         int pshopsBefore = (int) this.printshops.count();
 
-        RegisterRequest rr = addRegisterRequest();
+        RegisterRequest exampleRR = new RegisterRequest("manager", "manager", "proxyprint.pt.printshop@gmail.com", "1234", "address", 45d, 32d, "NIF", "name", false);
+        RegisterRequest rr = addRegisterRequest(exampleRR);
 
         MvcResult mvcResult = this.mockMvc.perform(post("/request/accept/" + (int) rr.getId())
                 .with(httpBasic("admin", "admin"))).andReturn();
@@ -111,8 +123,37 @@ public class RegisterRequestTests {
         int pshopsAfter = (int) this.printshops.count();
 
         assert (pshopsBefore == pshopsAfter - 1);
-        
+
         Manager m = this.managers.findByUsername("manager");
-        assert(m.getPassword().equals("1234"));
+        assert (m.getPassword().equals("1234"));
+    }
+
+    @Test
+    public void pendingRequestTest() throws Exception {
+        //test admin
+        Admin admin = admins.save(new Admin("admin", "admin", "admin@mail.pt"));
+
+        //adicionar direto aos daos neste caso
+        RegisterRequest exampleRR = new RegisterRequest("manager1", "manager1", "proxyprint.pt.printshop@gmail.com", "1234", "address", 45d, 32d, "NIF", "name", false);
+        RegisterRequest exampleRR1 = new RegisterRequest("manager", "manager", "proxyprint.pt.printshop@gmail.com", "1234", "address", 45d, 32d, "NIF", "name", true);
+        this.registerRequests.save(exampleRR);
+        this.registerRequests.save(exampleRR1);
+
+        MvcResult mvcResult = this.mockMvc.perform(get("/requests/pending")
+                .with(httpBasic("admin", "admin"))).andReturn();
+
+        assert (mvcResult.getResponse().getStatus() == 200);
+
+        String response = mvcResult.getResponse().getContentAsString();
+
+        Type listOfRR = new TypeToken<List<RegisterRequest>>(){}.getType();
+        
+        List<RegisterRequest> pending1 = this.registerRequests.findByAccepted(false);
+        List<RegisterRequest> pending2 = GSON.fromJson(response, listOfRR);
+
+        System.out.println(pending1);
+        System.out.println(pending2);
+        
+        assert (CollectionUtils.isEqualCollection(pending1, pending2));
     }
 }

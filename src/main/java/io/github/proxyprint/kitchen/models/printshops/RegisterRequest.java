@@ -182,23 +182,24 @@ public class RegisterRequest implements Serializable {
         this.pShopDateRequestAccepted = GregorianCalendarToString(date);
     }
 
+    public RegisterRequest(long id, String managerName, String managerUsername, String managerEmail, String managerPassword, String pShopAddress, Double pShopLatitude, Double pShopLongitude, String pShopNIF, String pShopName, String pShopDateRequest, String pShopDateRequestAccepted) {
+        this.id = id;
+        this.managerName = managerName;
+        this.managerUsername = managerUsername;
+        this.managerEmail = managerEmail;
+        this.managerPassword = managerPassword;
+        this.pShopAddress = pShopAddress;
+        this.pShopLatitude = pShopLatitude;
+        this.pShopLongitude = pShopLongitude;
+        this.pShopNIF = pShopNIF;
+        this.pShopName = pShopName;
+        this.pShopDateRequest = pShopDateRequest;
+        this.pShopDateRequestAccepted = pShopDateRequestAccepted;
+    }
+
     @Override
     public String toString() {
-        return "RegisterRequest{"
-                + "id=" + id
-                + ", managerName='" + managerName + '\''
-                + ", managerUsername='" + managerUsername + '\''
-                + ", managerEmail='" + managerEmail + '\''
-                + ", managerPassword='" + managerPassword + '\''
-                + ", pShopAddress='" + pShopAddress + '\''
-                + ", pShopLatitude=" + pShopLatitude
-                + ", pShopLongitude=" + pShopLongitude
-                + ", pShopNIF='" + pShopNIF + '\''
-                + ", pShopName='" + pShopName + '\''
-                + ", accepted=" + accepted
-                + ", pShopDateRequest='" + pShopDateRequest + '\''
-                + ", pShopDateRequestAccepted='" + pShopDateRequestAccepted + '\''
-                + '}';
+        return "RegisterRequest{" + "id=" + id + ", managerName=" + managerName + ", managerUsername=" + managerUsername + ", managerEmail=" + managerEmail + ", managerPassword=" + managerPassword + ", pShopAddress=" + pShopAddress + ", pShopLatitude=" + pShopLatitude + ", pShopLongitude=" + pShopLongitude + ", pShopNIF=" + pShopNIF + ", pShopName=" + pShopName + ", accepted=" + accepted + ", pShopDateRequest=" + pShopDateRequest + ", pShopDateRequestAccepted=" + pShopDateRequestAccepted + '}';
     }
 
     @Override
