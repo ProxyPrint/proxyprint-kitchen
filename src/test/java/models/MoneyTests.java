@@ -6,7 +6,7 @@ import junit.framework.TestCase;
 /**
  * Created by daniel on 03-06-2016.
  */
-public class MoneyTest extends TestCase {
+public class MoneyTests extends TestCase {
     protected double double1, double2;
     protected int ip, fp;
 
