@@ -52,7 +52,7 @@ public class RegisterRequestController {
 
     @RequestMapping(value = "/request/register", method = RequestMethod.POST)
     public ResponseEntity<RegisterRequest> registerRequest(@RequestBody RegisterRequest registerRequest) {
-        registerRequests.save(registerRequest);
+        registerRequest = registerRequests.save(registerRequest);
         return new ResponseEntity<>(registerRequest, HttpStatus.OK);
     }
 
