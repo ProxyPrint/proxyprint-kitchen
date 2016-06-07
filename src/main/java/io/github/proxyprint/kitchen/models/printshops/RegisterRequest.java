@@ -22,6 +22,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
+import java.util.Objects;
 
 /**
  *
@@ -81,29 +82,53 @@ public class RegisterRequest implements Serializable {
         this.pShopDateRequestAccepted = null;
     }
 
-    public long getId() { return id; }
+    public long getId() {
+        return id;
+    }
 
-    public String getManagerName() { return managerName; }
+    public String getManagerName() {
+        return managerName;
+    }
 
-    public void setManagerName(String managerName) { this.managerName = managerName; }
+    public void setManagerName(String managerName) {
+        this.managerName = managerName;
+    }
 
-    public void setId(long id) { this.id = id; }
+    public void setId(long id) {
+        this.id = id;
+    }
 
-    public String getManagerUsername() { return managerUsername; }
+    public String getManagerUsername() {
+        return managerUsername;
+    }
 
-    public void setManagerUsername(String managerUsername) { this.managerUsername = managerUsername; }
+    public void setManagerUsername(String managerUsername) {
+        this.managerUsername = managerUsername;
+    }
 
-    public String getManagerEmail() { return managerEmail; }
+    public String getManagerEmail() {
+        return managerEmail;
+    }
 
-    public void setManagerEmail(String managerEmail) { this.managerEmail = managerEmail; }
+    public void setManagerEmail(String managerEmail) {
+        this.managerEmail = managerEmail;
+    }
 
-    public String getManagerPassword() { return managerPassword; }
+    public String getManagerPassword() {
+        return managerPassword;
+    }
 
-    public void setManagerPassword(String managerPassword) { this.managerPassword = managerPassword; }
+    public void setManagerPassword(String managerPassword) {
+        this.managerPassword = managerPassword;
+    }
 
-    public String getpShopAddress() { return pShopAddress; }
+    public String getpShopAddress() {
+        return pShopAddress;
+    }
 
-    public void setpShopAddress(String pShopAddress) { this.pShopAddress = pShopAddress; }
+    public void setpShopAddress(String pShopAddress) {
+        this.pShopAddress = pShopAddress;
+    }
 
     public Double getpShopLatitude() {
         return pShopLatitude;
@@ -121,45 +146,138 @@ public class RegisterRequest implements Serializable {
         this.pShopLongitude = pShopLongitude;
     }
 
-    public String getpShopNIF() { return pShopNIF; }
+    public String getpShopNIF() {
+        return pShopNIF;
+    }
 
-    public void setpShopNIF(String pShopNIF) { this.pShopNIF = pShopNIF; }
+    public void setpShopNIF(String pShopNIF) {
+        this.pShopNIF = pShopNIF;
+    }
 
-    public String getpShopName() { return pShopName; }
+    public String getpShopName() {
+        return pShopName;
+    }
 
-    public void setpShopName(String pShopName) { this.pShopName = pShopName; }
+    public void setpShopName(String pShopName) {
+        this.pShopName = pShopName;
+    }
 
-    public boolean isAccepted() { return accepted; }
+    public boolean isAccepted() {
+        return accepted;
+    }
 
-    public void setAccepted(boolean accepted) { this.accepted = accepted; }
+    public void setAccepted(boolean accepted) {
+        this.accepted = accepted;
+    }
 
-    public String getpShopDateRequest() { return pShopDateRequest; }
+    public String getpShopDateRequest() {
+        return pShopDateRequest;
+    }
 
-    public String getpShopDateRequestAccepted() { return pShopDateRequestAccepted; }
+    public String getpShopDateRequestAccepted() {
+        return pShopDateRequestAccepted;
+    }
 
-    public void setpShopDateRequestAccepted(GregorianCalendar date) { this.pShopDateRequestAccepted = GregorianCalendarToString(date); }
+    public void setpShopDateRequestAccepted(GregorianCalendar date) {
+        this.pShopDateRequestAccepted = GregorianCalendarToString(date);
+    }
+
+    public RegisterRequest(long id, String managerName, String managerUsername, String managerEmail, String managerPassword, String pShopAddress, Double pShopLatitude, Double pShopLongitude, String pShopNIF, String pShopName, String pShopDateRequest, String pShopDateRequestAccepted) {
+        this.id = id;
+        this.managerName = managerName;
+        this.managerUsername = managerUsername;
+        this.managerEmail = managerEmail;
+        this.managerPassword = managerPassword;
+        this.pShopAddress = pShopAddress;
+        this.pShopLatitude = pShopLatitude;
+        this.pShopLongitude = pShopLongitude;
+        this.pShopNIF = pShopNIF;
+        this.pShopName = pShopName;
+        this.pShopDateRequest = pShopDateRequest;
+        this.pShopDateRequestAccepted = pShopDateRequestAccepted;
+    }
 
     @Override
     public String toString() {
-        return "RegisterRequest{" +
-                "id=" + id +
-                ", managerName='" + managerName + '\'' +
-                ", managerUsername='" + managerUsername + '\'' +
-                ", managerEmail='" + managerEmail + '\'' +
-                ", managerPassword='" + managerPassword + '\'' +
-                ", pShopAddress='" + pShopAddress + '\'' +
-                ", pShopLatitude=" + pShopLatitude +
-                ", pShopLongitude=" + pShopLongitude +
-                ", pShopNIF='" + pShopNIF + '\'' +
-                ", pShopName='" + pShopName + '\'' +
-                ", accepted=" + accepted +
-                ", pShopDateRequest='" + pShopDateRequest + '\'' +
-                ", pShopDateRequestAccepted='" + pShopDateRequestAccepted + '\'' +
-                '}';
+        return "RegisterRequest{" + "id=" + id + ", managerName=" + managerName + ", managerUsername=" + managerUsername + ", managerEmail=" + managerEmail + ", managerPassword=" + managerPassword + ", pShopAddress=" + pShopAddress + ", pShopLatitude=" + pShopLatitude + ", pShopLongitude=" + pShopLongitude + ", pShopNIF=" + pShopNIF + ", pShopName=" + pShopName + ", accepted=" + accepted + ", pShopDateRequest=" + pShopDateRequest + ", pShopDateRequestAccepted=" + pShopDateRequestAccepted + '}';
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 67 * hash + (int) (this.id ^ (this.id >>> 32));
+        hash = 67 * hash + Objects.hashCode(this.managerName);
+        hash = 67 * hash + Objects.hashCode(this.managerUsername);
+        hash = 67 * hash + Objects.hashCode(this.managerEmail);
+        hash = 67 * hash + Objects.hashCode(this.managerPassword);
+        hash = 67 * hash + Objects.hashCode(this.pShopAddress);
+        hash = 67 * hash + Objects.hashCode(this.pShopLatitude);
+        hash = 67 * hash + Objects.hashCode(this.pShopLongitude);
+        hash = 67 * hash + Objects.hashCode(this.pShopNIF);
+        hash = 67 * hash + Objects.hashCode(this.pShopName);
+        hash = 67 * hash + (this.accepted ? 1 : 0);
+        hash = 67 * hash + Objects.hashCode(this.pShopDateRequest);
+        hash = 67 * hash + Objects.hashCode(this.pShopDateRequestAccepted);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final RegisterRequest other = (RegisterRequest) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        if (this.accepted != other.accepted) {
+            return false;
+        }
+        if (!Objects.equals(this.managerName, other.managerName)) {
+            return false;
+        }
+        if (!Objects.equals(this.managerUsername, other.managerUsername)) {
+            return false;
+        }
+        if (!Objects.equals(this.managerEmail, other.managerEmail)) {
+            return false;
+        }
+        if (!Objects.equals(this.managerPassword, other.managerPassword)) {
+            return false;
+        }
+        if (!Objects.equals(this.pShopAddress, other.pShopAddress)) {
+            return false;
+        }
+        if (!Objects.equals(this.pShopNIF, other.pShopNIF)) {
+            return false;
+        }
+        if (!Objects.equals(this.pShopName, other.pShopName)) {
+            return false;
+        }
+        if (!Objects.equals(this.pShopDateRequest, other.pShopDateRequest)) {
+            return false;
+        }
+        if (!Objects.equals(this.pShopDateRequestAccepted, other.pShopDateRequestAccepted)) {
+            return false;
+        }
+        if (!Objects.equals(this.pShopLatitude, other.pShopLatitude)) {
+            return false;
+        }
+        if (!Objects.equals(this.pShopLongitude, other.pShopLongitude)) {
+            return false;
+        }
+        return true;
     }
 
     /**
      * From GregoriaCalendar to String.
+     *
      * @param c, GregorianCalendar instance
      * @return Well formated string for display
      */

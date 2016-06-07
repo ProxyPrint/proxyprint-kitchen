@@ -18,7 +18,6 @@ package io.github.proxyprint.kitchen;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import io.github.proxyprint.kitchen.config.NgrokConfig;
 import io.github.proxyprint.kitchen.utils.NotificationManager;
 import io.github.proxyprint.kitchen.utils.gson.AnnotationExclusionStrategy;
 import org.springframework.boot.SpringApplication;
