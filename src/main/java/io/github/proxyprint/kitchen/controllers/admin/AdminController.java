@@ -164,7 +164,6 @@ public class AdminController {
         printshop.addItemPriceTable(rp1.genKey(),(float) 0.23);
 
         // Color
-
         PaperItem p2 = new PaperItem(Item.Format.A4, Item.Sides.DUPLEX, Item.Colors.COLOR);
 
         RangePaperItem rp2 = new RangePaperItem(Item.Format.A4, Item.Sides.SIMPLEX, Item.Colors.COLOR, 1, 5);
@@ -235,7 +234,7 @@ public class AdminController {
         b = new BindingItem(BindingItem.RingType.SPIRAL, 44, 50);
         printshop.addItemPriceTable(b.genKey(), (float) 3.35);
         BindingItem bs = new BindingItem(BindingItem.RingType.STAPLING, 0, 0);
-        printshop.addItemPriceTable(bs.genKey(), (float) 0.1);
+        printshop.addItemPriceTable(bs.genKey(), (float) 0.01);
 
         // Covers
         CoverItem c = new CoverItem(Item.CoverType.CRISTAL_ACETATE, Item.Format.A4);

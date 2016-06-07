@@ -6,6 +6,14 @@ package io.github.proxyprint.kitchen.models.printshops.pricetable;
 public class BindingItem extends Item {
     public static String KEY_BASE = "BINDING";
 
+    public static int B_6_10_THICKNESS_FLOOR = 1;
+    public static int B_6_10_THICKNESS_CEIL = 20;
+    public static int B_12_20_THICKNESS_FLOOR = 21;
+    public static int B_12_20_THICKNESS_CEIL = 80;
+    public static int B_22_28_THICKNESS_FLOOR = 81;
+    public static int B_22_28_THICKNESS_CEIL = 119;
+    public static int B_32_38_THICKNESS_FLOOR = 120;
+
     private RingType ringsType;
     private int ringThicknessInfLim; // in millimeters
     private int ringThicknessSupLim; // in millimeters
