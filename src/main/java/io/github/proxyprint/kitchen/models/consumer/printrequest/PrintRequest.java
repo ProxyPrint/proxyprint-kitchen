@@ -7,6 +7,7 @@ import io.github.proxyprint.kitchen.utils.gson.Exclude;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.util.*;
 
 /**
@@ -198,7 +199,11 @@ public class PrintRequest implements Serializable {
                     }
                 }
             }
-            if (totalCost > 0) budgets.put(printShop.getId(), String.valueOf(totalCost)); // add to budgets
+            if (totalCost > 0) {
+                DecimalFormat df = new DecimalFormat();
+                df.setMaximumFractionDigits(2);
+                budgets.put(printShop.getId(), String.valueOf(df.format(totalCost))); // add to budgets
+            }
         }
 
         return budgets;
