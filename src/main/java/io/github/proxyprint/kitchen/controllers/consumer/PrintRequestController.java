@@ -10,7 +10,6 @@ import io.github.proxyprint.kitchen.models.consumer.printrequest.Document;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.DocumentSpec;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
-import io.github.proxyprint.kitchen.models.printshops.pricetable.BudgetCalculator;
 import io.github.proxyprint.kitchen.models.repositories.*;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.io.FilenameUtils;
@@ -32,6 +31,7 @@ import java.security.Principal;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.springframework.core.env.Environment;
 
 /**
  * Created by daniel on 20-05-2016.
@@ -39,6 +39,8 @@ import java.util.logging.Logger;
 @RestController
 public class PrintRequestController {
 
+    @Autowired
+    private Environment environment;
     @Autowired
     private ConsumerDAO consumers;
     @Autowired
@@ -84,7 +86,7 @@ public class PrintRequestController {
         // Process files
         Map<String, Long> documentsIds = processSumitedFiles(printRequest, request);
         // Parse and store documents and specifications
-        storeDocumentsAndSpecs(prequest,documentsIds);
+        storeDocumentsAndSpecs(prequest, documentsIds);
         // Finally calculate the budgets :D
         List<PrintShop> pshops = getListOfPrintShops(pshopIDs);
         Map<Long, String> budgets = printRequest.calcBudgetsForPrintShops(pshops);
@@ -92,11 +94,14 @@ public class PrintRequestController {
         response.addProperty("success", true);
         response.add("budgets", GSON.toJsonTree(budgets));
         response.addProperty("printRequestID", printRequest.getId());
-        response.addProperty("externalURL", NgrokConfig.getExternalUrl());
+        //se nao estiver no heroku, fazer tunel
+        if (this.environment.acceptsProfiles("!heroku")) {
+            response.addProperty("externalURL", NgrokConfig.getExternalUrl());
+        }
         return GSON.toJson(response);
     }
 
-    public Map<String,Long> processSumitedFiles(PrintRequest printRequest, HttpServletRequest request) {
+    public Map<String, Long> processSumitedFiles(PrintRequest printRequest, HttpServletRequest request) {
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
         Map<String, Long> documentsIds = new HashMap<String, Long>();
         for (Collection<MultipartFile> files : multipartRequest.getMultiFileMap().values()) {
@@ -121,10 +126,14 @@ public class PrintRequestController {
                 long id = (long) Double.valueOf((double) tmpid).intValue();
 
                 int infLim = 0;
-                if (tmpinfLim != null) infLim = Double.valueOf((double) tmpinfLim).intValue();
+                if (tmpinfLim != null) {
+                    infLim = Double.valueOf((double) tmpinfLim).intValue();
+                }
 
                 int supLim = 0;
-                if (tmpsupLim != null) supLim = Double.valueOf((double) tmpsupLim).intValue();
+                if (tmpsupLim != null) {
+                    supLim = Double.valueOf((double) tmpsupLim).intValue();
+                }
 
                 // Get printing schema by its id
                 PrintingSchema tmpschema = printingSchemas.findOne(id);
@@ -142,7 +151,7 @@ public class PrintRequestController {
 
     public List<PrintShop> getListOfPrintShops(List<Long> pshopsIDs) {
         List<PrintShop> pshops = new ArrayList<>();
-        for(long pid : pshopsIDs) {
+        for (long pid : pshopsIDs) {
             pshops.add(printShops.findOne(pid));
         }
         return pshops;
@@ -176,8 +185,8 @@ public class PrintRequestController {
 
         }
     }
-    /*----------------------------------------------------------------------------------------------------------------*/
 
+    /*----------------------------------------------------------------------------------------------------------------*/
     @ApiOperation(value = "Returns success/insuccess", notes = "This method allow clients to POST a print request and associate it to a given printshop with a given budget, the payment may or not occur according to the payment method.")
     @Secured("ROLE_USER")
     @RequestMapping(value = "/consumer/printrequest/{printRequestID}/submit", method = RequestMethod.POST)
@@ -207,8 +216,8 @@ public class PrintRequestController {
                 printRequest.setStatus(PrintRequest.Status.NOT_PAYED);
                 printRequest.setCost(cost);
 
-                if(paymentMethod.equals(PrintRequest.PROXY_PAYMENT)) {
-                    if(consumer.getBalance().getMoneyAsDouble() < cost) {
+                if (paymentMethod.equals(PrintRequest.PROXY_PAYMENT)) {
+                    if (consumer.getBalance().getMoneyAsDouble() < cost) {
                         response.addProperty("success", false);
                         response.addProperty("message", "Não possuí saldo suficiente para efetuar o pedido.");
                         return GSON.toJson(response);
@@ -238,7 +247,9 @@ public class PrintRequestController {
     }
 
     protected double round(double value, int places) {
-        if (places < 0) throw new IllegalArgumentException();
+        if (places < 0) {
+            throw new IllegalArgumentException();
+        }
 
         BigDecimal bd = new BigDecimal(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);
