@@ -8,6 +8,7 @@ import io.github.proxyprint.kitchen.utils.gson.Exclude;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.*;
 
 /**
@@ -56,7 +57,8 @@ public class PrintRequest implements Serializable {
     @Column(nullable = true, name = "paypal_sale_id")
     private String payPalSaleID;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @Exclude private PrintShop printshop;
+    @Exclude
+    private PrintShop printshop;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Consumer consumer;
@@ -155,32 +157,50 @@ public class PrintRequest implements Serializable {
         return printshop;
     }
 
-    public Set<Document> getDocuments() { return documents; }
+    public Set<Document> getDocuments() {
+        return documents;
+    }
 
-    public void setDocuments(Set<Document> documents) { this.documents = documents; }
+    public void setDocuments(Set<Document> documents) {
+        this.documents = documents;
+    }
 
-    public void addDocument(Document doc) { this.documents.add(doc); }
+    public void addDocument(Document doc) {
+        this.documents.add(doc);
+    }
 
-    public boolean isPayed() { return !(this.status.equals(Status.NOT_PAYED)); }
+    public boolean isPayed() {
+        return !(this.status.equals(Status.NOT_PAYED));
+    }
 
-    public String getPayPalSaleID() { return payPalSaleID; }
+    public String getPayPalSaleID() {
+        return payPalSaleID;
+    }
 
-    public void setPayPalSaleID(String payPalSaleID) { this.payPalSaleID = payPalSaleID; }
+    public void setPayPalSaleID(String payPalSaleID) {
+        this.payPalSaleID = payPalSaleID;
+    }
 
-    public String getPaymentType() { return paymentType; }
+    public String getPaymentType() {
+        return paymentType;
+    }
 
-    public void setPaymentType(String paymentType) { this.paymentType = paymentType; }
+    public void setPaymentType(String paymentType) {
+        this.paymentType = paymentType;
+    }
 
     /**
      * Calculate budgets for a given list of printshops.
+     *
      * @param pshops printshops to calculate the budget.
-     * @return A map containing the printshopID associated with the calculated budget
+     * @return A map containing the printshopID associated with the calculated
+     * budget
      */
     public Map<Long, String> calcBudgetsForPrintShops(List<PrintShop> pshops) {
         Map<Long, String> budgets = new HashMap<>();
 
         Set<Document> prDocs = this.getDocuments();
-        for (PrintShop printShop: pshops) {
+        for (PrintShop printShop : pshops) {
             BudgetCalculator budgetCalculator = new BudgetCalculator(printShop);
             float totalCost = 0; // In the future we may specifie the budget by file its easy!
             for (Document document : prDocs) {
@@ -191,16 +211,19 @@ public class PrintRequest implements Serializable {
                         specCost = budgetCalculator.calculatePrice(documentSpec.getFirstPage(), documentSpec.getLastPage(), documentSpec.getPrintingSchema());
                     } else {
                         // Total calculation
+                        System.out.println(document.getTotalPages());
                         specCost = budgetCalculator.calculatePrice(1, document.getTotalPages(), documentSpec.getPrintingSchema());
                     }
-                    if (specCost != -1) totalCost += specCost;
-                    else {
+                    if (specCost != -1) {
+                        totalCost += specCost;
+                    } else {
                         budgets.put(printShop.getId(), "Esta reprografia não pode satisfazer o pedido.");
                     }
                 }
             }
             if (totalCost > 0) {
-                DecimalFormat df = new DecimalFormat();
+                NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
+                DecimalFormat df = (DecimalFormat) nf;
                 df.setMaximumFractionDigits(2);
                 budgets.put(printShop.getId(), String.valueOf(df.format(totalCost))); // add to budgets
             }
