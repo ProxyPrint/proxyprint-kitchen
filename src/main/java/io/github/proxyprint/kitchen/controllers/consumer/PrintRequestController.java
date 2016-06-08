@@ -96,7 +96,7 @@ public class PrintRequestController {
         response.addProperty("printRequestID", printRequest.getId());
         //se nao estiver no heroku, fazer tunel
         if (this.environment.acceptsProfiles("!heroku")) {
-            response.addProperty("externalURL", NgrokConfig.getExternalUrl());
+            // response.addProperty("externalURL", NgrokConfig.getExternalUrl());
         }
         return GSON.toJson(response);
     }
@@ -141,10 +141,12 @@ public class PrintRequestController {
                 // Create DocumentSpec and associate it with respective Document
                 DocumentSpec tmpdc = new DocumentSpec(infLim, supLim, tmpschema);
                 documentsSpecs.save(tmpdc);
-                long did = documentsIds.get(fileName);
-                Document tmpdoc = documents.findOne(did);
-                tmpdoc.addSpecification(tmpdc);
-                documents.save(tmpdoc);
+                if(documentsIds.containsKey(fileName)) {
+                    long did = documentsIds.get(fileName);
+                    Document tmpdoc = documents.findOne(did);
+                    tmpdoc.addSpecification(tmpdc);
+                    documents.save(tmpdoc);
+                }
             }
         }
     }
@@ -159,7 +161,7 @@ public class PrintRequestController {
 
     private void singleFileHandle(MultipartFile file, PrintRequest printRequest, Map<String, Long> documentsIds) {
         String filetype = FilenameUtils.getExtension(file.getOriginalFilename());
-        if (!filetype.equals("pdf")) {
+        if (!filetype.equalsIgnoreCase("pdf")) {
             return;
         }
         String name = FilenameUtils.removeExtension(file.getOriginalFilename());
