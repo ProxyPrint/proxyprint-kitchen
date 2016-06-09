@@ -61,15 +61,16 @@ public class PayPalController {
 
 
         if(payerEmail!=null && quantity!=null && paymentStatus!=null) {
-            Consumer c = consumers.findByEmail(payerEmail);
-            if (c != null) {
+            PrintRequest pr = printRequests.findOne(prid);
+
+            if (pr != null) {
                 LoggingManager.info(this.getClass(), "******* IPN (name:value) pair : " + map + "  " +
                         "######### TransactionType : " + transactionType + "  ======== IPN verified : " + isIpnVerified);
 
-                PrintRequest pr = printRequests.findOne(prid);
+                Consumer c = pr.getConsumer();
 
                 // Divine Condition for secure request background check
-                if(pr!=null && c.getPrintRequests().contains(pr) && pr.getCost()==quantity && paymentStatus.equals(PayPalWrapper.PAYPAL_COMPLETED_PAYMENT)) {
+                if(c!=null && c.getPrintRequests().contains(pr) && pr.getCost()==quantity && paymentStatus.equals(PayPalWrapper.PAYPAL_COMPLETED_PAYMENT)) {
                     // The print request may now go to the printshop
                     pr.setStatus(PrintRequest.Status.PENDING);
                     pr.setPayPalSaleID(transactionID);
