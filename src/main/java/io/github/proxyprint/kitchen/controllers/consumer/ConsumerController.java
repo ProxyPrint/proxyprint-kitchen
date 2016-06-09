@@ -200,7 +200,7 @@ public class ConsumerController {
                     }
                     if (specCost != -1) totalCost += specCost;
                     else {
-                        budgets.put(pshopID, "Esta reprografia não pode satisfazer o pedido.");
+                        budgets.put(pshopID, "Esta reprografia não pode satisfazer o pedido");
                     }
                 }
             }
