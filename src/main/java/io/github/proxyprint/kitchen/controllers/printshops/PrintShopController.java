@@ -416,7 +416,7 @@ public class PrintShopController {
         return new ResponseEntity(GSON.toJson(pShop), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Returns a printshop", notes = "This method returns the printshop info")
+    @ApiOperation(value = "Returns a printshop", notes = "This method returns a list of printshop with info from each one.")
     @RequestMapping(value = "/printshops", method = RequestMethod.GET)
     public ResponseEntity<String> getPrintShops() {
         Iterable<PrintShop> printShops = this.printshops.findAll();
