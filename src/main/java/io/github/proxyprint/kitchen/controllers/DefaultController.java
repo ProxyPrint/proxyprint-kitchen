@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import io.github.proxyprint.kitchen.models.User;
 import io.github.proxyprint.kitchen.models.repositories.*;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -73,6 +74,7 @@ public class DefaultController {
         return GSON.toJson(response);
     }
 
+    @ApiOperation(value = "Returns success/insuccess.", notes = "This method validates the login data from a user.")
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public String login(WebRequest request) throws IOException {
         boolean auth;

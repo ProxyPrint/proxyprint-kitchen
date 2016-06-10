@@ -59,6 +59,7 @@ public class NotificationsController {
         notificationManager.sendNotification(name, new Notification(message));
     }
 
+    @ApiOperation(value = "Returns success/insuccess.", notes = "This method allows a consumer to subscribe the SSE.")
     @RequestMapping(value = "/consumer/subscribe", produces = "text/event-stream")
     public ResponseEntity<SseEmitter> subscribe(WebRequest request) throws Exception {
         String username = request.getParameter("username");
