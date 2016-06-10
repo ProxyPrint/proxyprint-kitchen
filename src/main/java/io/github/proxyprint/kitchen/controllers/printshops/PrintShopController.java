@@ -199,7 +199,7 @@ public class PrintShopController {
 
         } else if (printRequest.getStatus() == Status.FINISHED) {
 
-            if(printRequest.getPaymentType().equals(PrintRequest.PAYPAL_COMPLETED_PAYMENT)) {
+            if(printRequest.getPaymentType().equals(PrintRequest.PAYPAL_PAYMENT)) {
                 PayPalWrapper pp = new PayPalWrapper();
                 Manager manager = managers.findByPrintShop(printshop);
                 boolean payPalRes = pp.payShareToPrintShop(printRequest, manager, printshop);
