@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import io.github.proxyprint.kitchen.models.Admin;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.Document;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.DocumentSpec;
@@ -49,6 +50,8 @@ public class ConsumerController {
     private String documentsPath;
     @Autowired
     private ConsumerDAO consumers;
+    @Autowired
+    private AdminDAO admin;
     @Autowired
     private PrintingSchemaDAO printingSchemas;
     @Autowired
@@ -287,6 +290,13 @@ public class ConsumerController {
             printShops.save(p);
 
             consumer.getPrintRequests().remove(printRequest);
+
+            // Refund consumer with proxyprint money :D
+            Admin master = admin.findAll().iterator().next();
+            double returnQuantity = printRequest.getCost();
+            master.getBalance().subtractDoubleQuantity(returnQuantity);
+            admin.save(master);
+            consumer.getBalance().addDoubleQuantity(returnQuantity);
             consumers.save(consumer);
 
             response.addProperty("success", true);
