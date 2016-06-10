@@ -50,13 +50,7 @@ public class ConsumerController {
     @Autowired
     private ConsumerDAO consumers;
     @Autowired
-    private PrintingSchemaDAO printingSchemas;
-    @Autowired
     private DocumentDAO documents;
-    @Autowired
-    private DocumentSpecDAO documentsSpecs;
-    @Autowired
-    private PrintRequestDAO printRequests;
     @Autowired
     private PrintShopDAO printShops;
     @Autowired
@@ -149,7 +143,6 @@ public class ConsumerController {
         return GSON.toJson(response);
     }
 
-
     private void singleFileHandle(MultipartFile file, PrintRequest printRequest, Map<String, Long> documentsIds) {
         String filetype = FilenameUtils.getExtension(file.getOriginalFilename());
         if (!filetype.equals("pdf")) {
@@ -211,6 +204,7 @@ public class ConsumerController {
     }
 
 
+    @ApiOperation(value = "Returns success/insuccess.", notes = "This method allows consumers to remove all notifications.")
     @Secured("ROLE_USER")
     @RequestMapping(value = "/consumer/{username}/notifications", method = RequestMethod.DELETE)
     public ResponseEntity<String> deleteAllNotifications (@PathVariable(value = "username") String username) {
@@ -223,6 +217,7 @@ public class ConsumerController {
         return new ResponseEntity<>(GSON.toJson(response), HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Returns success/insuccess.", notes = "This method allows consumers to mark as read all notifications.")
     @Secured("ROLE_USER")
     @RequestMapping(value ="/consumer/{username}/notifications", method = RequestMethod.PUT)
     public ResponseEntity<String> readAllNotifications (@PathVariable(value = "username") String username) {
@@ -236,7 +231,7 @@ public class ConsumerController {
         return new ResponseEntity<>(GSON.toJson(response), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Returns pending requests.", notes = "Returns the pending requests from the user.")
+    @ApiOperation(value = "Returns pending requests.", notes = "This method retrieves to the consumer his pending requests.")
     @Secured({"ROLE_USER"})
     @RequestMapping(value = "/consumer/requests", method = RequestMethod.GET)
     public String getRequests(Principal principal) {
@@ -261,6 +256,7 @@ public class ConsumerController {
         return GSON.toJson(response);
     }
 
+    @ApiOperation(value = "Returns success/insuccess.", notes = "This method allows consumers to cancel a pending request.")
     @Secured({"ROLE_USER"})
     @RequestMapping(value = "/consumer/requests/cancel/{id}", method = RequestMethod.DELETE)
     public String cancelRequests(@PathVariable(value = "id") long id, Principal principal) {
@@ -297,7 +293,7 @@ public class ConsumerController {
         return GSON.toJson(response);
     }
 
-    @ApiOperation(value = "Returns satisfied requests.", notes = "Returns the history of satisfied requests from a consumer.")
+    @ApiOperation(value = "Returns satisfied requests.", notes = "This method retrieves the history of satisfied requests from a consumer.")
     @Secured({"ROLE_USER"})
     @RequestMapping(value = "/consumer/satisfied", method = RequestMethod.GET)
     public String getPrintShopSatisfiedRequests(Principal principal) {
