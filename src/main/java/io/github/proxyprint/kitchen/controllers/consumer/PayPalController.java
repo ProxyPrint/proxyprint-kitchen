@@ -94,7 +94,6 @@ public class PayPalController {
     }
 
     @ApiOperation(value = "It confirms that a certain consumer has pay its load up on ProxyPrint.", notes = "Its a route for being remotely called by PayPal servers.")
-    @Secured({"ROLE_USER"})
     @RequestMapping(value = "paypal/ipn/consumer/{consumerID}", method = RequestMethod.POST)
     protected void consumerLoadUpConfirmation(@PathVariable(value = "consumerID") long cid, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Map<String,String> configurationMap =  Configuration.getConfig();
@@ -111,6 +110,8 @@ public class PayPalController {
 
         if(consumer!=null) {
             if(paymentStatus.equals(PayPalWrapper.PAYPAL_COMPLETED_PAYMENT)) {
+                LoggingManager.info(this.getClass(), "******* IPN (name:value) pair : " + map + "  Load Balance Confirmation for Consumer #"+consumer.getId());
+
                 // Payment is completed
                 consumer.getBalance().addDoubleQuantity(quantity);
 
