@@ -26,13 +26,25 @@ public class PrintingSchema {
     @Column(name = "cover_specs", nullable = true)
     private String coverSpecs;
 
+    @Column(name = "is_deleted", nullable = false)
+    private boolean deleted;
+
     public PrintingSchema() {}
+
+    public PrintingSchema(PrintingSchema ps) {
+        this.name = ps.getName();
+        this.paperSpecs = ps.getPaperSpecs();
+        this.bindingSpecs = ps.getBindingSpecs();
+        this.coverSpecs = ps.getCoverSpecs();
+        this.deleted = false;
+    }
 
     public PrintingSchema(String name, String paperSpecs, String bindingSpecs, String coverSpecs) {
         this.name = name;
         this.paperSpecs = paperSpecs;
         this.bindingSpecs = bindingSpecs;
         this.coverSpecs = coverSpecs;
+        this.deleted = false;
     }
 
     public PrintingSchema(String name , PaperItem psi, BindingItem bi, CoverItem ci) {
@@ -52,6 +64,7 @@ public class PrintingSchema {
         } else {
             this.bindingSpecs="";
         }
+        this.deleted = false;
     }
 
     public long getId() { return id; }
@@ -80,6 +93,10 @@ public class PrintingSchema {
     }
 
     public void setCoverSpecs(String coverSpecs) { this.coverSpecs = coverSpecs; }
+
+    public boolean isDeleted() { return this.deleted; }
+
+    public void delete() { this.deleted=true; }
 
     /**
      * Converts the string paperSpecs to its respective PaperItem Object.
