@@ -88,9 +88,15 @@ public class PrintingSchemaController {
     @Secured({"ROLE_USER"})
     @RequestMapping(value = "/consumer/{consumerID}/printingschemas/{printingSchemaID}", method = RequestMethod.DELETE)
     public String deleteConsumerPrintingSchema(@PathVariable(value = "consumerID") long cid, @PathVariable(value = "printingSchemaID") long psid) {
-        printingSchemas.delete(psid);
         JsonObject obj = new JsonObject();
-        obj.addProperty("success", true);
+        PrintingSchema ps = printingSchemas.findOne(psid);
+        if(!ps.isDeleted()) {
+            ps.delete();
+            printingSchemas.save(ps);
+            obj.addProperty("success", true);
+        } else {
+            obj.addProperty("false", true);
+        }
         return GSON.toJson(obj);
     }
 

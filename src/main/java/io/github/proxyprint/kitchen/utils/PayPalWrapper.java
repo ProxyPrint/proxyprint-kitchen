@@ -56,8 +56,6 @@ public class PayPalWrapper {
      * @throws PayPalRESTException
      */
     public boolean payShareToPrintShop(PrintRequest prequest, Manager manager, PrintShop pshop) throws PayPalRESTException {
-        JsonObject response = new JsonObject();
-
         if (prequest != null && manager != null && pshop != null) {
             Payout payout = new Payout();
             PayoutBatch batch = null;

@@ -118,7 +118,7 @@ public class MailBox {
             msg.setRecipients(Message.RecipientType.TO,
                     InternetAddress.parse(consumer.getEmail(), false));
             msg.setSubject("ProxyPrint");
-            msg.setText("Olá " + consumer.getName() + ", o seu pedido nº #"+(printRequestID+1)+", está pronto!\n\n" +
+            msg.setText("Olá " + consumer.getName() + ", o seu pedido nº #"+(printRequestID)+", está pronto!\n\n" +
                     "Assim que quiser pode deslocar-se à reprografia "+pshopName+" para levantar o pedido.\n\n" +
                     "Com os melhores cumprimentos,\n" +
                     "\n" +
