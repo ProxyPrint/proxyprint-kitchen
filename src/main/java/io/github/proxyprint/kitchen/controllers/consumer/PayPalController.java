@@ -7,12 +7,15 @@ import com.paypal.ipn.IPNMessage;
 import io.github.proxyprint.kitchen.Configuration;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
+import io.github.proxyprint.kitchen.models.notifications.Notification;
 import io.github.proxyprint.kitchen.models.printshops.Manager;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
 import io.github.proxyprint.kitchen.models.repositories.*;
+import io.github.proxyprint.kitchen.utils.NotificationManager;
 import io.github.proxyprint.kitchen.utils.PayPalWrapper;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -43,6 +46,8 @@ public class PayPalController {
     private ManagerDAO managers;
     @Autowired
     private Gson GSON;
+    @Autowired
+    private NotificationManager notificationManager;
 
     @ApiOperation(value = "Returns nothing", notes = "This method implements the payment check mechanism given by PayPal. This method acts as callback, it reacts to the change of status of a transaction to Completed (eCheck - complete).")
     @RequestMapping(value = "/paypal/ipn/{printRequestID}", method = RequestMethod.POST)
@@ -75,6 +80,8 @@ public class PayPalController {
                     pr.setStatus(PrintRequest.Status.PENDING);
                     pr.setPayPalSaleID(transactionID);
                     printRequests.save(pr);
+                    String message = "O pagamento via PayPal do seu pedido nº #"+pr.getId()+" foi confirmado. Obrigado!";
+                    notificationManager.sendNotification(c, new Notification(message));
                     return;
                 }
             } else {
@@ -86,23 +93,36 @@ public class PayPalController {
         }
     }
 
-    // ONLY FOR TESTING!!
-    @RequestMapping(value = "/paypal/testpaypshop", method = RequestMethod.POST)
-    public String testPayShareToPrintShop() throws PayPalRESTException {
-        PrintRequest pr = printRequests.findOne((long)38);
-        PrintShop pshop = printShops.findOne((long)8);
-        Manager m = managers.findOne((long)7);
-        PayPalWrapper ppw = new PayPalWrapper();
-        return String.valueOf(ppw.payShareToPrintShop(pr,m,pshop));
-    }
+    @ApiOperation(value = "It confirms that a certain consumer has pay its load up on ProxyPrint.", notes = "Its a route for being remotely called by PayPal servers.")
+    @Secured({"ROLE_USER"})
+    @RequestMapping(value = "/consumer/{consumerID}/loadup/confirm", method = RequestMethod.POST)
+    protected void consumerLoadUpConfirmation(@PathVariable(value = "consumerID") long cid, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        Map<String,String> configurationMap =  Configuration.getConfig();
+        IPNMessage ipnlistener = new IPNMessage(request,configurationMap);
+        boolean isIpnVerified = ipnlistener.validate();
+        String transactionType = ipnlistener.getTransactionType();
+        Map<String,String> map = ipnlistener.getIpnMap();
 
-    // ONLY FOR TESTING!!
-    @RequestMapping(value = "/paypal/testrefund", method = RequestMethod.POST)
-    public String testRefund() throws PayPalRESTException {
-        Consumer c = consumers.findOne((long)2);
-        PrintRequest pr = printRequests.findOne((long)29);
-        PayPalWrapper ppw = new PayPalWrapper();
-        return String.valueOf(ppw.refundConsumerCancelledPrintRequest(c,pr));
+
+        String payerEmail = map.get("payer_email");
+        Double quantity = Double.valueOf(map.get("mc_gross"));
+        String paymentStatus = map.get("payment_status");
+        Consumer consumer = consumers.findOne(cid);
+
+        if(consumer!=null) {
+            if(paymentStatus.equals(PayPalWrapper.PAYPAL_COMPLETED_PAYMENT)) {
+                // Payment is completed
+                consumer.getBalance().addDoubleQuantity(quantity);
+
+                // Send notification to user informing its balance was updated
+                String message = "O seu carregamento de "+quantity+" € via PayPal foi confirmado. Obrigado!";
+                notificationManager.sendNotification(consumer.getUsername(), new Notification(message));
+                return;
+            }
+            // Send notification to user informing something went wrong
+            String message = "O seu carregamento de "+quantity+" € não pode ser confirmado. Por favor contacte proxyprint.pt@gmail.com indicando o seu username e quantia para que lhe possámos devolver o dinheiro.";
+            notificationManager.sendNotification(consumer.getUsername(), new Notification(message));
+        }
     }
 
 }
