@@ -1,12 +1,9 @@
 package io.github.proxyprint.kitchen.config;
 
-import com.paypal.core.LoggingManager;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.URL;
 
 /**
  * Created by daniel on 01-06-2016.
@@ -34,18 +31,17 @@ public class NgrokConfig {
                 return EXTERNAL_URL;
 
             } catch (IOException e) {
-                e.printStackTrace();
+                return null;
             } finally {
                 try {
                     reader.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    return null;
                 }
             }
         }
         else {
             return EXTERNAL_URL;
         }
-        return null;
     }
 }

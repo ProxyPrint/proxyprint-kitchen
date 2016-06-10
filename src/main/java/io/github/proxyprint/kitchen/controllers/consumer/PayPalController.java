@@ -81,7 +81,7 @@ public class PayPalController {
                     pr.setPayPalSaleID(transactionID);
                     printRequests.save(pr);
                     String message = "O pagamento via PayPal do seu pedido nº #"+pr.getId()+" foi confirmado. Obrigado!";
-                    notificationManager.sendNotification(c, new Notification(message));
+                    notificationManager.sendNotification(c.getUsername(), new Notification(message));
                     return;
                 }
             } else {
@@ -95,7 +95,7 @@ public class PayPalController {
 
     @ApiOperation(value = "It confirms that a certain consumer has pay its load up on ProxyPrint.", notes = "Its a route for being remotely called by PayPal servers.")
     @Secured({"ROLE_USER"})
-    @RequestMapping(value = "/consumer/{consumerID}/loadup/confirm", method = RequestMethod.POST)
+    @RequestMapping(value = "paypal/ipn/consumer/{consumerID}", method = RequestMethod.POST)
     protected void consumerLoadUpConfirmation(@PathVariable(value = "consumerID") long cid, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Map<String,String> configurationMap =  Configuration.getConfig();
         IPNMessage ipnlistener = new IPNMessage(request,configurationMap);
