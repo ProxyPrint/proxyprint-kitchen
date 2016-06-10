@@ -16,7 +16,7 @@ import java.util.*;
 /**
  * Created by daniel on 04-06-2016.
  */
-public class PrintRequestTests extends TestCase {
+public class BudgetTests extends TestCase {
     PrintRequest pr;
     PrintingSchema ps;
     PrintShop printshop;
@@ -186,6 +186,37 @@ public class PrintRequestTests extends TestCase {
         Map<Long,String> map = pr.calcBudgetsForPrintShops(pshops);
 
         assertTrue(map.get((long)8).equals("13.7"));
+    }
+
+    /**
+     * Doc.pdf (1 pag.)
+     * Budget: 0.75 + 0.01 = 0.76
+     * @throws Exception
+     */
+    @Test
+    public void testSimpleBudgetOnePageDoc() throws Exception {
+        ps = new PrintingSchema("Cores+A4+Frente+Agrafar", "PAPER,COLOR,A4,DUPLEX", "BINDING,STAPLING,0,0", "");
+        pr = new PrintRequest();
+        pr.setArrivalTimestamp(new Date());
+        pr.setConsumer(consumer);
+        pr.setPaymentType(PrintRequest.PROXY_PAYMENT);
+
+        Document doc = new Document("Doc.pdf", 1);
+        DocumentSpec docSpc = new DocumentSpec(1,1,ps);
+        Set<DocumentSpec> docSpcs = new HashSet<>();
+        docSpcs.add(docSpc);
+        doc.setSpecs(docSpcs);
+
+        Set<Document> docs = new HashSet<>();
+        docs.add(doc);
+        pr.setDocuments(docs);
+
+        List<PrintShop> pshops = new ArrayList<>();
+        pshops.add(printshop);
+
+        Map<Long,String> map = pr.calcBudgetsForPrintShops(pshops);
+
+        assertTrue(map.get((long)8).equals("0.76"));
     }
 
     /**
