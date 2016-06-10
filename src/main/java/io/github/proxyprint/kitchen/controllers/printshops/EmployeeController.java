@@ -7,6 +7,8 @@ import io.github.proxyprint.kitchen.models.repositories.DocumentDAO;
 import io.github.proxyprint.kitchen.models.repositories.EmployeeDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
 import java.io.File;
+
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
@@ -37,6 +39,7 @@ public class EmployeeController {
     @Autowired
     private Gson GSON;
 
+    @ApiOperation(value = "Returns a document", notes = "This method allows employees to get a document by a given id.")
     @Secured("ROLE_EMPLOYEE")
     @RequestMapping(value = "/documents/{id}", method = RequestMethod.GET)
     public ResponseEntity<FileSystemResource> getEmployees(@PathVariable(value = "id") long id, Principal principal) {
