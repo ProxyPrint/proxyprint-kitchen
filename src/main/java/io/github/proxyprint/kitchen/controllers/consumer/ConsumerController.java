@@ -37,8 +37,6 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
-
 /**
  * Created by daniel on 04-04-2016.
  */
@@ -59,6 +57,7 @@ public class ConsumerController {
     private Gson GSON;
 
     @ApiOperation(value = "Returns success/insuccess", notes = "This method allows consumer registration.")
+    @Secured("ROLE_USER")
     @RequestMapping(value = "/consumer/register", method = RequestMethod.POST)
     public String addUser(WebRequest request) {
         boolean success = false;
@@ -87,6 +86,7 @@ public class ConsumerController {
     }
 
     @ApiOperation(value = "Returns all the user information", notes = "This method allows consumers to get their personal information.")
+    @Secured("ROLE_USER")
     @RequestMapping(value = "/consumer/info", method = RequestMethod.GET)
     public String getConsumerInfo(Principal principal) {
         boolean success = false;
@@ -105,6 +105,7 @@ public class ConsumerController {
     }
 
     @ApiOperation(value = "Updates the consumer information", notes = "This method allows consumers to update their personal information.")
+    @Secured("ROLE_USER")
     @RequestMapping(value = "/consumer/info/update", method = RequestMethod.PUT)
     public String updateConsumerInfo(Principal principal, HttpServletRequest request) {
         boolean success = false;
@@ -202,7 +203,6 @@ public class ConsumerController {
 
         return budgets;
     }
-
 
     @ApiOperation(value = "Returns success/insuccess.", notes = "This method allows consumers to remove all notifications.")
     @Secured("ROLE_USER")
