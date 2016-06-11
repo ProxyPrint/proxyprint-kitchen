@@ -340,21 +340,19 @@ public class ConsumerController {
         return GSON.toJson(response);
     }
 
-    
+
     @ApiOperation(value = "Returns a certain consumer's balance.", notes = "Returns the consumer's balance, normaly used for update purposes.")
     @Secured({"ROLE_USER"})
     @RequestMapping(value = "/consumer/balance", method = RequestMethod.GET)
     public String getConsumerBalance(Principal principal) {
         JsonObject response = new JsonObject();
         Consumer consumer = consumers.findByUsername(principal.getName());
-
-        if (consumer == null) {
+        if (consumer != null) {
             Money balance = consumer.getBalance();
             response.add("balance", GSON.toJsonTree(balance));
-            response.addProperty("success", false);
+            response.addProperty("success", true);
             return GSON.toJson(response);
         }
-
         response.addProperty("success", false);
         return GSON.toJson(response);
     }
