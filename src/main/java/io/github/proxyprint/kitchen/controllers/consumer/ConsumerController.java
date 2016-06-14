@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import io.github.proxyprint.kitchen.models.Admin;
+import io.github.proxyprint.kitchen.models.Money;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.Document;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.DocumentSpec;
@@ -47,6 +49,10 @@ public class ConsumerController {
     private String documentsPath;
     @Autowired
     private ConsumerDAO consumers;
+    @Autowired
+    private AdminDAO admin;
+    @Autowired
+    private PrintingSchemaDAO printingSchemas;
     @Autowired
     private DocumentDAO documents;
     @Autowired
@@ -194,7 +200,7 @@ public class ConsumerController {
                     }
                     if (specCost != -1) totalCost += specCost;
                     else {
-                        budgets.put(pshopID, "Esta reprografia não pode satisfazer o pedido.");
+                        budgets.put(pshopID, "Esta reprografia não pode satisfazer o pedido");
                     }
                 }
             }
@@ -283,6 +289,13 @@ public class ConsumerController {
             printShops.save(p);
 
             consumer.getPrintRequests().remove(printRequest);
+
+            // Refund consumer with proxyprint money :D
+            Admin master = admin.findAll().iterator().next();
+            double returnQuantity = printRequest.getCost();
+            master.getBalance().subtractDoubleQuantity(returnQuantity);
+            admin.save(master);
+            consumer.getBalance().addDoubleQuantity(returnQuantity);
             consumers.save(consumer);
 
             response.addProperty("success", true);
@@ -322,6 +335,23 @@ public class ConsumerController {
 
         response.add("satisfiedrequests", jsonArray);
         response.addProperty("success", true);
+        return GSON.toJson(response);
+    }
+
+
+    @ApiOperation(value = "Returns a certain consumer's balance.", notes = "Returns the consumer's balance, normaly used for update purposes.")
+    @Secured({"ROLE_USER"})
+    @RequestMapping(value = "/consumer/balance", method = RequestMethod.GET)
+    public String getConsumerBalance(Principal principal) {
+        JsonObject response = new JsonObject();
+        Consumer consumer = consumers.findByUsername(principal.getName());
+        if (consumer != null) {
+            Money balance = consumer.getBalance();
+            response.add("balance", GSON.toJsonTree(balance));
+            response.addProperty("success", true);
+            return GSON.toJson(response);
+        }
+        response.addProperty("success", false);
         return GSON.toJson(response);
     }
 

@@ -35,7 +35,10 @@ public class BudgetCalculator {
         if (pschema.getPaperItem() != null) {
             PaperItem pi = pschema.getPaperItem();
             if (pi != null) {
-                if (pi.getSides().equals(Item.Sides.DUPLEX)) {
+                if(numberOfPages==1) {
+                    pi.setSides(Item.Sides.SIMPLEX);
+                }
+                else if (pi.getSides().equals(Item.Sides.DUPLEX)) {
                     if ((numberOfPages % 2) != 0) {
                         numberOfPages--;
                         flagDuplexOdd = true;
