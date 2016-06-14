@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2016 Jorge Caldas, José Cortez
  * José Francisco, Marcelo Gonçalves
  *
@@ -88,13 +88,13 @@ public class DefaultController {
             auth = false;
         } else {
             User user = createUser(username);
-            if(this.environment.acceptsProfiles("!heroku") && user.getClass().getSimpleName().equals(Consumer.class.getSimpleName())) {
+            /*if(this.environment.acceptsProfiles("!heroku") && user.getClass().getSimpleName().equals(Consumer.class.getSimpleName())) {
                 // Added tunnel to response
                 String tunnel = NgrokConfig.getExternalUrl();
                 if(tunnel!=null) {
                     response.addProperty("externalURL", tunnel);
                 }
-            }
+            }*/
             if (user == null) {
                 auth = false;
             } else {
