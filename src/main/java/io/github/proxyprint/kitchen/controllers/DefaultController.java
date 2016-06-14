@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2016 Jorge Caldas, José Cortez
  * José Francisco, Marcelo Gonçalves
  *
@@ -18,9 +18,12 @@ package io.github.proxyprint.kitchen.controllers;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import io.github.proxyprint.kitchen.config.NgrokConfig;
 import io.github.proxyprint.kitchen.models.User;
+import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -51,6 +54,8 @@ public class DefaultController {
     private EmployeeDAO employees;
     @Autowired
     private Gson GSON;
+    @Autowired
+    private Environment environment;
 
     @RequestMapping(method = RequestMethod.OPTIONS, value = "/*")
     @ResponseBody
@@ -83,6 +88,13 @@ public class DefaultController {
             auth = false;
         } else {
             User user = createUser(username);
+            /*if(this.environment.acceptsProfiles("!heroku") && user.getClass().getSimpleName().equals(Consumer.class.getSimpleName())) {
+                // Added tunnel to response
+                String tunnel = NgrokConfig.getExternalUrl();
+                if(tunnel!=null) {
+                    response.addProperty("externalURL", tunnel);
+                }
+            }*/
             if (user == null) {
                 auth = false;
             } else {
