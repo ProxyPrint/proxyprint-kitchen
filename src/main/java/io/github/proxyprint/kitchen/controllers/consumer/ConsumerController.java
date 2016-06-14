@@ -39,8 +39,6 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
-
 /**
  * Created by daniel on 04-04-2016.
  */
@@ -58,10 +56,6 @@ public class ConsumerController {
     @Autowired
     private DocumentDAO documents;
     @Autowired
-    private DocumentSpecDAO documentsSpecs;
-    @Autowired
-    private PrintRequestDAO printRequests;
-    @Autowired
     private PrintShopDAO printShops;
     @Autowired
     private PrintRequestDAO printrequests;
@@ -69,6 +63,7 @@ public class ConsumerController {
     private Gson GSON;
 
     @ApiOperation(value = "Returns success/insuccess", notes = "This method allows consumer registration.")
+    @Secured("ROLE_USER")
     @RequestMapping(value = "/consumer/register", method = RequestMethod.POST)
     public String addUser(WebRequest request) {
         boolean success = false;
@@ -97,6 +92,7 @@ public class ConsumerController {
     }
 
     @ApiOperation(value = "Returns all the user information", notes = "This method allows consumers to get their personal information.")
+    @Secured("ROLE_USER")
     @RequestMapping(value = "/consumer/info", method = RequestMethod.GET)
     public String getConsumerInfo(Principal principal) {
         boolean success = false;
@@ -115,6 +111,7 @@ public class ConsumerController {
     }
 
     @ApiOperation(value = "Updates the consumer information", notes = "This method allows consumers to update their personal information.")
+    @Secured("ROLE_USER")
     @RequestMapping(value = "/consumer/info/update", method = RequestMethod.PUT)
     public String updateConsumerInfo(Principal principal, HttpServletRequest request) {
         boolean success = false;
@@ -152,7 +149,6 @@ public class ConsumerController {
         response.addProperty("success", success);
         return GSON.toJson(response);
     }
-
 
     private void singleFileHandle(MultipartFile file, PrintRequest printRequest, Map<String, Long> documentsIds) {
         String filetype = FilenameUtils.getExtension(file.getOriginalFilename());
@@ -214,7 +210,7 @@ public class ConsumerController {
         return budgets;
     }
 
-
+    @ApiOperation(value = "Returns success/insuccess.", notes = "This method allows consumers to remove all notifications.")
     @Secured("ROLE_USER")
     @RequestMapping(value = "/consumer/{username}/notifications", method = RequestMethod.DELETE)
     public ResponseEntity<String> deleteAllNotifications (@PathVariable(value = "username") String username) {
@@ -227,6 +223,7 @@ public class ConsumerController {
         return new ResponseEntity<>(GSON.toJson(response), HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Returns success/insuccess.", notes = "This method allows consumers to mark as read all notifications.")
     @Secured("ROLE_USER")
     @RequestMapping(value ="/consumer/{username}/notifications", method = RequestMethod.PUT)
     public ResponseEntity<String> readAllNotifications (@PathVariable(value = "username") String username) {
@@ -240,7 +237,7 @@ public class ConsumerController {
         return new ResponseEntity<>(GSON.toJson(response), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Returns pending requests.", notes = "Returns the pending requests from the user.")
+    @ApiOperation(value = "Returns pending requests.", notes = "This method retrieves to the consumer his pending requests.")
     @Secured({"ROLE_USER"})
     @RequestMapping(value = "/consumer/requests", method = RequestMethod.GET)
     public String getRequests(Principal principal) {
@@ -265,6 +262,7 @@ public class ConsumerController {
         return GSON.toJson(response);
     }
 
+    @ApiOperation(value = "Returns success/insuccess.", notes = "This method allows consumers to cancel a pending request.")
     @Secured({"ROLE_USER"})
     @RequestMapping(value = "/consumer/requests/cancel/{id}", method = RequestMethod.DELETE)
     public String cancelRequests(@PathVariable(value = "id") long id, Principal principal) {
@@ -308,7 +306,7 @@ public class ConsumerController {
         return GSON.toJson(response);
     }
 
-    @ApiOperation(value = "Returns satisfied requests.", notes = "Returns the history of satisfied requests from a consumer.")
+    @ApiOperation(value = "Returns satisfied requests.", notes = "This method retrieves the history of satisfied requests from a consumer.")
     @Secured({"ROLE_USER"})
     @RequestMapping(value = "/consumer/satisfied", method = RequestMethod.GET)
     public String getPrintShopSatisfiedRequests(Principal principal) {

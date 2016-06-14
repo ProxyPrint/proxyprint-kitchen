@@ -45,6 +45,7 @@ public class ManagerController {
     /*---------------------
         Employees
      ---------------------*/
+    @ApiOperation(value = "Returns list of employees.", notes = "This method allows a manager to get the list of employees from his printshop.")
     @Secured("ROLE_MANAGER")
     @RequestMapping(value = "/printshops/{printShopID}/employees", method = RequestMethod.GET)
     public String getEmployees(@PathVariable(value = "printShopID") long psid) {
@@ -63,6 +64,7 @@ public class ManagerController {
         }
     }
 
+    @ApiOperation(value = "Returns success/insuccess.", notes = "This method allows a manager to add a employee to his printshop.")
     @Secured("ROLE_MANAGER")
     @RequestMapping(value = "/printshops/{printShopID}/employees", method = RequestMethod.POST)
     public String addEmployee(@PathVariable(value = "printShopID") long psid, HttpServletRequest request) {
@@ -99,6 +101,7 @@ public class ManagerController {
         }
     }
 
+    @ApiOperation(value = "Returns success/insuccess.", notes = "This method allows a manager to edit a employee from his printshop.")
     @Secured("ROLE_MANAGER")
     @RequestMapping(value = "/printshops/{printShopID}/employees", method = RequestMethod.PUT)
     public String editEmployee(@PathVariable(value = "printShopID") long psid, HttpServletRequest request) {
@@ -136,6 +139,7 @@ public class ManagerController {
         }
     }
 
+    @ApiOperation(value = "Returns success/insuccess.", notes = "This method allows a manager to delete a employee from his printshop.")
     @Secured("ROLE_MANAGER")
     @RequestMapping(value = "/printshops/{printShopID}/employees/{employeeID}", method = RequestMethod.DELETE)
     public String deleteEmployee(@PathVariable(value = "printShopID") long psid, @PathVariable(value = "employeeID") long eid) {
@@ -153,6 +157,7 @@ public class ManagerController {
         }
     }
 
+    @ApiOperation(value = "Returns success/insuccess.", notes = "This method allows a manager to get the statistics info from his printshop.")
     @Secured("ROLE_MANAGER")
     @RequestMapping(value = "/printshops/stats", method = RequestMethod.GET)
     public String getPrintShopStatistics(Principal principal) {
@@ -195,9 +200,9 @@ public class ManagerController {
         response.addProperty("success", false);
         return GSON.toJson(response);
     }
-    
+
+    @ApiOperation(value = "Returns a printshop", notes = "This method allows manager to get his printshop info")
     @Secured({"ROLE_MANAGER"})
-    @ApiOperation(value = "Returns a printshop", notes = "This method returns the printshop info")
     @RequestMapping(value = "/printshop", method = RequestMethod.GET)
     public String getManagerPrintShop(Principal principal) {
         Manager m = managers.findByUsername(principal.getName());

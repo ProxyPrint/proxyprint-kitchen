@@ -24,6 +24,7 @@ import io.github.proxyprint.kitchen.models.repositories.ManagerDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
 import io.github.proxyprint.kitchen.models.repositories.RegisterRequestDAO;
 import io.github.proxyprint.kitchen.utils.MailBox;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,12 +50,14 @@ public class RegisterRequestController {
     @Autowired
     private Gson GSON;
 
+    @ApiOperation(value = "Returns success.", notes = "This method allows to add a register request to a new printshop.")
     @RequestMapping(value = "/request/register", method = RequestMethod.POST)
     public ResponseEntity<RegisterRequest> registerRequest(@RequestBody RegisterRequest registerRequest) {
         registerRequest = registerRequests.save(registerRequest);
         return new ResponseEntity<>(registerRequest, HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Returns success/insuccess.", notes = "This method allows the admin to accept a register request from a printshop.")
     @Secured({"ROLE_ADMIN"})
     @RequestMapping(value = "/request/accept/{id}", method = RequestMethod.POST)
     public String acceptRequest(@PathVariable(value = "id") long id) throws IOException {
@@ -106,6 +109,7 @@ public class RegisterRequestController {
         return GSON.toJson(response);
     }
 
+    @ApiOperation(value = "Returns success/insuccess.", notes = "This method allows the admin to reject a register request from a printshop.")
     @Secured({"ROLE_ADMIN"})
     @RequestMapping(value = "/request/reject/{printRequestID}", method = RequestMethod.POST)
     public String rejectRequest(@PathVariable(value = "printRequestID") long prid, Principal principal, @RequestBody String motive) throws IOException {
@@ -127,6 +131,7 @@ public class RegisterRequestController {
         }
     }
 
+    @ApiOperation(value = "Returns a list of pending register requests.", notes = "This method allows the admin to get a list of pending register requests.")
     @Secured({"ROLE_ADMIN"})
     @RequestMapping(value = "/requests/pending", method = RequestMethod.GET)
     public ResponseEntity<List<RegisterRequest>> acceptRequest() {

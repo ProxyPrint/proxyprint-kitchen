@@ -84,6 +84,7 @@ public class PrintShopController {
     @Autowired
     private Gson GSON;
 
+    @ApiOperation(value = "Returns a list of printshops.", notes = "This method returns a list of the nearest printshops.")
     @RequestMapping(value = "/printshops/nearest", method = RequestMethod.GET)
     public String getNearestPrintShops(WebRequest request) {
         String lat = request.getParameter("latitude");
@@ -352,6 +353,7 @@ public class PrintShopController {
         return GSON.toJson(response);
     }
 
+    @ApiOperation(value = "Returns success/insuccess.", notes = "This method allows a employee to cancel a print resquest.")
     @Secured({"ROLE_MANAGER", "ROLE_EMPLOYEE"})
     @RequestMapping(value = "/printshops/requests/cancel/{id}", method = RequestMethod.POST)
     public String cancelPrintShopRequests(@PathVariable(value = "id") long id, Principal principal, @RequestBody String motive)
@@ -414,7 +416,7 @@ public class PrintShopController {
         return new ResponseEntity(GSON.toJson(pShop), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Returns a printshop", notes = "This method returns the printshop info")
+    @ApiOperation(value = "Returns a printshop", notes = "This method returns a list of printshop with info from each one.")
     @RequestMapping(value = "/printshops", method = RequestMethod.GET)
     public ResponseEntity<String> getPrintShops() {
         Iterable<PrintShop> printShops = this.printshops.findAll();

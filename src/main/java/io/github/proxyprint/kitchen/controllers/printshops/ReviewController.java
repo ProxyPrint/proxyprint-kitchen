@@ -80,22 +80,22 @@ public class ReviewController {
     }
 
     @ApiOperation(value = "Add a review to a printshop with the given ID", notes = "404 if the printshop doesn't exist.")
-   @Secured({"ROLE_USER"})
-   @RequestMapping(value = "/printshops/{id}/reviews", method = RequestMethod.POST)
-   public ResponseEntity<String> addPrintShopReview(@PathVariable("id") long id, Principal principal, @RequestBody Map<String, String> params) {
-       PrintShop pShop = this.printshops.findOne(id);
-       if (pShop == null) {
+    @Secured({"ROLE_USER"})
+    @RequestMapping(value = "/printshops/{id}/reviews", method = RequestMethod.POST)
+    public ResponseEntity<String> addPrintShopReview(@PathVariable("id") long id, Principal principal, @RequestBody Map<String, String> params) {
+        PrintShop pShop = this.printshops.findOne(id);
+        if (pShop == null) {
            return new ResponseEntity(HttpStatus.NOT_FOUND);
-       }
-       Consumer consumer = this.consumers.findByUsername(principal.getName());
-       String reviewText = params.get("review");
-       int rating = Integer.parseInt(params.get("rating"));
-       Review review = reviews.save(new Review(reviewText, rating, consumer));
-       pShop.addReview(review);
+        }
+        Consumer consumer = this.consumers.findByUsername(principal.getName());
+        String reviewText = params.get("review");
+        int rating = Integer.parseInt(params.get("rating"));
+        Review review = reviews.save(new Review(reviewText, rating, consumer));
+        pShop.addReview(review);
         pShop.updatePrintShopRating();
-       this.printshops.save(pShop);
-       return new ResponseEntity(this.GSON.toJson(review), HttpStatus.OK);
-   }
+        this.printshops.save(pShop);
+        return new ResponseEntity(this.GSON.toJson(review), HttpStatus.OK);
+    }
 
     @ApiOperation(value = "Edit an existing printshop review", notes = "404 if the printshop or the review doesn't exist.")
     @Secured({"ROLE_USER"})

@@ -6,6 +6,7 @@ import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.consumer.PrintingSchema;
 import io.github.proxyprint.kitchen.models.repositories.ConsumerDAO;
 import io.github.proxyprint.kitchen.models.repositories.PrintingSchemaDAO;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +37,7 @@ public class PrintingSchemaController {
      * @param id, the id of the consumer.
      * @return set of the printing schemas belonging to the consumer matched by the id.
      */
+    @ApiOperation(value = "Returns a set of the printing schemas.", notes = "This method allows consumers to get his PrintingSchemas.")
     @Secured({"ROLE_USER"})
     @RequestMapping(value = "/consumer/{consumerID}/printingschemas", method = RequestMethod.GET)
     public String getConsumerPrintingSchemas(@PathVariable(value = "consumerID") long id) {
@@ -59,6 +61,7 @@ public class PrintingSchemaController {
      * @param ps, the PrintingSchema created by the consumer.
      * @return HttpStatus.OK if everything went well.
      */
+    @ApiOperation(value = "Returns success/insuccess.", notes = "This method allows consumers to add a new printing schema to his printing schemas collection.")
     @Secured({"ROLE_USER"})
     @RequestMapping(value = "/consumer/{consumerID}/printingschemas", method = RequestMethod.POST)
     public String addNewConsumerPrintingSchema(@PathVariable(value = "consumerID") long id, @RequestBody PrintingSchema ps) {
@@ -85,6 +88,7 @@ public class PrintingSchemaController {
      * @param psid, the id of the printing schema to delete.
      * @return HttpStatus.OK if everything went well.
      */
+    @ApiOperation(value = "Returns success/insuccess.", notes = "This method allows consumers to delete a printing schema from his printing schemas collection.")
     @Secured({"ROLE_USER"})
     @RequestMapping(value = "/consumer/{consumerID}/printingschemas/{printingSchemaID}", method = RequestMethod.DELETE)
     public String deleteConsumerPrintingSchema(@PathVariable(value = "consumerID") long cid, @PathVariable(value = "printingSchemaID") long psid) {
@@ -108,6 +112,7 @@ public class PrintingSchemaController {
      * @param psid, the PrintingSchema id.
      * @return HttpStatus.OK if everything went well.
      */
+    @ApiOperation(value = "Returns success/insuccess.", notes = "This method allows consumers to edit a printing schema from his printing schemas collection.")
     @Secured({"ROLE_USER"})
     @RequestMapping(value = "/consumer/{consumerID}/printingschemas/{printingSchemaID}", method = RequestMethod.PUT)
     public ResponseEntity<String> editConsumerPrintingSchema(@PathVariable(value = "consumerID") long cid, @PathVariable(value = "printingSchemaID") long psid, @RequestBody PrintingSchema pschema) {

@@ -22,6 +22,7 @@ import io.github.proxyprint.kitchen.config.NgrokConfig;
 import io.github.proxyprint.kitchen.models.User;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.repositories.*;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -78,6 +79,7 @@ public class DefaultController {
         return GSON.toJson(response);
     }
 
+    @ApiOperation(value = "Returns success/insuccess.", notes = "This method validates the login data from a user.")
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public String login(WebRequest request) throws IOException {
         boolean auth;
