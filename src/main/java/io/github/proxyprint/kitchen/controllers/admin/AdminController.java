@@ -26,6 +26,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by daniel on 19-04-2016.
@@ -101,11 +102,10 @@ public class AdminController {
         printShops.save(printshop);
         printshop = new PrintShop("Gráfica Editora Poveira, Lda.", "R. Manuel Silva, 18. C.P. 4490657, Povoa de Varzim, Porto.", 41.379605, -8.761047, "133555378", "logo_6", 0);
         printShops.save(printshop);
-        printshop = new PrintShop("Staples Vila do Conde", "Avenida General Humberto Delgado 2, Vila do Conde", 41.370674, -8.744176, "133555378", "logo_7", 0);
-        printShops.save(printshop);
-        printshop = new PrintShop("Staples Vila da Maia", "Rua Comendador Valentim dos Santos Dinis 570, Maia", 41.246159, -8.625225, "133555378", "logo_7", 0);
-        printShops.save(printshop);
-
+        PrintShop staples_vdc = new PrintShop("Staples Vila do Conde", "Avenida General Humberto Delgado 2, Vila do Conde", 41.370674, -8.744176, "133555378", "logo_7", 0);
+        printShops.save(staples_vdc);
+        PrintShop staples_vdm = new PrintShop("Staples Vila da Maia", "Rua Comendador Valentim dos Santos Dinis 570, Maia", 41.246159, -8.625225, "133555378", "logo_7", 0);
+        printShops.save(staples_vdm);
 
         printshop = new PrintShop("Video Norte", "Rua Nova de Santa Cruz", 41.5594, -8.3972, "123444378", "logo_8", 0);
 
@@ -121,7 +121,7 @@ public class AdminController {
         users.save(master);
 
         /*-------------------------------------
-            PriceTable
+            PriceTable 'Video Norte'
         ------------------------------------*/
         // Paper
         PaperItem p1 = new PaperItem(Item.Format.A4, Item.Sides.DUPLEX, Item.Colors.BW);
@@ -250,6 +250,194 @@ public class AdminController {
         c = new CoverItem(Item.CoverType.PVC_OPAQUE, Item.Format.A3);
         printshop.addItemPriceTable(c.genKey(), (float) 1.5);
 
+        /*-------------------------------------
+            PriceTable 'Staples - Print at shop pricetable'
+        ------------------------------------*/
+        // Paper
+        p1 = new PaperItem(Item.Format.A4, Item.Sides.DUPLEX, Item.Colors.BW);
+
+        // Black & White
+        rp1 = new RangePaperItem(Item.Format.A4, Item.Sides.SIMPLEX, Item.Colors.BW, 1, 25);
+        staples_vdc.addItemPriceTable(rp1.genKey(),(float) 0.13);
+        staples_vdm.addItemPriceTable(rp1.genKey(),(float) 0.13);
+        rp1 = new RangePaperItem(Item.Format.A4, Item.Sides.DUPLEX, Item.Colors.BW, 1, 25);
+        staples_vdc.addItemPriceTable(rp1.genKey(),(float) 0.18);
+        staples_vdm.addItemPriceTable(rp1.genKey(),(float) 0.18);
+        rp1 = new RangePaperItem(Item.Format.A3, Item.Sides.SIMPLEX, Item.Colors.BW, 1, 25);
+        staples_vdc.addItemPriceTable(rp1.genKey(),(float) 0.19);
+        staples_vdm.addItemPriceTable(rp1.genKey(),(float) 0.19);
+        rp1 = new RangePaperItem(Item.Format.A3, Item.Sides.DUPLEX, Item.Colors.BW, 1, 25);
+        staples_vdc.addItemPriceTable(rp1.genKey(),(float) 0.35);
+        staples_vdm.addItemPriceTable(rp1.genKey(),(float) 0.35);
+
+        rp1 = new RangePaperItem(Item.Format.A4, Item.Sides.SIMPLEX, Item.Colors.BW, 26, 500);
+        staples_vdc.addItemPriceTable(rp1.genKey(),(float) 0.08);
+        staples_vdm.addItemPriceTable(rp1.genKey(),(float) 0.08);
+        rp1 = new RangePaperItem(Item.Format.A4, Item.Sides.DUPLEX, Item.Colors.BW, 26, 500);
+        staples_vdc.addItemPriceTable(rp1.genKey(),(float) 0.13);
+        staples_vdm.addItemPriceTable(rp1.genKey(),(float) 0.13);
+        rp1 = new RangePaperItem(Item.Format.A3, Item.Sides.SIMPLEX, Item.Colors.BW, 26, 500);
+        staples_vdc.addItemPriceTable(rp1.genKey(),(float) 0.14);
+        staples_vdm.addItemPriceTable(rp1.genKey(),(float) 0.14);
+        rp1 = new RangePaperItem(Item.Format.A3, Item.Sides.DUPLEX, Item.Colors.BW, 26, 500);
+        staples_vdc.addItemPriceTable(rp1.genKey(),(float) 0.24);
+        staples_vdm.addItemPriceTable(rp1.genKey(),(float) 0.24);
+
+        rp1 = new RangePaperItem(Item.Format.A4, Item.Sides.SIMPLEX, Item.Colors.BW, 501, 2000);
+        staples_vdc.addItemPriceTable(rp1.genKey(),(float) 0.05);
+        staples_vdm.addItemPriceTable(rp1.genKey(),(float) 0.05);
+        rp1 = new RangePaperItem(Item.Format.A4, Item.Sides.DUPLEX, Item.Colors.BW, 501, 2000);
+        staples_vdc.addItemPriceTable(rp1.genKey(),(float) 0.08);
+        staples_vdm.addItemPriceTable(rp1.genKey(),(float) 0.08);
+        rp1 = new RangePaperItem(Item.Format.A3, Item.Sides.SIMPLEX, Item.Colors.BW, 501, 2000);
+        staples_vdc.addItemPriceTable(rp1.genKey(),(float) 0.09);
+        staples_vdm.addItemPriceTable(rp1.genKey(),(float) 0.09);
+        rp1 = new RangePaperItem(Item.Format.A3, Item.Sides.DUPLEX, Item.Colors.BW, 501, 2000);
+        staples_vdc.addItemPriceTable(rp1.genKey(),(float) 0.16);
+        staples_vdm.addItemPriceTable(rp1.genKey(),(float) 0.16);
+
+        rp1 = new RangePaperItem(Item.Format.A4, Item.Sides.SIMPLEX, Item.Colors.BW, 2001, 3500);
+        staples_vdc.addItemPriceTable(rp1.genKey(),(float) 0.04);
+        staples_vdm.addItemPriceTable(rp1.genKey(),(float) 0.04);
+        rp1 = new RangePaperItem(Item.Format.A4, Item.Sides.DUPLEX, Item.Colors.BW, 2001, 3500);
+        staples_vdc.addItemPriceTable(rp1.genKey(),(float) 0.07);
+        staples_vdm.addItemPriceTable(rp1.genKey(),(float) 0.07);
+        rp1 = new RangePaperItem(Item.Format.A3, Item.Sides.SIMPLEX, Item.Colors.BW, 2001, 3500);
+        staples_vdc.addItemPriceTable(rp1.genKey(),(float) 0.08);
+        staples_vdm.addItemPriceTable(rp1.genKey(),(float) 0.08);
+        rp1 = new RangePaperItem(Item.Format.A3, Item.Sides.DUPLEX, Item.Colors.BW, 2001, 3500);
+        staples_vdc.addItemPriceTable(rp1.genKey(),(float) 0.14);
+        staples_vdm.addItemPriceTable(rp1.genKey(),(float) 0.14);
+
+        // Color
+        p2 = new PaperItem(Item.Format.A4, Item.Sides.DUPLEX, Item.Colors.COLOR);
+
+        rp2 = new RangePaperItem(Item.Format.A4, Item.Sides.SIMPLEX, Item.Colors.COLOR, 1, 10);
+        staples_vdc.addItemPriceTable(rp2.genKey(),(float) 1.01);
+        staples_vdm.addItemPriceTable(rp2.genKey(),(float) 1.01);
+        rp2 = new RangePaperItem(Item.Format.A4, Item.Sides.DUPLEX, Item.Colors.COLOR, 1, 10);
+        staples_vdc.addItemPriceTable(rp2.genKey(),(float) 1.97);
+        staples_vdm.addItemPriceTable(rp2.genKey(),(float) 1.97);
+        rp2 = new RangePaperItem(Item.Format.A3, Item.Sides.SIMPLEX, Item.Colors.COLOR, 1, 10);
+        staples_vdc.addItemPriceTable(rp2.genKey(),(float) 1.90);
+        staples_vdm.addItemPriceTable(rp2.genKey(),(float) 1.90);
+        rp2 = new RangePaperItem(Item.Format.A3, Item.Sides.DUPLEX, Item.Colors.COLOR, 1, 10);
+        staples_vdc.addItemPriceTable(rp2.genKey(),(float) 3.74);
+        staples_vdm.addItemPriceTable(rp2.genKey(),(float) 3.74);
+
+        rp2 = new RangePaperItem(Item.Format.A4, Item.Sides.SIMPLEX, Item.Colors.COLOR, 11, 50);
+        staples_vdc.addItemPriceTable(rp2.genKey(),(float) 0.80);
+        staples_vdm.addItemPriceTable(rp2.genKey(),(float) 0.80);
+        rp2 = new RangePaperItem(Item.Format.A4, Item.Sides.DUPLEX, Item.Colors.COLOR, 11, 50);
+        staples_vdc.addItemPriceTable(rp2.genKey(),(float) 1.58);
+        staples_vdm.addItemPriceTable(rp2.genKey(),(float) 1.58);
+        rp2 = new RangePaperItem(Item.Format.A3, Item.Sides.SIMPLEX, Item.Colors.COLOR, 11, 50);
+        staples_vdc.addItemPriceTable(rp2.genKey(),(float) 1.53);
+        staples_vdm.addItemPriceTable(rp2.genKey(),(float) 1.53);
+        rp2 = new RangePaperItem(Item.Format.A3, Item.Sides.DUPLEX, Item.Colors.COLOR, 11, 50);
+        staples_vdc.addItemPriceTable(rp2.genKey(),(float) 2.97);
+        staples_vdm.addItemPriceTable(rp2.genKey(),(float) 2.97);
+
+        rp2 = new RangePaperItem(Item.Format.A4, Item.Sides.SIMPLEX, Item.Colors.COLOR, 51, 250);
+        staples_vdc.addItemPriceTable(rp2.genKey(),(float) 0.73);
+        staples_vdm.addItemPriceTable(rp2.genKey(),(float) 0.73);
+        rp2 = new RangePaperItem(Item.Format.A4, Item.Sides.DUPLEX, Item.Colors.COLOR, 51, 250);
+        staples_vdc.addItemPriceTable(rp2.genKey(),(float) 1.42);
+        staples_vdm.addItemPriceTable(rp2.genKey(),(float) 1.42);
+        rp2 = new RangePaperItem(Item.Format.A3, Item.Sides.SIMPLEX, Item.Colors.COLOR, 51, 250);
+        staples_vdc.addItemPriceTable(rp2.genKey(),(float) 1.39);
+        staples_vdm.addItemPriceTable(rp2.genKey(),(float) 1.39);
+        rp2 = new RangePaperItem(Item.Format.A3, Item.Sides.DUPLEX, Item.Colors.COLOR, 51, 250);
+        staples_vdc.addItemPriceTable(rp2.genKey(),(float) 2.69);
+        staples_vdm.addItemPriceTable(rp2.genKey(),(float) 2.69);
+
+        rp2 = new RangePaperItem(Item.Format.A4, Item.Sides.SIMPLEX, Item.Colors.COLOR, 251, 1000);
+        staples_vdc.addItemPriceTable(rp2.genKey(),(float) 0.49);
+        staples_vdm.addItemPriceTable(rp2.genKey(),(float) 0.49);
+        rp2 = new RangePaperItem(Item.Format.A4, Item.Sides.DUPLEX, Item.Colors.COLOR, 251, 1000);
+        staples_vdc.addItemPriceTable(rp2.genKey(),(float) 0.97);
+        staples_vdm.addItemPriceTable(rp2.genKey(),(float) 0.97);
+        rp2 = new RangePaperItem(Item.Format.A3, Item.Sides.SIMPLEX, Item.Colors.COLOR, 251, 1000);
+        staples_vdc.addItemPriceTable(rp2.genKey(),(float) 0.98);
+        staples_vdm.addItemPriceTable(rp2.genKey(),(float) 0.98);
+        rp2 = new RangePaperItem(Item.Format.A3, Item.Sides.DUPLEX, Item.Colors.COLOR, 251, 1000);
+        staples_vdc.addItemPriceTable(rp2.genKey(),(float) 1.84);
+        staples_vdm.addItemPriceTable(rp2.genKey(),(float) 1.84);
+
+        // Bindings
+        b = new BindingItem(BindingItem.RingType.PLASTIC, 6, 10);
+        staples_vdc.addItemPriceTable(b.genKey(), (float) 1.67);
+        staples_vdm.addItemPriceTable(b.genKey(), (float) 1.67);
+        b = new BindingItem(BindingItem.RingType.PLASTIC, 12, 16);
+        staples_vdc.addItemPriceTable(b.genKey(), (float) 1.73);
+        staples_vdm.addItemPriceTable(b.genKey(), (float) 1.73);
+        b = new BindingItem(BindingItem.RingType.PLASTIC, 18, 22);
+        staples_vdc.addItemPriceTable(b.genKey(), (float) 2.05);
+        staples_vdm.addItemPriceTable(b.genKey(), (float) 2.05);
+        b = new BindingItem(BindingItem.RingType.PLASTIC, 25, 32);
+        staples_vdc.addItemPriceTable(b.genKey(), (float) 2.10);
+        staples_vdm.addItemPriceTable(b.genKey(), (float) 2.10);
+        b = new BindingItem(BindingItem.RingType.PLASTIC, 38, 52);
+        staples_vdc.addItemPriceTable(b.genKey(), (float) 2.68);
+        staples_vdm.addItemPriceTable(b.genKey(), (float) 2.68);
+
+        b = new BindingItem(BindingItem.RingType.WIRE, 1, 9);
+        staples_vdc.addItemPriceTable(b.genKey(), (float) 1.92);
+        staples_vdm.addItemPriceTable(b.genKey(), (float) 1.92);
+        b = new BindingItem(BindingItem.RingType.WIRE, 11, 14);
+        staples_vdc.addItemPriceTable(b.genKey(), (float) 1.64);
+        staples_vdm.addItemPriceTable(b.genKey(), (float) 1.64);
+        b = new BindingItem(BindingItem.RingType.WIRE, 16, 19);
+        staples_vdc.addItemPriceTable(b.genKey(), (float) 1.95);
+        staples_vdm.addItemPriceTable(b.genKey(), (float) 1.95);
+        b = new BindingItem(BindingItem.RingType.WIRE, 22, 25);
+        staples_vdc.addItemPriceTable(b.genKey(), (float) 2.0);
+        staples_vdm.addItemPriceTable(b.genKey(), (float) 2.0);
+        b = new BindingItem(BindingItem.RingType.WIRE, 28, 32);
+        staples_vdc.addItemPriceTable(b.genKey(), (float) 2.54);
+        staples_vdm.addItemPriceTable(b.genKey(), (float) 2.54);
+
+        b = new BindingItem(BindingItem.RingType.SPIRAL, 1, 10);
+        staples_vdc.addItemPriceTable(b.genKey(), (float) 1.92);
+        staples_vdm.addItemPriceTable(b.genKey(), (float) 1.92);
+        b = new BindingItem(BindingItem.RingType.SPIRAL, 12, 14);
+        staples_vdc.addItemPriceTable(b.genKey(), (float) 1.97);
+        staples_vdm.addItemPriceTable(b.genKey(), (float) 1.97);
+        b = new BindingItem(BindingItem.RingType.SPIRAL, 16, 20);
+        staples_vdc.addItemPriceTable(b.genKey(), (float) 2.06);
+        staples_vdm.addItemPriceTable(b.genKey(), (float) 2.06);
+        b = new BindingItem(BindingItem.RingType.SPIRAL, 22, 26);
+        staples_vdc.addItemPriceTable(b.genKey(), (float) 2.33);
+        staples_vdm.addItemPriceTable(b.genKey(), (float) 2.33);
+        b = new BindingItem(BindingItem.RingType.SPIRAL, 28, 32);
+        staples_vdc.addItemPriceTable(b.genKey(), (float) 2.99);
+        staples_vdm.addItemPriceTable(b.genKey(), (float) 2.99);
+        bs = new BindingItem(BindingItem.RingType.STAPLING, 0, 0);
+        staples_vdc.addItemPriceTable(bs.genKey(), (float) 0.01);
+        staples_vdm.addItemPriceTable(bs.genKey(), (float) 0.01);
+
+        // Covers
+        c = new CoverItem(Item.CoverType.CRISTAL_ACETATE, Item.Format.A4);
+        staples_vdc.addItemPriceTable(c.genKey(), (float) 0.5);
+        staples_vdm.addItemPriceTable(c.genKey(), (float) 0.5);
+
+        c = new CoverItem(Item.CoverType.PVC_TRANSPARENT, Item.Format.A4);
+        staples_vdc.addItemPriceTable(c.genKey(), (float) 0.7);
+        staples_vdm.addItemPriceTable(c.genKey(), (float) 0.7);
+        c = new CoverItem(Item.CoverType.PVC_TRANSPARENT, Item.Format.A3);
+        staples_vdc.addItemPriceTable(c.genKey(), (float) 1.5);
+        staples_vdm.addItemPriceTable(c.genKey(), (float) 1.5);
+
+        c = new CoverItem(Item.CoverType.PVC_OPAQUE, Item.Format.A4);
+        staples_vdc.addItemPriceTable(c.genKey(), (float) 0.7);
+        staples_vdm.addItemPriceTable(c.genKey(), (float) 0.7);
+        c = new CoverItem(Item.CoverType.PVC_OPAQUE, Item.Format.A3);
+        staples_vdc.addItemPriceTable(c.genKey(), (float) 1.5);
+        staples_vdm.addItemPriceTable(c.genKey(), (float) 1.5);
+
+        printShops.save(staples_vdc);
+        printShops.save(staples_vdm);
+
         // PrintingSchemas
         // PrintingSchema printingSchema1 = new PrintingSchema("A4+2LAD+PB+Agrafar",p1.genKey(),bs.genKey(),"");
         PrintingSchema printingSchema1 = new PrintingSchema("A4+2LAD+PB+Agrafar",p1.genKey(),"BINDING,STAPLING,0,0","");
@@ -321,8 +509,11 @@ public class AdminController {
         employee = new Employee("carlos", "1234", "Carlos do Mar", printshop);
         employee.setPrintShop(printshop2);
         users.save(employee);
-        employee = new Employee("mario", "1234", "Mário Pereira", printshop);
-        employee.setPrintShop(printshop2);
+        employee = new Employee("mariovdc", "1234", "Mário Pereira", staples_vdc);
+        employee.setPrintShop(staples_vdc);
+        users.save(employee);
+        employee = new Employee("mariovdm", "1234", "Mário Lino", staples_vdm);
+        employee.setPrintShop(staples_vdm);
         users.save(employee);
         /*--------------------- Employees ---------------------*/
 
@@ -401,6 +592,8 @@ public class AdminController {
         registerRequests.save(registerRequest4);
 
         printShops.save(printshop);
+        printShops.save(staples_vdc);
+        printShops.save(staples_vdm);
 
         /*---------------- Reviews -----------------------------*/
         Review r = new Review("Muito bom", 4, joao);
@@ -416,6 +609,27 @@ public class AdminController {
 
         response.addProperty("message", "seeding completed");
 
+        return new ResponseEntity<>(GSON.toJson(response), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Returns nothing.", notes = "This method allows developers to fill in the database with fake but consistent data.")
+    @RequestMapping(value = "/admin/useed", method = RequestMethod.POST)
+    public ResponseEntity<String> useed() {
+        JsonObject response = new JsonObject();
+
+        String name = "AAA";
+        Money money = new Money(1000,00);
+        Random rand = new Random();
+        Consumer c;
+        int min=1;
+        int max=90;
+        for(int i=0; i < 1000; i++) {
+            c = new Consumer(name+i, name.toLowerCase()+i, "1234", "proxyprint.pt.consumer@gmail.com", String.valueOf(rand.nextInt((max - min) + 1) + min), String.valueOf(rand.nextInt((max - min) + 1) + min));
+            c.setBalance(money);
+            users.save(c);
+        }
+
+        response.addProperty("message",  "consumers seeding completed");
         return new ResponseEntity<>(GSON.toJson(response), HttpStatus.OK);
     }
 

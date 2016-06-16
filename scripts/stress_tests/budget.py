@@ -5,6 +5,7 @@ import json
 # Global data configs
 N_PRINTSHOPS=8
 MAX_ALLOWED_BUDGETS=5
+MAX_CONSUMERS=1000
 # URL
 url = "http://localhost:8080/consumer/budget"
 # Files location and file selection
@@ -20,11 +21,13 @@ for i in range (1,random.randrange(1,MAX_ALLOWED_BUDGETS+1)):
     pshop_id += 1
     if pshop_id == N_PRINTSHOPS:
         pshop_id=1
+# Random user
+consumer = "aaa"+str(random.randrange(1,MAX_CONSUMERS))
 
 data={"files":{file_name:{"specs":[{"id":2,"name":"","paperSpecs":"","bindingSpecs":"","coverSpecs":"","deleted":False,"from":0,"to":0}],"pages":30,"name":file_name}},"printshops":printshops}
 
 data = {'files': open(file_path,'rb'), 'printRequest': json.dumps(data) }
 
-r = requests.post(url, files=data, auth=("joao","1234"))
+r = requests.post(url, files=data, auth=(consumer,"1234"))
 
 print r.text
