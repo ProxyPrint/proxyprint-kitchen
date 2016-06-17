@@ -10,6 +10,8 @@ import io.github.proxyprint.kitchen.models.consumer.printrequest.Document;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.DocumentSpec;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.Item;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.PaperItem;
 import io.github.proxyprint.kitchen.models.repositories.*;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.io.FilenameUtils;
@@ -95,9 +97,9 @@ public class PrintRequestController {
         response.add("budgets", GSON.toJsonTree(budgets));
         response.addProperty("printRequestID", printRequest.getId());
         //se nao estiver no heroku, fazer tunel
-        if (this.environment.acceptsProfiles("!heroku")) {
-            response.addProperty("externalURL", NgrokConfig.getExternalUrl());
-        }
+        //if (this.environment.acceptsProfiles("!heroku")) {
+        //    response.addProperty("externalURL", NgrokConfig.getExternalUrl());
+        //}
         return GSON.toJson(response);
     }
 
@@ -256,6 +258,66 @@ public class PrintRequestController {
         BigDecimal bd = new BigDecimal(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
+    }
+
+    @ApiOperation(value = "Returns a Print Request ID", notes = "This method allows other platforms to print a document using ProxyPrint")
+    @RequestMapping(value = "/printdocument", method = RequestMethod.POST)
+    public String printDocument(HttpServletRequest request, @RequestPart("printRequest") String requestJSON) throws IOException {
+        JsonObject response = new JsonObject();
+
+        PrintRequest printRequest = new PrintRequest();
+        printRequest = printRequests.save(printRequest);
+
+        Map prequest = new Gson().fromJson(requestJSON, Map.class);
+
+        // Process files
+        Map<String, Long> documentsIds = processSumitedFiles(printRequest, request);
+        // Parse and store documents and specifications
+        storeDocumentsWithDefaultSpecs(prequest, documentsIds);
+
+        response.addProperty("success", true);
+        response.addProperty("printRequestID", printRequest.getId());
+        return GSON.toJson(response);
+    }
+
+    @ApiOperation(value = "Returns a document", notes = "This method returns the document from a print request ")
+    @RequestMapping(value = "/printdocument/{id}", method = RequestMethod.GET)
+    public String getDocument(@PathVariable(value = "id") long id) throws IOException {
+        JsonObject response = new JsonObject();
+
+        PrintRequest printRequest = printRequests.findOne(id);
+
+        if (printRequest == null) {
+            response.addProperty("success", false);
+            return GSON.toJson(response);
+        }
+
+        response.addProperty("success", true);
+        response.add("documents", GSON.toJsonTree(printRequest.getDocuments()));
+        return GSON.toJson(response);
+    }
+
+    public void storeDocumentsWithDefaultSpecs(Map prequest, Map<String, Long> documentsIds) {
+        Map<String, Map> mdocuments = (Map) prequest.get("files");
+
+        for (Map.Entry<String, Map> documentSpecs : mdocuments.entrySet()) {
+            String fileName = documentSpecs.getKey();
+            List<Map<String, String>> specs = (List) documentSpecs.getValue().get("specs");
+
+            PaperItem p1 = new PaperItem(Item.Format.A4, Item.Sides.DUPLEX, Item.Colors.BW);
+            PrintingSchema tmpschema = new PrintingSchema("A4+2LAD+PB",p1.genKey(),"BINDING,STAPLING,0,0","");
+
+            // Create DocumentSpec and associate it with respective Document
+            DocumentSpec tmpdc = new DocumentSpec(0, 0, tmpschema);
+            documentsSpecs.save(tmpdc);
+
+            if(documentsIds.containsKey(fileName)) {
+                long did = documentsIds.get(fileName);
+                Document tmpdoc = documents.findOne(did);
+                tmpdoc.addSpecification(tmpdc);
+                documents.save(tmpdoc);
+            }
+        }
     }
 
 }
