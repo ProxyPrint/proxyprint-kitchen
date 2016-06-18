@@ -21,9 +21,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.print.Doc;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -320,4 +322,36 @@ public class PrintRequestController {
         }
     }
 
+    @ApiOperation(value = "Returns a set of budgets", notes = "This method calculates budgets for a given and already specified print request. The budgets are calculated for specific printshops also passed along as parameters.")
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/printrecipe/{id}/budget", method = RequestMethod.POST)
+    public String calcBudgetForPrintRecipe(Principal principal, WebRequest request, @PathVariable(value = "id") long id) throws IOException {
+        JsonObject response = new JsonObject();
+        Consumer consumer = consumers.findByUsername(principal.getName());
+
+        PrintRequest printRequest = printRequests.findOne(id);
+        printRequest.setConsumer(consumer);
+        printRequest = printRequests.save(printRequest);
+
+        String[] listPShops = request.getParameterValues("printshops");
+
+        // PrintShops
+        List<Long> pshopIDs = new ArrayList<>();
+        for (String pID : listPShops) {
+            pshopIDs.add((long) Double.valueOf(Double.valueOf(pID)).intValue());
+        }
+
+        // Finally calculate the budgets :D
+        List<PrintShop> pshops = getListOfPrintShops(pshopIDs);
+        Map<Long, String> budgets = printRequest.calcBudgetsForPrintShops(pshops);
+
+        response.addProperty("success", true);
+        response.add("budgets", GSON.toJsonTree(budgets));
+        response.addProperty("printRequestID", printRequest.getId());
+        //se nao estiver no heroku, fazer tunel
+        //if (this.environment.acceptsProfiles("!heroku")) {
+        //    response.addProperty("externalURL", NgrokConfig.getExternalUrl());
+        //}
+        return GSON.toJson(response);
+    }
 }
