@@ -63,7 +63,6 @@ public class ConsumerController {
     private Gson GSON;
 
     @ApiOperation(value = "Returns success/insuccess", notes = "This method allows consumer registration.")
-    @Secured("ROLE_USER")
     @RequestMapping(value = "/consumer/register", method = RequestMethod.POST)
     public String addUser(WebRequest request) {
         boolean success = false;
