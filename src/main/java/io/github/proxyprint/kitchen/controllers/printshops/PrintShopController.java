@@ -192,8 +192,8 @@ public class PrintShopController {
                     " está completo! Pode deslocar-se á reprografia para proceder ao levantamento.";
 
             // Send email to user
-            MailBox m = new MailBox();
-            m.sendEmailFinishedPrintRequest(consumer, printRequest.getId(), printshop.getName());
+            /*MailBox m = new MailBox();
+            m.sendEmailFinishedPrintRequest(consumer, printRequest.getId(), printshop.getName());*/
 
             notificationManager.sendNotification(user, new Notification(not));
             printRequest.setStatus(Status.FINISHED);
@@ -389,8 +389,8 @@ public class PrintShopController {
             consumers.save(user);
 
             // Send email
-            MailBox mb = new MailBox();
-            mb.sendEmailCancelledPrintRequest(printRequest, user, motive);
+            /*MailBox mb = new MailBox();
+            mb.sendEmailCancelledPrintRequest(printRequest, user, motive);*/
 
             // Notification
             not = "O pedido número " + requestid + " foi cancelado! Motivo: " + motive;
