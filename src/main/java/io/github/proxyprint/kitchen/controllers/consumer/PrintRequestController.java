@@ -262,24 +262,48 @@ public class PrintRequestController {
         return bd.doubleValue();
     }
 
+    /*-------------------------------------------------Integration----------------------------------------------------*/
+
     @ApiOperation(value = "Returns a Print Request ID", notes = "This method allows other platforms to print a document using ProxyPrint")
     @RequestMapping(value = "/printdocument", method = RequestMethod.POST)
-    public String printDocument(HttpServletRequest request, @RequestPart("printRequest") String requestJSON) throws IOException {
+    public String printDocument(HttpServletRequest request) throws IOException {
         JsonObject response = new JsonObject();
 
         PrintRequest printRequest = new PrintRequest();
         printRequest = printRequests.save(printRequest);
 
-        Map prequest = new Gson().fromJson(requestJSON, Map.class);
-
         // Process files
         Map<String, Long> documentsIds = processSumitedFiles(printRequest, request);
+
+        System.out.println("\n\n" + documentsIds.keySet().toString() +"\n\n");
+
         // Parse and store documents and specifications
-        storeDocumentsWithDefaultSpecs(prequest, documentsIds);
+        storeDocumentsWithDefaultSpecs(documentsIds);
 
         response.addProperty("success", true);
         response.addProperty("printRequestID", printRequest.getId());
         return GSON.toJson(response);
+    }
+
+    public void storeDocumentsWithDefaultSpecs(Map<String, Long> documentsIds) {
+
+        PaperItem p1 = new PaperItem(Item.Format.A4, Item.Sides.DUPLEX, Item.Colors.BW);
+        PrintingSchema tmpschema = new PrintingSchema("A4+2LAD+PB",p1.genKey(),"BINDING,STAPLING,0,0","");
+        printingSchemas.save(tmpschema);
+
+        for(String fileName : documentsIds.keySet()) {
+
+            System.out.println("\n\n" + fileName +"\n\n");
+
+            // Create DocumentSpec and associate it with respective Document
+            DocumentSpec tmpdc = new DocumentSpec(0, 0, tmpschema);
+            documentsSpecs.save(tmpdc);
+
+            long did = documentsIds.get(fileName);
+            Document tmpdoc = documents.findOne(did);
+            tmpdoc.addSpecification(tmpdc);
+            documents.save(tmpdoc);
+        }
     }
 
     @ApiOperation(value = "Returns a document", notes = "This method returns the document from a print request ")
@@ -296,30 +320,10 @@ public class PrintRequestController {
 
         response.addProperty("success", true);
         response.add("documents", GSON.toJsonTree(printRequest.getDocuments()));
+
+        System.out.println("\n\n" + "RESPONDI" +"\n\n");
+
         return GSON.toJson(response);
-    }
-
-    public void storeDocumentsWithDefaultSpecs(Map prequest, Map<String, Long> documentsIds) {
-        Map<String, Map> mdocuments = (Map) prequest.get("files");
-
-        for (Map.Entry<String, Map> documentSpecs : mdocuments.entrySet()) {
-            String fileName = documentSpecs.getKey();
-            List<Map<String, String>> specs = (List) documentSpecs.getValue().get("specs");
-
-            PaperItem p1 = new PaperItem(Item.Format.A4, Item.Sides.DUPLEX, Item.Colors.BW);
-            PrintingSchema tmpschema = new PrintingSchema("A4+2LAD+PB",p1.genKey(),"BINDING,STAPLING,0,0","");
-
-            // Create DocumentSpec and associate it with respective Document
-            DocumentSpec tmpdc = new DocumentSpec(0, 0, tmpschema);
-            documentsSpecs.save(tmpdc);
-
-            if(documentsIds.containsKey(fileName)) {
-                long did = documentsIds.get(fileName);
-                Document tmpdoc = documents.findOne(did);
-                tmpdoc.addSpecification(tmpdc);
-                documents.save(tmpdoc);
-            }
-        }
     }
 
     @ApiOperation(value = "Returns a set of budgets", notes = "This method calculates budgets for a given and already specified print request. The budgets are calculated for specific printshops also passed along as parameters.")
