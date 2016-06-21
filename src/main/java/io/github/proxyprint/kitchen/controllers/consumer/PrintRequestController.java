@@ -94,10 +94,6 @@ public class PrintRequestController {
         response.addProperty("success", true);
         response.add("budgets", GSON.toJsonTree(budgets));
         response.addProperty("printRequestID", printRequest.getId());
-        //se nao estiver no heroku, fazer tunel
-        if (this.environment.acceptsProfiles("!heroku")) {
-            response.addProperty("externalURL", NgrokConfig.getExternalUrl());
-        }
         return GSON.toJson(response);
     }
 
