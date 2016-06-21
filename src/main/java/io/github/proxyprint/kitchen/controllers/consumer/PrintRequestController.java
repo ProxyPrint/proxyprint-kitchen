@@ -325,7 +325,7 @@ public class PrintRequestController {
     @ApiOperation(value = "Returns a set of budgets", notes = "This method calculates budgets for a given and already specified print request. The budgets are calculated for specific printshops also passed along as parameters.")
     @Secured("ROLE_USER")
     @RequestMapping(value = "/printrecipe/{id}/budget", method = RequestMethod.POST)
-    public String calcBudgetForPrintRecipe(Principal principal, WebRequest request, @PathVariable(value = "id") long id) throws IOException {
+    public String calcBudgetForPrintRecipe(Principal principal, @PathVariable(value = "id") long id, HttpServletRequest request) throws IOException {
         JsonObject response = new JsonObject();
         Consumer consumer = consumers.findByUsername(principal.getName());
 
@@ -333,12 +333,14 @@ public class PrintRequestController {
         printRequest.setConsumer(consumer);
         printRequest = printRequests.save(printRequest);
 
-        String[] listPShops = request.getParameterValues("printshops");
+        String requestJSON = IOUtils.toString(request.getInputStream());
 
         // PrintShops
+        List<Double> tmpPshopIDs = GSON.fromJson(requestJSON, List.class);
         List<Long> pshopIDs = new ArrayList<>();
-        for (String pID : listPShops) {
-            pshopIDs.add((long) Double.valueOf(Double.valueOf(pID)).intValue());
+
+        for (Double doubleID : tmpPshopIDs) {
+            pshopIDs.add((long) Double.valueOf(doubleID).intValue());
         }
 
         // Finally calculate the budgets :D
@@ -348,10 +350,13 @@ public class PrintRequestController {
         response.addProperty("success", true);
         response.add("budgets", GSON.toJsonTree(budgets));
         response.addProperty("printRequestID", printRequest.getId());
+
         //se nao estiver no heroku, fazer tunel
         //if (this.environment.acceptsProfiles("!heroku")) {
         //    response.addProperty("externalURL", NgrokConfig.getExternalUrl());
         //}
+
         return GSON.toJson(response);
     }
+
 }
