@@ -47,7 +47,7 @@ public abstract class User implements Serializable {
     @JsonIgnore
     @Column(name = "password", nullable = false)
     protected String password;
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection
     @CollectionTable(
             name = "roles",
             joinColumns = @JoinColumn(name = "user_id")

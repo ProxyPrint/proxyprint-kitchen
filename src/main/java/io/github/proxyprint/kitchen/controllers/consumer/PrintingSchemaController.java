@@ -17,13 +17,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Set;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * Created by daniel on 28-04-2016.
  */
-@RestController
+@RestController 
+@Transactional
 public class PrintingSchemaController {
     @Autowired
     private ConsumerDAO consumers;

@@ -5,7 +5,6 @@ import io.github.proxyprint.kitchen.models.consumer.printrequest.Document;
 import io.github.proxyprint.kitchen.models.printshops.Employee;
 import io.github.proxyprint.kitchen.models.repositories.DocumentDAO;
 import io.github.proxyprint.kitchen.models.repositories.EmployeeDAO;
-import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
 import java.io.File;
 
 import io.swagger.annotations.ApiOperation;
@@ -23,11 +22,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 import javax.annotation.Resource;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Created by daniel on 14-05-2016.
  */
-@RestController
+@RestController 
+@Transactional
 public class EmployeeController {
 
     @Resource(name = "documentsPath")
