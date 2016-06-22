@@ -275,8 +275,6 @@ public class PrintRequestController {
         // Process files
         Map<String, Long> documentsIds = processSumitedFiles(printRequest, request);
 
-        System.out.println("\n\n" + documentsIds.keySet().toString() +"\n\n");
-
         // Parse and store documents and specifications
         storeDocumentsWithDefaultSpecs(documentsIds);
 
@@ -292,8 +290,6 @@ public class PrintRequestController {
         printingSchemas.save(tmpschema);
 
         for(String fileName : documentsIds.keySet()) {
-
-            System.out.println("\n\n" + fileName +"\n\n");
 
             // Create DocumentSpec and associate it with respective Document
             DocumentSpec tmpdc = new DocumentSpec(0, 0, tmpschema);
@@ -321,14 +317,12 @@ public class PrintRequestController {
         response.addProperty("success", true);
         response.add("documents", GSON.toJsonTree(printRequest.getDocuments()));
 
-        System.out.println("\n\n" + "RESPONDI" +"\n\n");
-
         return GSON.toJson(response);
     }
 
     @ApiOperation(value = "Returns a set of budgets", notes = "This method calculates budgets for a given and already specified print request. The budgets are calculated for specific printshops also passed along as parameters.")
     @Secured("ROLE_USER")
-    @RequestMapping(value = "/printrecipe/{id}/budget", method = RequestMethod.POST)
+    @RequestMapping(value = "/printdocument/{id}/budget", method = RequestMethod.POST)
     public String calcBudgetForPrintRecipe(Principal principal, @PathVariable(value = "id") long id, HttpServletRequest request) throws IOException {
         JsonObject response = new JsonObject();
         Consumer consumer = consumers.findByUsername(principal.getName());
