@@ -17,11 +17,13 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Created by daniel on 10-05-2016.
  */
-@RestController
+@RestController 
+@Transactional
 public class PriceTableController {
     @Autowired
     private PrintShopDAO printshops;

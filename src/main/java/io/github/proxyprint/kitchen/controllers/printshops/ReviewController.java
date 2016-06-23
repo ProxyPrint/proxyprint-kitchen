@@ -26,13 +26,13 @@ import io.github.proxyprint.kitchen.models.repositories.PrintShopDAO;
 import io.github.proxyprint.kitchen.models.repositories.ReviewDAO;
 import io.swagger.annotations.ApiOperation;
 import java.security.Principal;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,7 +44,8 @@ import org.springframework.web.context.request.WebRequest;
  *
  * @author jose
  */
-@RestController
+@RestController 
+@Transactional
 public class ReviewController {
 
     @Autowired

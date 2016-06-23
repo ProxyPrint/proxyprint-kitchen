@@ -38,7 +38,6 @@ import io.github.proxyprint.kitchen.models.printshops.pricetable.Item;
 import io.github.proxyprint.kitchen.models.printshops.pricetable.RangePaperItem;
 import io.github.proxyprint.kitchen.models.repositories.*;
 import io.github.proxyprint.kitchen.utils.DistanceCalculator;
-import io.github.proxyprint.kitchen.utils.MailBox;
 import io.github.proxyprint.kitchen.utils.NotificationManager;
 import io.github.proxyprint.kitchen.utils.PayPalWrapper;
 import io.swagger.annotations.ApiOperation;
@@ -56,11 +55,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author josesousa
  */
-@RestController
+@RestController 
+@Transactional
 public class PrintShopController {
 
     @Autowired

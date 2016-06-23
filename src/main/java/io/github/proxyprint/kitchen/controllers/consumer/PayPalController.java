@@ -1,21 +1,17 @@
 package io.github.proxyprint.kitchen.controllers.consumer;
 
 import com.google.gson.Gson;
-import com.paypal.base.rest.PayPalRESTException;
 import com.paypal.core.LoggingManager;
 import com.paypal.ipn.IPNMessage;
 import io.github.proxyprint.kitchen.Configuration;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
 import io.github.proxyprint.kitchen.models.notifications.Notification;
-import io.github.proxyprint.kitchen.models.printshops.Manager;
-import io.github.proxyprint.kitchen.models.printshops.PrintShop;
 import io.github.proxyprint.kitchen.models.repositories.*;
 import io.github.proxyprint.kitchen.utils.NotificationManager;
 import io.github.proxyprint.kitchen.utils.PayPalWrapper;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,11 +22,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Created by daniel on 20-05-2016.
  */
-@RestController
+@RestController 
+@Transactional
 public class PayPalController {
     @Autowired
     private UserDAO users;

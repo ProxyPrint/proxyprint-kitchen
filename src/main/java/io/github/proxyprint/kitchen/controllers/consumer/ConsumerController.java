@@ -38,11 +38,13 @@ import java.security.Principal;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Created by daniel on 04-04-2016.
  */
-@RestController
+@RestController 
+@Transactional
 public class ConsumerController {
 
     @Resource(name = "documentsPath")

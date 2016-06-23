@@ -34,11 +34,13 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author josesousa
  */
-@RestController
+@RestController 
+@Transactional
 public class RegisterRequestController {
 
     @Autowired

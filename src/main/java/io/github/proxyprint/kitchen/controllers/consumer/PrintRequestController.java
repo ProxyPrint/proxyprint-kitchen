@@ -2,7 +2,6 @@ package io.github.proxyprint.kitchen.controllers.consumer;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import io.github.proxyprint.kitchen.config.NgrokConfig;
 import io.github.proxyprint.kitchen.models.Admin;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
 import io.github.proxyprint.kitchen.models.consumer.PrintingSchema;
@@ -32,11 +31,13 @@ import java.security.Principal;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Created by daniel on 20-05-2016.
  */
-@RestController
+@RestController 
+@Transactional
 public class PrintRequestController {
 
     @Autowired

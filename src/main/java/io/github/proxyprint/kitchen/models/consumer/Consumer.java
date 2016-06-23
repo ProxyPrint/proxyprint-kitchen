@@ -27,15 +27,15 @@ public class Consumer extends User {
     private String longitude;
 
     @JoinColumn(name = "consumer_id")
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL)
     private Set<PrintingSchema> printingSchemas;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "consumer")
     @Exclude
     private Set<PrintRequest> printrequests;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "consumer")
     @Exclude
     private List<Notification> notifications;

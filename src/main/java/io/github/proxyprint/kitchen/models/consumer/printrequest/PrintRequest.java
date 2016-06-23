@@ -56,14 +56,14 @@ public class PrintRequest implements Serializable {
     private Status status;
     @Column(nullable = true, name = "paypal_sale_id")
     private String payPalSaleID;
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.ALL)
     @Exclude
     private PrintShop printshop;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.ALL)
     private Consumer consumer;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "print_request_id")
     private Set<Document> documents;
 

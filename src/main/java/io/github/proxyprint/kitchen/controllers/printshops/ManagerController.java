@@ -24,11 +24,13 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Created by daniel on 27-04-2016.
  */
-@RestController
+@RestController 
+@Transactional
 public class ManagerController {
 
     @Autowired

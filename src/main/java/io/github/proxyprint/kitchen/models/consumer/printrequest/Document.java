@@ -26,7 +26,7 @@ public class Document implements Serializable {
     @Column(name = "total_pages", nullable = false)
     private int totalPages;
 
-    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "document_id")
     private Set<DocumentSpec> specs;
 

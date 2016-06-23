@@ -25,10 +25,10 @@ import java.security.Principal;
 import java.util.List;
 
 import io.swagger.annotations.ApiOperation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,7 +41,8 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
  *
  * @author jose
  */
-@RestController
+@RestController 
+@Transactional
 public class NotificationsController {
 
     @Autowired
