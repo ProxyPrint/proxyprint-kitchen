@@ -439,16 +439,23 @@ public class AdminController {
         printShops.save(staples_vdm);
 
         // PrintingSchemas
-        // PrintingSchema printingSchema1 = new PrintingSchema("A4+2LAD+PB+Agrafar",p1.genKey(),bs.genKey(),"");
         PrintingSchema printingSchema1 = new PrintingSchema("A4+2LAD+PB+Agrafar",p1.genKey(),"BINDING,STAPLING,0,0","");
-        // PrintingSchema printingSchema2 = new PrintingSchema("A4+2LAD+CORES+Encaderna",p2.genKey(),b.genKey(),c.genKey());
-        PrintingSchema printingSchema2 = new PrintingSchema("A4+2LAD+CORES+Encaderna",p2.genKey(),"BINDING,SPIRAL",c.genKey());
         printingSchemas.save(printingSchema1);
+        PrintingSchema printingSchema2= new PrintingSchema("A4+2LAD+CORES+Encaderna",p2.genKey(),"BINDING,SPIRAL",c.genKey());
         printingSchemas.save(printingSchema2);
+        PaperItem pi = new PaperItem(Item.Format.A4, Item.Sides.DUPLEX, Item.Colors.BW);
+        PrintingSchema printingSchema3 = new PrintingSchema("A4+2LAD+PB",pi.genKey(),"","");
+        PaperItem pi2 = new PaperItem(Item.Format.A3, Item.Sides.SIMPLEX, Item.Colors.COLOR);
+        PrintingSchema printingSchema4 = new PrintingSchema("A4+SIMPLEX+COLOR",pi.genKey(),"","");
+        PaperItem pi3 = new PaperItem(Item.Format.A3, Item.Sides.SIMPLEX, Item.Colors.COLOR);
+        PrintingSchema printingSchema5 = new PrintingSchema("A4+SIMPLEX+PW+Encadernar",pi.genKey(),"BINDING,SPIRAL","COVER,PVC_TRANSPARENT,A4");
 
         // Add printing schemas to joao
         joao.addPrintingSchema(printingSchema1);
         joao.addPrintingSchema(printingSchema2);
+        joao.addPrintingSchema(printingSchema3);
+        joao.addPrintingSchema(printingSchema4);
+        joao.addPrintingSchema(printingSchema5);
 
         // Add ProxyMoney to Consumers
         Money money = new Money(1342,22);
@@ -612,7 +619,7 @@ public class AdminController {
         return new ResponseEntity<>(GSON.toJson(response), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Returns nothing.", notes = "This method allows developers to fill in the database with fake but consistent data.")
+    @ApiOperation(value = "Returns nothing.", notes = "This method allows developers to fill in the database with fake consumer accounts.")
     @RequestMapping(value = "/admin/useed", method = RequestMethod.POST)
     public ResponseEntity<String> useed() {
         JsonObject response = new JsonObject();
@@ -623,6 +630,7 @@ public class AdminController {
         Consumer c;
         int min=1;
         int max=90;
+
         for(int i=0; i < 1000; i++) {
             c = new Consumer(name+i, name.toLowerCase()+i, "1234", "proxyprint.pt.consumer@gmail.com", String.valueOf(rand.nextInt((max - min) + 1) + min), String.valueOf(rand.nextInt((max - min) + 1) + min));
             c.setBalance(money);

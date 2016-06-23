@@ -98,10 +98,7 @@ public class PrintRequestController {
         response.addProperty("success", true);
         response.add("budgets", GSON.toJsonTree(budgets));
         response.addProperty("printRequestID", printRequest.getId());
-        //se nao estiver no heroku, fazer tunel
-        //if (this.environment.acceptsProfiles("!heroku")) {
-        //    response.addProperty("externalURL", NgrokConfig.getExternalUrl());
-        //}
+
         return GSON.toJson(response);
     }
 
@@ -145,7 +142,7 @@ public class PrintRequestController {
                 // Create DocumentSpec and associate it with respective Document
                 DocumentSpec tmpdc = new DocumentSpec(infLim, supLim, tmpschema);
                 documentsSpecs.save(tmpdc);
-                if(documentsIds.containsKey(fileName)) {
+                if (documentsIds.containsKey(fileName)) {
                     long did = documentsIds.get(fileName);
                     Document tmpdoc = documents.findOne(did);
                     tmpdoc.addSpecification(tmpdc);
@@ -263,7 +260,6 @@ public class PrintRequestController {
     }
 
     /*-------------------------------------------------Integration----------------------------------------------------*/
-
     @ApiOperation(value = "Returns a Print Request ID", notes = "This method allows other platforms to print a document using ProxyPrint")
     @RequestMapping(value = "/printdocument", method = RequestMethod.POST)
     public String printDocument(HttpServletRequest request) throws IOException {
@@ -286,10 +282,10 @@ public class PrintRequestController {
     public void storeDocumentsWithDefaultSpecs(Map<String, Long> documentsIds) {
 
         PaperItem p1 = new PaperItem(Item.Format.A4, Item.Sides.DUPLEX, Item.Colors.BW);
-        PrintingSchema tmpschema = new PrintingSchema("A4+2LAD+PB",p1.genKey(),"BINDING,STAPLING,0,0","");
+        PrintingSchema tmpschema = new PrintingSchema("A4+2LAD+PB", p1.genKey(), "BINDING,STAPLING,0,0", "");
         printingSchemas.save(tmpschema);
 
-        for(String fileName : documentsIds.keySet()) {
+        for (String fileName : documentsIds.keySet()) {
 
             // Create DocumentSpec and associate it with respective Document
             DocumentSpec tmpdc = new DocumentSpec(0, 0, tmpschema);
@@ -353,7 +349,6 @@ public class PrintRequestController {
         //if (this.environment.acceptsProfiles("!heroku")) {
         //    response.addProperty("externalURL", NgrokConfig.getExternalUrl());
         //}
-
         return GSON.toJson(response);
     }
 

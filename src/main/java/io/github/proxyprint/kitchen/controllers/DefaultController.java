@@ -18,6 +18,7 @@ package io.github.proxyprint.kitchen.controllers;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import io.github.proxyprint.kitchen.WebAppConfig;
 import io.github.proxyprint.kitchen.config.NgrokConfig;
 import io.github.proxyprint.kitchen.models.User;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
@@ -36,6 +37,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
 import java.io.IOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -43,6 +46,9 @@ import java.io.IOException;
  */
 @RestController
 public class DefaultController {
+
+    private final Logger logger = LoggerFactory.getLogger(WebAppConfig.class);
+    
     @Autowired
     private UserDAO users;
     @Autowired
@@ -90,18 +96,20 @@ public class DefaultController {
             auth = false;
         } else {
             User user = createUser(username);
-            /*if(this.environment.acceptsProfiles("!heroku") && user.getClass().getSimpleName().equals(Consumer.class.getSimpleName())) {
-                // Added tunnel to response
-                String tunnel = NgrokConfig.getExternalUrl();
-                if(tunnel!=null) {
+            if (this.environment.acceptsProfiles("!heroku") && user.getClass().getSimpleName().equals(Consumer.class.getSimpleName())) {
+                try {
+                    // Added tunnel to response
+                    String tunnel = NgrokConfig.getExternalUrl();
                     response.addProperty("externalURL", tunnel);
+                } catch (NullPointerException ex) {
+                    logger.warn("Ngrok is not running! Please solve that!");
                 }
-            }*/
+            }
             if (user == null) {
                 auth = false;
             } else {
                 auth = user.getPassword().equals(password);
-                if(auth==true) {
+                if (auth == true) {
                     response.add("user", GSON.toJsonTree(user));
                 }
             }
@@ -114,6 +122,7 @@ public class DefaultController {
     /**
      * Find the username in the database and create its concrete type.
      * http://stackoverflow.com/questions/25991191/spring-autowired-bean-causes-null-pointer
+     *
      * @param username, the username submited in the log in process.
      * @return An user object instantiated with its concrete type.
      */
