@@ -9,6 +9,8 @@ import io.github.proxyprint.kitchen.models.consumer.printrequest.Document;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.DocumentSpec;
 import io.github.proxyprint.kitchen.models.consumer.printrequest.PrintRequest;
 import io.github.proxyprint.kitchen.models.printshops.PrintShop;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.Item;
+import io.github.proxyprint.kitchen.models.printshops.pricetable.PaperItem;
 import io.github.proxyprint.kitchen.models.repositories.*;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.io.FilenameUtils;
@@ -18,9 +20,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.print.Doc;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -95,6 +99,7 @@ public class PrintRequestController {
         response.addProperty("success", true);
         response.add("budgets", GSON.toJsonTree(budgets));
         response.addProperty("printRequestID", printRequest.getId());
+
         return GSON.toJson(response);
     }
 
@@ -138,7 +143,7 @@ public class PrintRequestController {
                 // Create DocumentSpec and associate it with respective Document
                 DocumentSpec tmpdc = new DocumentSpec(infLim, supLim, tmpschema);
                 documentsSpecs.save(tmpdc);
-                if(documentsIds.containsKey(fileName)) {
+                if (documentsIds.containsKey(fileName)) {
                     long did = documentsIds.get(fileName);
                     Document tmpdoc = documents.findOne(did);
                     tmpdoc.addSpecification(tmpdc);
@@ -253,6 +258,99 @@ public class PrintRequestController {
         BigDecimal bd = new BigDecimal(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
+    }
+
+    /*-------------------------------------------------Integration----------------------------------------------------*/
+    @ApiOperation(value = "Returns a Print Request ID", notes = "This method allows other platforms to print a document using ProxyPrint")
+    @RequestMapping(value = "/printdocument", method = RequestMethod.POST)
+    public String printDocument(HttpServletRequest request) throws IOException {
+        JsonObject response = new JsonObject();
+
+        PrintRequest printRequest = new PrintRequest();
+        printRequest = printRequests.save(printRequest);
+
+        // Process files
+        Map<String, Long> documentsIds = processSumitedFiles(printRequest, request);
+
+        // Parse and store documents and specifications
+        storeDocumentsWithDefaultSpecs(documentsIds);
+
+        response.addProperty("success", true);
+        response.addProperty("printRequestID", printRequest.getId());
+        return GSON.toJson(response);
+    }
+
+    public void storeDocumentsWithDefaultSpecs(Map<String, Long> documentsIds) {
+
+        PaperItem p1 = new PaperItem(Item.Format.A4, Item.Sides.DUPLEX, Item.Colors.BW);
+        PrintingSchema tmpschema = new PrintingSchema("A4+2LAD+PB", p1.genKey(), "BINDING,STAPLING,0,0", "");
+        printingSchemas.save(tmpschema);
+
+        for (String fileName : documentsIds.keySet()) {
+
+            // Create DocumentSpec and associate it with respective Document
+            DocumentSpec tmpdc = new DocumentSpec(0, 0, tmpschema);
+            documentsSpecs.save(tmpdc);
+
+            long did = documentsIds.get(fileName);
+            Document tmpdoc = documents.findOne(did);
+            tmpdoc.addSpecification(tmpdc);
+            documents.save(tmpdoc);
+        }
+    }
+
+    @ApiOperation(value = "Returns a document", notes = "This method returns the document from a print request ")
+    @RequestMapping(value = "/printdocument/{id}", method = RequestMethod.GET)
+    public String getDocument(@PathVariable(value = "id") long id) throws IOException {
+        JsonObject response = new JsonObject();
+
+        PrintRequest printRequest = printRequests.findOne(id);
+
+        if (printRequest == null) {
+            response.addProperty("success", false);
+            return GSON.toJson(response);
+        }
+
+        response.addProperty("success", true);
+        response.add("documents", GSON.toJsonTree(printRequest.getDocuments()));
+
+        return GSON.toJson(response);
+    }
+
+    @ApiOperation(value = "Returns a set of budgets", notes = "This method calculates budgets for a given and already specified print request. The budgets are calculated for specific printshops also passed along as parameters.")
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/printdocument/{id}/budget", method = RequestMethod.POST)
+    public String calcBudgetForPrintRecipe(Principal principal, @PathVariable(value = "id") long id, HttpServletRequest request) throws IOException {
+        JsonObject response = new JsonObject();
+        Consumer consumer = consumers.findByUsername(principal.getName());
+
+        PrintRequest printRequest = printRequests.findOne(id);
+        printRequest.setConsumer(consumer);
+        printRequest = printRequests.save(printRequest);
+
+        String requestJSON = IOUtils.toString(request.getInputStream());
+
+        // PrintShops
+        List<Double> tmpPshopIDs = GSON.fromJson(requestJSON, List.class);
+        List<Long> pshopIDs = new ArrayList<>();
+
+        for (Double doubleID : tmpPshopIDs) {
+            pshopIDs.add((long) Double.valueOf(doubleID).intValue());
+        }
+
+        // Finally calculate the budgets :D
+        List<PrintShop> pshops = getListOfPrintShops(pshopIDs);
+        Map<Long, String> budgets = printRequest.calcBudgetsForPrintShops(pshops);
+
+        response.addProperty("success", true);
+        response.add("budgets", GSON.toJsonTree(budgets));
+        response.addProperty("printRequestID", printRequest.getId());
+
+        //se nao estiver no heroku, fazer tunel
+        //if (this.environment.acceptsProfiles("!heroku")) {
+        //    response.addProperty("externalURL", NgrokConfig.getExternalUrl());
+        //}
+        return GSON.toJson(response);
     }
 
 }

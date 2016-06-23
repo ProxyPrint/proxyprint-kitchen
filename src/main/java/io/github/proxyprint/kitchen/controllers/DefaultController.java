@@ -18,6 +18,7 @@ package io.github.proxyprint.kitchen.controllers;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import io.github.proxyprint.kitchen.WebAppConfig;
 import io.github.proxyprint.kitchen.config.NgrokConfig;
 import io.github.proxyprint.kitchen.models.User;
 import io.github.proxyprint.kitchen.models.consumer.Consumer;
@@ -37,14 +38,18 @@ import org.springframework.web.context.request.WebRequest;
 
 import java.io.IOException;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author josesousa
  */
-@RestController 
+@RestController
 @Transactional
 public class DefaultController {
+
+    private final Logger logger = LoggerFactory.getLogger(WebAppConfig.class);
 
     @Autowired
     private UserDAO users;
@@ -94,12 +99,12 @@ public class DefaultController {
         } else {
             User user = createUser(username);
             if (this.environment.acceptsProfiles("!heroku") && user.getClass().getSimpleName().equals(Consumer.class.getSimpleName())) {
-                // Added tunnel to response
                 try {
+                    // Added tunnel to response
                     String tunnel = NgrokConfig.getExternalUrl();
                     response.addProperty("externalURL", tunnel);
-                } catch (NullPointerException e) {
-
+                } catch (NullPointerException ex) {
+                    logger.warn("Ngrok is not running! Please solve that!");
                 }
             }
             if (user == null) {
