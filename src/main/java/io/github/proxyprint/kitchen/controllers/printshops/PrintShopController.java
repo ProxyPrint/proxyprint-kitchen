@@ -158,7 +158,7 @@ public class PrintShopController {
     @ApiOperation(value = "Returns the new status.", notes = "Returns the new status of the corresponding print request.")
     @Secured({"ROLE_MANAGER", "ROLE_EMPLOYEE"})
     @RequestMapping(value = "/printshops/requests/{id}", method = RequestMethod.POST)
-    public String changeStatusPrintShopRequests(@PathVariable(value = "id") long id, Principal principal) throws IOException, PayPalRESTException {
+    public String changeStatusPrintShopRequests(@PathVariable(value = "id") long id, Principal principal) throws PayPalRESTException {
         JsonObject response = new JsonObject();
         Employee e = employees.findByUsername(principal.getName());
         PrintShop printshop = e.getPrintShop();

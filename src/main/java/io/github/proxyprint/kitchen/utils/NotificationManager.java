@@ -23,6 +23,8 @@ import io.github.proxyprint.kitchen.models.notifications.Notification;
 import io.github.proxyprint.kitchen.models.repositories.ConsumerDAO;
 import io.github.proxyprint.kitchen.models.repositories.NotificationDAO;
 import java.io.IOException;
+import java.util.logging.Level;
+import org.apache.catalina.connector.ClientAbortException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,8 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
  */
 public class NotificationManager {
   
+    private final Logger logger = LoggerFactory.getLogger(WebAppConfig.class);
+    
     @Autowired
     private ConsumerDAO consumers;
     @Autowired
@@ -57,7 +61,7 @@ public class NotificationManager {
         this.subscriptions.remove(username, emitter);
     }
 
-    public void sendNotification(String username, Notification notification) throws IOException {
+    public void sendNotification(String username, Notification notification){
         Consumer consumer = this.consumers.findByUsername(username);
         notification = notifications.save(notification);
         consumer.addNotifications(notification);
@@ -65,7 +69,11 @@ public class NotificationManager {
 
         if (this.subscriptions.containsKey(username)) {
             for (SseEmitter sse : this.subscriptions.get(username)) {
-                sse.send(notification, MediaType.APPLICATION_JSON);
+                try {
+                    sse.send(notification, MediaType.APPLICATION_JSON);
+                } catch (IOException ex) {
+                    this.logger.warn("Broken SSE Emitter..discarding it...");
+                }
             }
         }
     }
