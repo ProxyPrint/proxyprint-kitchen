@@ -137,37 +137,37 @@
                 <tbody>
                     <tr>
                         <td><a href="#operation--error-get">GET /error</a></td>
-                        <td><p>error</p>
+                        <td><p>errorHtml</p>
         </td>
                     </tr>
                     <tr>
                         <td><a href="#operation--error-head">HEAD /error</a></td>
-                        <td><p>error</p>
+                        <td><p>errorHtml</p>
         </td>
                     </tr>
                     <tr>
                         <td><a href="#operation--error-post">POST /error</a></td>
-                        <td><p>error</p>
+                        <td><p>errorHtml</p>
         </td>
                     </tr>
                     <tr>
                         <td><a href="#operation--error-put">PUT /error</a></td>
-                        <td><p>error</p>
+                        <td><p>errorHtml</p>
         </td>
                     </tr>
                     <tr>
                         <td><a href="#operation--error-delete">DELETE /error</a></td>
-                        <td><p>error</p>
+                        <td><p>errorHtml</p>
         </td>
                     </tr>
                     <tr>
                         <td><a href="#operation--error-options">OPTIONS /error</a></td>
-                        <td><p>error</p>
+                        <td><p>errorHtml</p>
         </td>
                     </tr>
                     <tr>
                         <td><a href="#operation--error-patch">PATCH /error</a></td>
-                        <td><p>error</p>
+                        <td><p>errorHtml</p>
         </td>
                     </tr>
                 </tbody>
@@ -314,6 +314,11 @@
                     </tr>
                     <tr>
                         <td><a href="#operation--admin-seed-post">POST /admin/seed</a></td>
+                        <td><p>Returns nothing.</p>
+        </td>
+                    </tr>
+                    <tr>
+                        <td><a href="#operation--admin-useed-post">POST /admin/useed</a></td>
                         <td><p>Returns nothing.</p>
         </td>
                     </tr>
@@ -1058,6 +1063,124 @@
                 <div class="panel-body">
                     <section class="sw-operation-description">
                         <p>This method allows developers to fill in the database with fake but consistent data.</p>
+            
+                    </section>
+                        
+                            <section class="sw-request-body">
+                                
+                                    <p><span class="label label-default">application/json</span> 
+                        </p>
+                            </section>        
+                    
+                        <section class="sw-responses">
+                                <p><span class="label label-default">*/*</span> 
+                    </p>
+                    
+                            <dl>
+                                    <dt class="sw-response-200">
+                                        200 OK
+                                    
+                                    </dt>
+                                    <dd class="sw-response-200">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <p>OK</p>
+                                            
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                
+                                                <div class="col-md-6 sw-response-model">
+                                                <div  class="panel panel-definition">
+                                                    <div class="panel-body">
+                                                            
+                                                    </div>
+                                                </div></div>
+                                            
+                                            </div>                </dd>
+                                    <dt class="sw-response-201">
+                                        201 Created
+                                    
+                                    </dt>
+                                    <dd class="sw-response-201">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <p>Created</p>
+                                            
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                
+                                                <div class="col-md-6 sw-response-model">
+                                            </div>
+                                            
+                                            </div>                </dd>
+                                    <dt class="sw-response-401">
+                                        401 Unauthorized
+                                    
+                                    </dt>
+                                    <dd class="sw-response-401">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <p>Unauthorized</p>
+                                            
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                
+                                                <div class="col-md-6 sw-response-model">
+                                            </div>
+                                            
+                                            </div>                </dd>
+                                    <dt class="sw-response-403">
+                                        403 Forbidden
+                                    
+                                    </dt>
+                                    <dd class="sw-response-403">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <p>Forbidden</p>
+                                            
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                
+                                                <div class="col-md-6 sw-response-model">
+                                            </div>
+                                            
+                                            </div>                </dd>
+                                    <dt class="sw-response-404">
+                                        404 Not Found
+                                    
+                                    </dt>
+                                    <dd class="sw-response-404">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <p>Not Found</p>
+                                            
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                
+                                                <div class="col-md-6 sw-response-model">
+                                            </div>
+                                            
+                                            </div>                </dd>
+                            </dl>
+                        </section>
+                </div>
+            </div>    
+        <span id="path--admin-useed"></span>
+            <div id="operation--admin-useed-post" class="swagger--panel-operation-post panel">
+                <div class="panel-heading">
+                    <div class="operation-summary">Returns nothing.</div>
+                    <h3 class="panel-title"><span class="operation-name">POST</span> <strong>/admin/useed</strong></h3>
+                        Tags:
+                            <a href="#tag-admin-controller">admin-controller</a>
+                </div>
+                <div class="panel-body">
+                    <section class="sw-operation-description">
+                        <p>This method allows developers to fill in the database with fake consumer accounts.</p>
             
                     </section>
                         
@@ -4567,7 +4690,7 @@
         <span id="path--error"></span>
             <div id="operation--error-delete" class="swagger--panel-operation-delete panel">
                 <div class="panel-heading">
-                    <div class="operation-summary">error</div>
+                    <div class="operation-summary">errorHtml</div>
                     <h3 class="panel-title"><span class="operation-name">DELETE</span> <strong>/error</strong></h3>
                         Tags:
                             <a href="#tag-basic-error-controller">basic-error-controller</a>
@@ -4584,7 +4707,7 @@
                             </section>        
                     
                         <section class="sw-responses">
-                                <p><span class="label label-default">*/*</span> 
+                                <p><span class="label label-default">text/html</span> 
                     </p>
                     
                             <dl>
@@ -4604,14 +4727,7 @@
                                                 <div class="col-md-6 sw-response-model">
                                                 <div  class="panel panel-definition">
                                                     <div class="panel-body">
-                                                            
-                                                                        <section class="json-schema-additionalProperties">
-                                                                            <span class="json-property-type"><span class="json-property-type">object</span>
-                                                                        <span class="json-property-range" title="Value limits"></span>
-                                                                        
-                                                                        </span>
-                                                                            
-                                                                        </section>
+                                                                <a class="json-schema-ref" href="#/definitions/ModelAndView">ModelAndView</a>
                                                     </div>
                                                 </div></div>
                                             
@@ -4672,7 +4788,7 @@
                 </div>
             </div>    <div id="operation--error-get" class="swagger--panel-operation-get panel">
                 <div class="panel-heading">
-                    <div class="operation-summary">error</div>
+                    <div class="operation-summary">errorHtml</div>
                     <h3 class="panel-title"><span class="operation-name">GET</span> <strong>/error</strong></h3>
                         Tags:
                             <a href="#tag-basic-error-controller">basic-error-controller</a>
@@ -4689,7 +4805,7 @@
                             </section>        
                     
                         <section class="sw-responses">
-                                <p><span class="label label-default">*/*</span> 
+                                <p><span class="label label-default">text/html</span> 
                     </p>
                     
                             <dl>
@@ -4709,14 +4825,7 @@
                                                 <div class="col-md-6 sw-response-model">
                                                 <div  class="panel panel-definition">
                                                     <div class="panel-body">
-                                                            
-                                                                        <section class="json-schema-additionalProperties">
-                                                                            <span class="json-property-type"><span class="json-property-type">object</span>
-                                                                        <span class="json-property-range" title="Value limits"></span>
-                                                                        
-                                                                        </span>
-                                                                            
-                                                                        </section>
+                                                                <a class="json-schema-ref" href="#/definitions/ModelAndView">ModelAndView</a>
                                                     </div>
                                                 </div></div>
                                             
@@ -4777,7 +4886,7 @@
                 </div>
             </div>    <div id="operation--error-head" class="swagger--panel-operation-head panel">
                 <div class="panel-heading">
-                    <div class="operation-summary">error</div>
+                    <div class="operation-summary">errorHtml</div>
                     <h3 class="panel-title"><span class="operation-name">HEAD</span> <strong>/error</strong></h3>
                         Tags:
                             <a href="#tag-basic-error-controller">basic-error-controller</a>
@@ -4794,7 +4903,7 @@
                             </section>        
                     
                         <section class="sw-responses">
-                                <p><span class="label label-default">*/*</span> 
+                                <p><span class="label label-default">text/html</span> 
                     </p>
                     
                             <dl>
@@ -4814,14 +4923,7 @@
                                                 <div class="col-md-6 sw-response-model">
                                                 <div  class="panel panel-definition">
                                                     <div class="panel-body">
-                                                            
-                                                                        <section class="json-schema-additionalProperties">
-                                                                            <span class="json-property-type"><span class="json-property-type">object</span>
-                                                                        <span class="json-property-range" title="Value limits"></span>
-                                                                        
-                                                                        </span>
-                                                                            
-                                                                        </section>
+                                                                <a class="json-schema-ref" href="#/definitions/ModelAndView">ModelAndView</a>
                                                     </div>
                                                 </div></div>
                                             
@@ -4882,7 +4984,7 @@
                 </div>
             </div>    <div id="operation--error-options" class="swagger--panel-operation-options panel">
                 <div class="panel-heading">
-                    <div class="operation-summary">error</div>
+                    <div class="operation-summary">errorHtml</div>
                     <h3 class="panel-title"><span class="operation-name">OPTIONS</span> <strong>/error</strong></h3>
                         Tags:
                             <a href="#tag-basic-error-controller">basic-error-controller</a>
@@ -4899,7 +5001,7 @@
                             </section>        
                     
                         <section class="sw-responses">
-                                <p><span class="label label-default">*/*</span> 
+                                <p><span class="label label-default">text/html</span> 
                     </p>
                     
                             <dl>
@@ -4919,14 +5021,7 @@
                                                 <div class="col-md-6 sw-response-model">
                                                 <div  class="panel panel-definition">
                                                     <div class="panel-body">
-                                                            
-                                                                        <section class="json-schema-additionalProperties">
-                                                                            <span class="json-property-type"><span class="json-property-type">object</span>
-                                                                        <span class="json-property-range" title="Value limits"></span>
-                                                                        
-                                                                        </span>
-                                                                            
-                                                                        </section>
+                                                                <a class="json-schema-ref" href="#/definitions/ModelAndView">ModelAndView</a>
                                                     </div>
                                                 </div></div>
                                             
@@ -4987,7 +5082,7 @@
                 </div>
             </div>    <div id="operation--error-patch" class="swagger--panel-operation-patch panel">
                 <div class="panel-heading">
-                    <div class="operation-summary">error</div>
+                    <div class="operation-summary">errorHtml</div>
                     <h3 class="panel-title"><span class="operation-name">PATCH</span> <strong>/error</strong></h3>
                         Tags:
                             <a href="#tag-basic-error-controller">basic-error-controller</a>
@@ -5004,7 +5099,7 @@
                             </section>        
                     
                         <section class="sw-responses">
-                                <p><span class="label label-default">*/*</span> 
+                                <p><span class="label label-default">text/html</span> 
                     </p>
                     
                             <dl>
@@ -5024,14 +5119,7 @@
                                                 <div class="col-md-6 sw-response-model">
                                                 <div  class="panel panel-definition">
                                                     <div class="panel-body">
-                                                            
-                                                                        <section class="json-schema-additionalProperties">
-                                                                            <span class="json-property-type"><span class="json-property-type">object</span>
-                                                                        <span class="json-property-range" title="Value limits"></span>
-                                                                        
-                                                                        </span>
-                                                                            
-                                                                        </section>
+                                                                <a class="json-schema-ref" href="#/definitions/ModelAndView">ModelAndView</a>
                                                     </div>
                                                 </div></div>
                                             
@@ -5092,7 +5180,7 @@
                 </div>
             </div>    <div id="operation--error-post" class="swagger--panel-operation-post panel">
                 <div class="panel-heading">
-                    <div class="operation-summary">error</div>
+                    <div class="operation-summary">errorHtml</div>
                     <h3 class="panel-title"><span class="operation-name">POST</span> <strong>/error</strong></h3>
                         Tags:
                             <a href="#tag-basic-error-controller">basic-error-controller</a>
@@ -5109,7 +5197,7 @@
                             </section>        
                     
                         <section class="sw-responses">
-                                <p><span class="label label-default">*/*</span> 
+                                <p><span class="label label-default">text/html</span> 
                     </p>
                     
                             <dl>
@@ -5129,14 +5217,7 @@
                                                 <div class="col-md-6 sw-response-model">
                                                 <div  class="panel panel-definition">
                                                     <div class="panel-body">
-                                                            
-                                                                        <section class="json-schema-additionalProperties">
-                                                                            <span class="json-property-type"><span class="json-property-type">object</span>
-                                                                        <span class="json-property-range" title="Value limits"></span>
-                                                                        
-                                                                        </span>
-                                                                            
-                                                                        </section>
+                                                                <a class="json-schema-ref" href="#/definitions/ModelAndView">ModelAndView</a>
                                                     </div>
                                                 </div></div>
                                             
@@ -5214,7 +5295,7 @@
                 </div>
             </div>    <div id="operation--error-put" class="swagger--panel-operation-put panel">
                 <div class="panel-heading">
-                    <div class="operation-summary">error</div>
+                    <div class="operation-summary">errorHtml</div>
                     <h3 class="panel-title"><span class="operation-name">PUT</span> <strong>/error</strong></h3>
                         Tags:
                             <a href="#tag-basic-error-controller">basic-error-controller</a>
@@ -5231,7 +5312,7 @@
                             </section>        
                     
                         <section class="sw-responses">
-                                <p><span class="label label-default">*/*</span> 
+                                <p><span class="label label-default">text/html</span> 
                     </p>
                     
                             <dl>
@@ -5251,14 +5332,7 @@
                                                 <div class="col-md-6 sw-response-model">
                                                 <div  class="panel panel-definition">
                                                     <div class="panel-body">
-                                                            
-                                                                        <section class="json-schema-additionalProperties">
-                                                                            <span class="json-property-type"><span class="json-property-type">object</span>
-                                                                        <span class="json-property-range" title="Value limits"></span>
-                                                                        
-                                                                        </span>
-                                                                            
-                                                                        </section>
+                                                                <a class="json-schema-ref" href="#/definitions/ModelAndView">ModelAndView</a>
                                                     </div>
                                                 </div></div>
                                             
