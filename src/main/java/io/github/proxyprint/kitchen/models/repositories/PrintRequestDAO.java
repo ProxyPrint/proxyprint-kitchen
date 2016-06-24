@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Created by MGonc on 28/04/16.
  */
-@Transactional
+
 public interface PrintRequestDAO extends CrudRepository<PrintRequest, Long> {
 
     public List<PrintRequest> findByStatusInAndPrintshop(List<Status> statuses, PrintShop printshop);

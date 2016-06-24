@@ -10,12 +10,12 @@ import java.util.List;
 /**
  * Created by daniel on 09-04-2016.
  */
-@Transactional
+
 public interface EmployeeDAO extends CrudRepository<Employee,Long> {
 
-    @Transactional
+    
     public Employee findByUsername(String username);
-    @Transactional
+    
     public List<Employee> findByPrintShop(PrintShop printShop);
 }
 

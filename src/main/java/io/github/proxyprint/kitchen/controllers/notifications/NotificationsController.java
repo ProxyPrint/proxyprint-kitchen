@@ -42,7 +42,6 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
  * @author jose
  */
 @RestController 
-@Transactional
 public class NotificationsController {
 
     @Autowired
@@ -52,6 +51,7 @@ public class NotificationsController {
     @Autowired
     private Gson GSON;
 
+    @Transactional
     @ApiOperation(value = "Returns nothing", notes = "This method sends a notification to a consumer.")
     @RequestMapping(value = "/consumer/{id}/notify", method = RequestMethod.POST)
     public void greeting(@PathVariable(value = "id") long id, WebRequest request, Principal principal) throws Exception {
@@ -60,6 +60,7 @@ public class NotificationsController {
         notificationManager.sendNotification(name, new Notification(message));
     }
 
+    @Transactional
     @ApiOperation(value = "Returns success/insuccess.", notes = "This method allows a consumer to subscribe the SSE.")
     @RequestMapping(value = "/consumer/subscribe", produces = "text/event-stream")
     public ResponseEntity<SseEmitter> subscribe(WebRequest request){
@@ -76,6 +77,7 @@ public class NotificationsController {
         }
     }
 
+    @Transactional
     @ApiOperation(value = "Returns list of notifications.", notes = "This method retrieves to consumer his list of notifications.")
     @Secured({"ROLE_USER"})
     @RequestMapping(value = "/consumer/notifications", method = RequestMethod.GET)
@@ -84,6 +86,7 @@ public class NotificationsController {
         return consumer.getNotifications();
     }
 
+    @Transactional
     @ApiOperation(value = "Returns success.", notes = "This method allows consumers to delete a notification.")
     @Secured({"ROLE_USER"})
     @RequestMapping(value="/notifications/{notificationId}", method = RequestMethod.DELETE)
@@ -94,6 +97,7 @@ public class NotificationsController {
         return new ResponseEntity<>(GSON.toJson(response), HttpStatus.OK);
     }
 
+    @Transactional
     @ApiOperation(value = "Returns success.", notes = "This method allows consumers to mark a notification as read.")
     @Secured({"ROLE_USER"})
     @RequestMapping(value="/notifications/{notificationId}", method = RequestMethod.PUT)

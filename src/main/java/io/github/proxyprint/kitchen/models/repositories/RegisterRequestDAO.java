@@ -26,7 +26,7 @@ import javax.transaction.Transactional;
  *
  * @author josesousa
  */
-@Transactional
+
 public interface RegisterRequestDAO extends CrudRepository<RegisterRequest, Long> {
     public List<RegisterRequest> findByAccepted(boolean accepted);
 }
