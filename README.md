@@ -17,6 +17,9 @@
 documents.path=/path/where/u/want/the/files
 </pre>
 </li>
+<li>
+Use maven version 3 or greater to build the project.
+</li>
 </ul>
 
 <h3>API Documentation</h3>
