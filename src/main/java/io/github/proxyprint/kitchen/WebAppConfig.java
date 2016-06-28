@@ -50,15 +50,15 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @EnableAsync
 public class WebAppConfig extends SpringBootServletInitializer {
 
+    private static final Class<WebAppConfig> APP_CLASS = WebAppConfig.class;
+        
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        return application.sources(appClass);
+        return application.sources(APP_CLASS);
     }
 
-    private static Class<WebAppConfig> appClass = WebAppConfig.class;
-
     public static void main(String[] args) throws IOException {
-        SpringApplication.run(WebAppConfig.class, args);
+        SpringApplication.run(APP_CLASS, args);
     }
 
     @Bean
