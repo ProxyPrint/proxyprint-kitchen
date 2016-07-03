@@ -62,8 +62,6 @@ public class RegisterRequestTests {
                 .addFilters(springSecurityFilterChain)
                 .build();
         this.admins.deleteAll();
-        this.managers.deleteAll();
-        this.printshops.deleteAll();
         this.registerRequests.deleteAll();
     }
 
