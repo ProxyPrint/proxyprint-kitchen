@@ -9,3 +9,4 @@ nbactions.xml
 .idea/
 nb-configuration.xml
 documents/
+.DS_Store
